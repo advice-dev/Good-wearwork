@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOODWEAR Marketplace</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
+body{margin:0;background:linear-gradient(135deg,#fffaf5,#fff0e6);color:#333;padding-bottom:90px}
+h1,h2,h3{color:#ff6600}
+.page{display:none}
+.active{display:block}
+.container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15)}
+input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3}
+button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700}
+.nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:flex;justify-content:space-around;padding:12px 0}
+.nav button{background:none;color:#ff6600;font-size:22px}
+.card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0}
+.card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
+.price{font-size:22px;font-weight:800;color:#ff6600}
+</style>
+</head>
+<body>
+
+<!-- INSCRIPTION -->
+<div id="signup" class="page active">
+  <div class="container">
+    <h1>GOODWEAR</h1>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Mot de passe">
+    <input id="username" placeholder="Nom boutique">
+    <input id="phone" placeholder="Téléphone">
+    <button onclick="signup()">S'inscrire</button>
+    <button onclick="login()">Se connecter</button>
+  </div>
+</div>
+
+<!-- MARKET -->
+<div id="market" class="page">
+  <div class="container">
+    <h2>Marketplace</h2>
+    <div id="list"></div>
+  </div>
+  <div class="nav">
+    <button onclick="show('market')"><i class="fa fa-shop"></i></button>
+    <button onclick="show('add')"><i class="fa fa-plus"></i></button>
+    <button onclick="show('cart')"><i class="fa fa-cart-shopping"></i></button>
+    <button onclick="show('profile')"><i class="fa fa-user"></i></button>
+  </div>
+</div>
+
+<!-- AJOUT PRODUIT -->
+<div id="add" class="page">
+  <div class="container">
+    <h2>Publier</h2>
+    <input id="title" placeholder="Produit">
+    <input id="price" type="number" placeholder="Prix">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input type="file" id="img">
+    <button onclick="publish()">Publier</button>
+  </div>
+</div>
+
+<!-- PANIER -->
+<div id="cart" class="page">
+  <div class="container">
+    <h2>Panier</h2>
+    <div id="cartList"></div>
+  </div>
+</div>
+
+<!-- PROFIL -->
+<div id="profile" class="page">
+  <div class="container">
+    <h2>Profil</h2>
+    <p>Points : <span id="points">0</span></p>
+    <div id="orders"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
+  authDomain: "good-wear-apk-84677.firebaseapp.com",
+  projectId: "good-wear-apk-84677"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let cart = [];
+
+// PAGES
+function show(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById(p).classList.add('active');
+  if(p==="market") renderMarket();
+  if(p==="cart") renderCart();
+  if(p==="profile") renderProfile();
+}
+
+// AUTH
+async function signup(){
+  const email=emailEl.value;
+  const pass=password.value;
+  if(!email||!pass) return alert("Champs manquants");
+  const res = await createUserWithEmailAndPassword(auth,email,pass);
+  currentUser=res.user;
+  await setDoc(doc(db,"users",currentUser.uid),{points:0,history:[]});
+  show("market");
+}
+
+async function login(){
+  const res=await signInWithEmailAndPassword(auth,email.value,password.value);
+  currentUser=res.user;
+  show("market");
+}
+
+onAuthStateChanged(auth,u=>{if(u){currentUser=u;show("market")}});
+
+// PRODUITS
+async function publish(){
+  if(!currentUser) return alert("Connecte-toi");
+  const file=img.files[0];
+  const r=new FileReader();
+  r.onload=async()=>{
+    await addDoc(collection(db,"products"),{
+      title:title.value,
+      price:+price.value,
+      desc:desc.value,
+      img:r.result
+    });
+    show("market");
+  }
+  r.readAsDataURL(file);
+}
+
+async function renderMarket(){
+  list.innerHTML="";
+  const snap=await getDocs(collection(db,"products"));
+  snap.forEach(d=>{
+    const p=d.data();
+    list.innerHTML+=`
+      <div class="card">
+        <img src="${p.img}">
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <div class="price">$${p.price}</div>
+        <button onclick="addCart('${d.id}')">Ajouter</button>
+      </div>`;
+  });
+}
+
+async function addCart(id){
+  const snap=await getDoc(doc(db,"products",id));
+  cart.push(snap.data());
+  alert("Ajouté au panier");
+}
+
+// PANIER
+function renderCart(){
+  cartList.innerHTML="";
+  cart.forEach((p,i)=>{
+    cartList.innerHTML+=`
+      <div class="card">
+        <h3>${p.title}</h3>
+        <div class="price">$${p.price}</div>
+        <button onclick="buy(${i})">Acheter</button>
+      </div>`;
+  });
+}
+
+async function buy(i){
+  const p=cart.splice(i,1)[0];
+  const ref=doc(db,"users",currentUser.uid);
+  const snap=await getDoc(ref);
+  const d=snap.data();
+  await updateDoc(ref,{
+    points:(d.points||0)+p.price,
+    history:[...(d.history||[]),p]
+  });
+  renderCart();
+}
+
+// PROFIL
+async function renderProfile(){
+  const snap=await getDoc(doc(db,"users",currentUser.uid));
+  points.innerText=snap.data().points;
+}
+
+//  EXPOSITION DES FONCTIONS (CRUCIAL)
+window.show=show;
+window.signup=signup;
+window.login=login;
+window.publish=publish;
+window.addCart=addCart;
+window.buy=buy;
+</script>
+
+</body>
+</html>
