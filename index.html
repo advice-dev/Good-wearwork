@@ -14,14 +14,12 @@ h1,h2,h3{color:#ff6600}
 .container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15)}
 input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3}
 button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700;cursor:pointer}
-
-/* MODIFICATION : La barre nav est cachée par défaut */
 .nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:none;justify-content:space-around;padding:12px 0;box-shadow:0 -5px 15px rgba(0,0,0,0.05)}
 .nav button{background:none;color:#ff6600;font-size:22px;width:auto;margin:0}
-
 .card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0}
 .card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
 .price{font-size:22px;font-weight:800;color:#ff6600}
+.original-price {font-size: 14px; text-decoration: line-through; color: #999;}
 </style>
 </head>
 <body>
@@ -49,7 +47,7 @@ button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none
   <div class="container">
     <h2>Publier</h2>
     <input id="title" placeholder="Produit">
-    <input id="price" type="number" placeholder="Prix">
+    <input id="price" type="number" placeholder="Prix réel (Base)">
     <textarea id="desc" placeholder="Description"></textarea>
     <input type="file" id="img-input">
     <button onclick="publish()">Publier</button>
@@ -97,40 +95,26 @@ const db = getFirestore(app);
 let currentUser = null;
 let shoppingCart = []; 
 
-// --- GESTION DES PAGES ET DU MENU ---
 function show(pageId){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
-
   const nav = document.getElementById('main-nav');
-  // On affiche le menu seulement si on n'est PAS sur la page d'inscription
-  if(pageId === 'signup') {
-    nav.style.display = 'none';
-  } else {
-    nav.style.display = 'flex';
-  }
-
+  if(pageId === 'signup') { nav.style.display = 'none'; } else { nav.style.display = 'flex'; }
   if(pageId === "market") renderMarket();
   if(pageId === "cart-page") renderCart();
   if(pageId === "profile") renderProfile();
 }
 
-// --- AUTHENTIFICATION ---
 async function signup(){
   const e = document.getElementById('email').value;
   const p = document.getElementById('password').value;
   const u = document.getElementById('username').value;
   const t = document.getElementById('phone').value;
-
-  if(!e || p.length < 6) return alert("Email valide et 6 caractères min pour le mot de passe");
-
   try {
     const res = await createUserWithEmailAndPassword(auth, e, p);
     currentUser = res.user;
-    await setDoc(doc(db, "users", currentUser.uid), {
-      username: u, phone: t, points: 0, history: []
-    });
-    show("market"); // Le menu apparaîtra ici
+    await setDoc(doc(db, "users", currentUser.uid), { username: u, phone: t, points: 0, history: [] });
+    show("market");
   } catch(err) { alert(err.message); }
 }
 
@@ -144,30 +128,18 @@ async function login(){
   } catch(err) { alert("Erreur de connexion"); }
 }
 
-onAuthStateChanged(auth, u => { 
-  if(u){ 
-    currentUser=u; 
-    show("market"); 
-  } else {
-    show("signup");
-  }
-});
+onAuthStateChanged(auth, u => { if(u){ currentUser=u; show("market"); } else { show("signup"); } });
 
-// --- PRODUITS ---
 async function publish(){
   const t = document.getElementById('title').value;
   const pr = document.getElementById('price').value;
   const d = document.getElementById('desc').value;
   const file = document.getElementById('img-input').files[0];
-
   if(!file) return alert("Ajoute une photo !");
-
   const r = new FileReader();
   r.onload = async () => {
-    await addDoc(collection(db, "products"), {
-      title: t, price: Number(pr), desc: d, img: r.result, sellerId: currentUser.uid
-    });
-    alert("Produit en ligne !");
+    await addDoc(collection(db, "products"), { title: t, price: Number(pr), desc: d, img: r.result, sellerId: currentUser.uid });
+    alert("Produit publié !");
     show("market");
   }
   r.readAsDataURL(file);
@@ -180,39 +152,56 @@ async function renderMarket(){
   list.innerHTML = "";
   snap.forEach(d => {
     const p = d.data();
+    // Affichage du prix majoré de 20%
+    const displayPrice = (p.price * 1.2).toFixed(2);
     list.innerHTML += `<div class="card">
       <img src="${p.img}">
       <h3>${p.title}</h3>
       <p>${p.desc}</p>
-      <div class="price">${p.price} €</div>
+      <div class="price">${displayPrice} €</div>
       <button onclick="addCart('${d.id}')">Ajouter au panier</button>
     </div>`;
   });
 }
 
 async function addCart(id){
-  const snap = await getDoc(doc(db, "products", id));
-  shoppingCart.push(snap.data());
-  alert("Dans le panier !");
+  const snap = await getDoc(doc(doc(db, "products", id)));
+  shoppingCart.push({...snap.data(), id: snap.id});
+  alert("Ajouté au panier !");
 }
 
 function renderCart(){
   const cl = document.getElementById('cartList');
   cl.innerHTML = shoppingCart.length === 0 ? "Panier vide" : "";
   shoppingCart.forEach((p, i) => {
-    cl.innerHTML += `<div class="card"><h3>${p.title}</h3><div class="price">${p.price} €</div><button onclick="buy(${i})">Acheter</button></div>`;
+    const displayPrice = (p.price * 1.2).toFixed(2);
+    cl.innerHTML += `<div class="card"><h3>${p.title}</h3><div class="price">${displayPrice} €</div><button onclick="buy(${i})">Acheter</button></div>`;
   });
 }
 
 async function buy(i){
-  const product = shoppingCart.splice(i, 1)[0];
+  const product = shoppingCart[i];
+  
+  // 1. Empêcher l'achat de ses propres articles
+  if(product.sellerId === currentUser.uid){
+    alert("Interdit : Vous ne pouvez pas acheter vos propres articles !");
+    shoppingCart.splice(i, 1);
+    renderCart();
+    return;
+  }
+
+  // 2. Transfert du prix RÉEL (sans les 20%)
+  const pointsReels = product.price;
+
   const userRef = doc(db, "users", currentUser.uid);
   const snap = await getDoc(userRef);
   await updateDoc(userRef, {
-    points: (snap.data().points || 0) + product.price,
+    points: (snap.data().points || 0) + pointsReels,
     history: arrayUnion(product)
   });
-  alert("Achat effectué !");
+  
+  shoppingCart.splice(i, 1);
+  alert(`Achat réussi ! ${pointsReels} points transférés.`);
   renderCart();
 }
 
@@ -221,20 +210,13 @@ async function renderProfile(){
   const data = snap.data();
   document.getElementById('points').innerText = data.points || 0;
   document.getElementById('shopNameDisplay').innerText = data.username || "Boutique";
-  
   const ord = document.getElementById('orders');
   ord.innerHTML = "<h4>Historique :</h4>";
-  (data.history || []).forEach(h => {
-    ord.innerHTML += `<p>📦 ${h.title} - ${h.price}€</p>`;
-  });
+  (data.history || []).forEach(h => { ord.innerHTML += `<p>📦 ${h.title} - ${h.price}€</p>`; });
 }
 
-window.show=show;
-window.signup=signup;
-window.login=login;
-window.publish=publish;
-window.addCart=addCart;
-window.buy=buy;
+window.show=show; window.signup=signup; window.login=login; window.publish=publish; window.addCart=addCart; window.buy=buy;
 </script>
 </body>
-</html>
+  </html>
+  
