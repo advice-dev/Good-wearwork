@@ -14,12 +14,14 @@ h1,h2,h3{color:#ff6600}
 .container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15)}
 input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3}
 button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700;cursor:pointer}
-.btn-delete{background:linear-gradient(135deg,#ff3333,#cc0000);margin-top:5px}
+.btn-delete{background:#ff3333}
+.btn-confirm{background:#28a745}
 .nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:none;justify-content:space-around;padding:12px 0;box-shadow:0 -5px 15px rgba(0,0,0,0.05)}
 .nav button{background:none;color:#ff6600;font-size:22px;width:auto;margin:0}
 .card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0}
 .card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
 .price{font-size:22px;font-weight:800;color:#ff6600}
+.status{font-size:12px;font-weight:bold;padding:5px;border-radius:5px;background:#eee}
 </style>
 </head>
 <body>
@@ -30,43 +32,36 @@ button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Mot de passe">
     <input id="username" placeholder="Nom boutique">
-    <input id="phone" placeholder="Téléphone">
-    <button onclick="signup()">S'inscrire</button>
-    <button onclick="login()">Se connecter</button>
+    <button onclick="signup()">S'inscrire / Se connecter</button>
   </div>
 </div>
 
 <div id="market" class="page">
-  <div class="container">
-    <h2>Marketplace</h2>
-    <div id="list"></div>
-  </div>
+  <div class="container"><h2>Marketplace (+20%)</h2><div id="list"></div></div>
 </div>
 
 <div id="add" class="page">
   <div class="container">
-    <h2>Publier</h2>
-    <input id="title" placeholder="Produit">
-    <input id="price" type="number" placeholder="Prix réel (Base)">
+    <h2>Vendre un article</h2>
+    <input id="title" placeholder="Nom de l'article">
+    <input id="price" type="number" placeholder="Prix réel (vendeur)">
     <textarea id="desc" placeholder="Description"></textarea>
     <input type="file" id="img-input">
-    <button onclick="publish()">Publier</button>
+    <button onclick="publish()">Mettre en vente</button>
   </div>
 </div>
 
 <div id="cart-page" class="page">
-  <div class="container">
-    <h2>Panier</h2>
-    <div id="cartList"></div>
-  </div>
+  <div class="container"><h2>Mon Panier</h2><div id="cartList"></div></div>
 </div>
 
 <div id="profile" class="page">
   <div class="container">
-    <h2>Profil</h2>
-    <h3 id="shopNameDisplay">Chargement...</h3>
-    <p>Points : <span id="points">0</span> ⭐</p>
-    <div id="orders"></div>
+    <h2 id="shopNameDisplay">Profil</h2>
+    <p>Solde Vendeur : <b id="points">0</b> ⭐</p>
+    <hr>
+    <h3>Mes Achats (À confirmer)</h3>
+    <div id="my-purchases"></div>
     <hr>
     <button class="btn-delete" onclick="deleteAccount()">Supprimer mon compte</button>
   </div>
@@ -81,159 +76,112 @@ button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
-  authDomain: "good-wear-apk-84677.firebaseapp.com",
-  projectId: "good-wear-apk-84677"
-};
-
+const firebaseConfig = { apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc", authDomain: "good-wear-apk-84677.firebaseapp.com", projectId: "good-wear-apk-84677" };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 let currentUser = null;
-let shoppingCart = []; 
+let shoppingCart = [];
 
 function show(pageId){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
-  const nav = document.getElementById('main-nav');
-  if(pageId === 'signup') { nav.style.display = 'none'; } else { nav.style.display = 'flex'; }
+  document.getElementById('main-nav').style.display = (pageId === 'signup') ? 'none' : 'flex';
   if(pageId === "market") renderMarket();
   if(pageId === "cart-page") renderCart();
   if(pageId === "profile") renderProfile();
 }
 
 async function signup(){
-  const e = document.getElementById('email').value;
-  const p = document.getElementById('password').value;
-  const u = document.getElementById('username').value;
-  const t = document.getElementById('phone').value;
-  try {
-    const res = await createUserWithEmailAndPassword(auth, e, p);
-    currentUser = res.user;
-    await setDoc(doc(db, "users", currentUser.uid), { username: u, phone: t, points: 0, history: [] });
-    show("market");
-  } catch(err) { alert(err.message); }
-}
-
-async function login(){
-  const e = document.getElementById('email').value;
-  const p = document.getElementById('password').value;
+  const e = document.getElementById('email').value, p = document.getElementById('password').value;
   try {
     const res = await signInWithEmailAndPassword(auth, e, p);
-    currentUser = res.user;
-    show("market");
-  } catch(err) { alert("Erreur de connexion"); }
+  } catch {
+    const res = await createUserWithEmailAndPassword(auth, e, p);
+    await setDoc(doc(db, "users", res.user.uid), { username: document.getElementById('username').value, points: 0 });
+  }
 }
-
 onAuthStateChanged(auth, u => { if(u){ currentUser=u; show("market"); } else { show("signup"); } });
 
 async function publish(){
-  const t = document.getElementById('title').value;
-  const pr = document.getElementById('price').value;
-  const d = document.getElementById('desc').value;
-  const file = document.getElementById('img-input').files[0];
-  if(!file) return alert("Ajoute une photo !");
+  const t = document.getElementById('title').value, pr = Number(document.getElementById('price').value), d = document.getElementById('desc').value, file = document.getElementById('img-input').files[0];
   const r = new FileReader();
   r.onload = async () => {
-    await addDoc(collection(db, "products"), { title: t, price: Number(pr), desc: d, img: r.result, sellerId: currentUser.uid });
-    alert("Produit publié !");
-    show("market");
-  }
+    await addDoc(collection(db, "products"), { title: t, price: pr, desc: d, img: r.result, sellerId: currentUser.uid, status: "disponible" });
+    alert("Article en ligne !"); show("market");
+  };
   r.readAsDataURL(file);
 }
 
 async function renderMarket(){
-  const list = document.getElementById('list');
-  list.innerHTML = "Chargement...";
-  const snap = await getDocs(collection(db, "products"));
+  const list = document.getElementById('list'); list.innerHTML = "Chargement...";
+  const snap = await getDocs(query(collection(db, "products"), where("status", "==", "disponible")));
   list.innerHTML = "";
   snap.forEach(d => {
     const p = d.data();
-    const displayPrice = (p.price * 1.2).toFixed(2);
     const isMine = p.sellerId === currentUser.uid;
-    
     list.innerHTML += `<div class="card">
-      <img src="${p.img}">
-      <h3>${p.title}</h3>
-      <p>${p.desc}</p>
-      <div class="price">${displayPrice} €</div>
-      ${isMine ? 
-        `<button class="btn-delete" onclick="deleteItem('${d.id}')">Supprimer mon article</button>` : 
-        `<button onclick="addCart('${d.id}')">Ajouter au panier</button>`
-      }
+      <img src="${p.img}"><h3>${p.title}</h3><p>${p.desc}</p>
+      <div class="price">${(p.price * 1.2).toFixed(2)} €</div>
+      ${isMine ? `<button class="btn-delete" onclick="deleteItem('${d.id}')">Supprimer</button>` : `<button onclick="addCart('${d.id}')">Ajouter au panier</button>`}
     </div>`;
   });
 }
 
-async function deleteItem(id){
-  if(confirm("Supprimer cet article ?")){
-    await deleteDoc(doc(db, "products", id));
-    renderMarket();
-  }
-}
-
-async function deleteAccount(){
-  if(confirm("⚠️ Supprimer définitivement votre boutique et votre compte ?")){
-    try {
-      await deleteDoc(doc(db, "users", currentUser.uid));
-      await deleteUser(currentUser);
-      alert("Compte supprimé.");
-      location.reload();
-    } catch(e) { alert("Veuillez vous reconnecter avant de supprimer le compte."); }
-  }
-}
-
-async function addCart(id){
-  const snap = await getDoc(doc(db, "products", id));
-  shoppingCart.push({...snap.data(), id: snap.id});
-  alert("Ajouté au panier !");
-}
+window.addCart = (id) => { alert("Ajouté !"); getDoc(doc(db, "products", id)).then(s => shoppingCart.push({...s.data(), id: s.id})); };
 
 function renderCart(){
-  const cl = document.getElementById('cartList');
-  cl.innerHTML = shoppingCart.length === 0 ? "Panier vide" : "";
+  const cl = document.getElementById('cartList'); cl.innerHTML = shoppingCart.length ? "" : "Panier vide";
   shoppingCart.forEach((p, i) => {
-    const displayPrice = (p.price * 1.2).toFixed(2);
-    cl.innerHTML += `<div class="card"><h3>${p.title}</h3><div class="price">${displayPrice} €</div><button onclick="buy(${i})">Acheter</button></div>`;
+    cl.innerHTML += `<div class="card"><h3>${p.title}</h3><div class="price">${(p.price * 1.2).toFixed(2)} €</div><button onclick="order(${i})">Commander</button></div>`;
   });
 }
 
-async function buy(i){
-  const product = shoppingCart[i];
-  if(product.sellerId === currentUser.uid){
-    alert("Impossible d'acheter chez soi.");
-    shoppingCart.splice(i, 1);
-    renderCart();
-    return;
-  }
-  const pointsReels = product.price;
-  const userRef = doc(db, "users", currentUser.uid);
-  const snap = await getDoc(userRef);
-  await updateDoc(userRef, {
-    points: (snap.data().points || 0) + pointsReels,
-    history: arrayUnion(product)
-  });
+// L'acheteur commande : l'article passe en statut "en_cours"
+async function order(i){
+  const p = shoppingCart[i];
+  await updateDoc(doc(db, "products", p.id), { status: "en_cours", buyerId: currentUser.uid });
   shoppingCart.splice(i, 1);
-  alert(`Achat réussi ! ${pointsReels} points transférés.`);
-  renderCart();
+  alert("Commande envoyée ! Attendez la réception pour confirmer.");
+  show("profile");
 }
 
 async function renderProfile(){
-  const snap = await getDoc(doc(db, "users", currentUser.uid));
-  const data = snap.data();
-  document.getElementById('points').innerText = data.points || 0;
-  document.getElementById('shopNameDisplay').innerText = data.username || "Boutique";
-  const ord = document.getElementById('orders');
-  ord.innerHTML = "<h4>Historique :</h4>";
-  (data.history || []).forEach(h => { ord.innerHTML += `<p>📦 ${h.title} - ${h.price}€</p>`; });
+  const uSnap = await getDoc(doc(db, "users", currentUser.uid));
+  document.getElementById('points').innerText = uSnap.data().points || 0;
+  
+  const purch = document.getElementById('my-purchases'); purch.innerHTML = "Chargement...";
+  const q = query(collection(db, "products"), where("buyerId", "==", currentUser.uid), where("status", "==", "en_cours"));
+  const snap = await getDocs(q);
+  purch.innerHTML = snap.empty ? "Aucun achat en attente." : "";
+  snap.forEach(d => {
+    const p = d.data();
+    purch.innerHTML += `<div class="card"><h4>${p.title}</h4><button class="btn-confirm" onclick="confirmArrival('${d.id}', ${p.price}, '${p.sellerId}')">Commande Reçue ✅</button></div>`;
+  });
 }
 
-window.show=show; window.signup=signup; window.login=login; window.publish=publish; window.addCart=addCart; window.buy=buy; window.deleteItem=deleteItem; window.deleteAccount=deleteAccount;
+// C'EST ICI QUE L'ARGENT EST TRANSFÉRÉ
+async function confirmArrival(prodId, price, sellerId){
+  if(confirm("Confirmez-vous avoir reçu l'article ? Le vendeur recevra alors ses points.")){
+    // 1. Donner les points au vendeur
+    const sRef = doc(db, "users", sellerId);
+    const sSnap = await getDoc(sRef);
+    await updateDoc(sRef, { points: (sSnap.data().points || 0) + price });
+    
+    // 2. Marquer l'article comme vendu (disparaît de partout)
+    await updateDoc(doc(db, "products", prodId), { status: "vendu" });
+    
+    alert("Terminé ! Points transférés au vendeur.");
+    renderProfile();
+  }
+}
+
+window.deleteItem = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "products", id)); renderMarket(); } };
+window.show=show; window.signup=signup; window.publish=publish; window.order=order; window.confirmArrival=confirmArrival;
 </script>
 </body>
 </html>
