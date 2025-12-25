@@ -1,187 +1,124 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOODWEAR Marketplace</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-*{box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
-body{margin:0;background:linear-gradient(135deg,#fffaf5,#fff0e6);color:#333;padding-bottom:90px}
-h1,h2,h3{color:#ff6600}
-.page{display:none}
-.active{display:block}
-.container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15)}
-input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3}
-button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700;cursor:pointer}
-.btn-delete{background:#ff3333}
-.btn-confirm{background:#28a745}
-.nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:none;justify-content:space-around;padding:12px 0;box-shadow:0 -5px 15px rgba(0,0,0,0.05)}
-.nav button{background:none;color:#ff6600;font-size:22px;width:auto;margin:0}
-.card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0}
-.card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
-.price{font-size:22px;font-weight:800;color:#ff6600}
-.status{font-size:12px;font-weight:bold;padding:5px;border-radius:5px;background:#eee}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOOD Wear - Officiel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { margin: 0; background: #fdfdfd; padding-bottom: 80px; }
+        .orange { color: #FF8C00; }
+        .page { display: none; padding: 20px; }
+        .active { display: block; }
+        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; }
+        button { background: #FF8C00; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .card { border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; overflow: hidden; background: white; }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .price-tag { font-size: 20px; font-weight: bold; color: #FF8C00; padding: 10px; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #eee; }
+        .nav i { font-size: 24px; color: #FF8C00; }
+        .info-box { background: #fff3e0; border: 1px solid #ffb74d; padding: 15px; border-radius: 8px; font-size: 14px; }
+    </style>
 </head>
 <body>
 
 <div id="signup" class="page active">
-  <div class="container">
-    <h1>GOODWEAR</h1>
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Mot de passe">
-    <input id="username" placeholder="Nom boutique">
-    <button onclick="signup()">S'inscrire / Se connecter</button>
-  </div>
+    <h2 class="orange">Rejoindre GOOD Wear</h2>
+    <div class="info-box">
+        <strong>⚠️ PAIEMENT UNIQUEMENT VIA :</strong><br>
+        M-Pesa : [NUMERO_MPESA]<br>
+        Orange Money : [NUMERO_ORANGE]
+    </div>
+    <input type="text" id="reg-name" placeholder="Nom complet">
+    <input type="tel" id="reg-phone" placeholder="Numéro de téléphone (Obligatoire)">
+    <input type="email" id="reg-email" placeholder="Email">
+    <input type="password" id="reg-pass" placeholder="Mot de passe (6 car. min)">
+    <button onclick="handleSignup()">Créer mon compte</button>
 </div>
 
 <div id="market" class="page">
-  <div class="container"><h2>Marketplace (+20%)</h2><div id="list"></div></div>
+    <h2 class="orange">Marketplace (+20% Taxe incluse)</h2>
+    <div id="product-list"></div>
 </div>
 
 <div id="add" class="page">
-  <div class="container">
-    <h2>Vendre un article</h2>
-    <input id="title" placeholder="Nom de l'article">
-    <input id="price" type="number" placeholder="Prix réel (vendeur)">
-    <textarea id="desc" placeholder="Description"></textarea>
-    <input type="file" id="img-input">
-    <button onclick="publish()">Mettre en vente</button>
-  </div>
+    <h2 class="orange">Vendre un article</h2>
+    <input type="text" id="p-title" placeholder="Nom de l'article">
+    <input type="number" id="p-price" placeholder="Prix de base (votre gain)">
+    <p id="calc-preview" style="font-size: 13px; color: gray;">Prix affiché au client : 0 €</p>
+    <textarea id="p-desc" placeholder="Description" style="width:100%; height:80px;"></textarea>
+    <input type="file" id="p-img">
+    <button onclick="handlePublish()">Mettre en vente</button>
 </div>
 
-<div id="cart-page" class="page">
-  <div class="container"><h2>Mon Panier</h2><div id="cartList"></div></div>
-</div>
-
-<div id="profile" class="page">
-  <div class="container">
-    <h2 id="shopNameDisplay">Profil</h2>
-    <p>Solde Vendeur : <b id="points">0</b> ⭐</p>
-    <hr>
-    <h3>Mes Achats (À confirmer)</h3>
-    <div id="my-purchases"></div>
-    <hr>
-    <button class="btn-delete" onclick="deleteAccount()">Supprimer mon compte</button>
-  </div>
-</div>
-
-<div id="main-nav" class="nav">
-    <button onclick="show('market')"><i class="fa fa-shop"></i></button>
-    <button onclick="show('add')"><i class="fa fa-plus"></i></button>
-    <button onclick="show('cart-page')"><i class="fa fa-cart-shopping"></i></button>
-    <button onclick="show('profile')"><i class="fa fa-user"></i></button>
+<div class="nav" id="main-nav" style="display:none;">
+    <i class="fa fa-shop" onclick="showPage('market')"></i>
+    <i class="fa fa-plus-circle" onclick="showPage('add')"></i>
+    <i class="fa fa-user" onclick="showPage('profile')"></i>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // --- CONFIGURATION FIREBASE ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = { apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc", authDomain: "good-wear-apk-84677.firebaseapp.com", projectId: "good-wear-apk-84677" };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    const config = { /* Tes clés Firebase ici */ };
+    const app = initializeApp(config);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-let currentUser = null;
-let shoppingCart = [];
+    let userSession = null;
 
-function show(pageId){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  document.getElementById('main-nav').style.display = (pageId === 'signup') ? 'none' : 'flex';
-  if(pageId === "market") renderMarket();
-  if(pageId === "cart-page") renderCart();
-  if(pageId === "profile") renderProfile();
-}
+    // --- CALCUL DE LA TAXE 20% ---
+    document.getElementById('p-price').addEventListener('input', (e) => {
+        const base = Number(e.target.value);
+        const total = base * 1.20; // Ajout des 20%
+        document.getElementById('calc-preview').innerText = `Prix affiché au client (Taxe incluse) : ${total.toFixed(2)} €`;
+    });
 
-async function signup(){
-  const e = document.getElementById('email').value, p = document.getElementById('password').value;
-  try {
-    const res = await signInWithEmailAndPassword(auth, e, p);
-  } catch {
-    const res = await createUserWithEmailAndPassword(auth, e, p);
-    await setDoc(doc(db, "users", res.user.uid), { username: document.getElementById('username').value, points: 0 });
-  }
-}
-onAuthStateChanged(auth, u => { if(u){ currentUser=u; show("market"); } else { show("signup"); } });
+    window.handleSignup = async () => {
+        const name = document.getElementById('reg-name').value;
+        const phone = document.getElementById('reg-phone').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
 
-async function publish(){
-  const t = document.getElementById('title').value, pr = Number(document.getElementById('price').value), d = document.getElementById('desc').value, file = document.getElementById('img-input').files[0];
-  const r = new FileReader();
-  r.onload = async () => {
-    await addDoc(collection(db, "products"), { title: t, price: pr, desc: d, img: r.result, sellerId: currentUser.uid, status: "disponible" });
-    alert("Article en ligne !"); show("market");
-  };
-  r.readAsDataURL(file);
-}
+        if(!phone || phone.length < 10) return alert("Numéro de téléphone invalide");
 
-async function renderMarket(){
-  const list = document.getElementById('list'); list.innerHTML = "Chargement...";
-  const snap = await getDocs(query(collection(db, "products"), where("status", "==", "disponible")));
-  list.innerHTML = "";
-  snap.forEach(d => {
-    const p = d.data();
-    const isMine = p.sellerId === currentUser.uid;
-    list.innerHTML += `<div class="card">
-      <img src="${p.img}"><h3>${p.title}</h3><p>${p.desc}</p>
-      <div class="price">${(p.price * 1.2).toFixed(2)} €</div>
-      ${isMine ? `<button class="btn-delete" onclick="deleteItem('${d.id}')">Supprimer</button>` : `<button onclick="addCart('${d.id}')">Ajouter au panier</button>`}
-    </div>`;
-  });
-}
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await setDoc(doc(db, "users", res.user.uid), {
+                name, phone, email, points: 0, status: "actif"
+            });
+            userSession = res.user;
+            alert("Compte créé ! Bienvenue.");
+            showPage('market');
+        } catch(e) { alert(e.message); }
+    };
 
-window.addCart = (id) => { alert("Ajouté !"); getDoc(doc(db, "products", id)).then(s => shoppingCart.push({...s.data(), id: s.id})); };
+    window.handlePublish = async () => {
+        const title = document.getElementById('p-title').value;
+        const basePrice = Number(document.getElementById('p-price').value);
+        const finalPrice = basePrice * 1.20; // Le prix que l'acheteur voit
+        
+        // Règle : Enregistre qui est le vendeur
+        await addDoc(collection(db, "products"), {
+            title,
+            originalPrice: basePrice,
+            displayPrice: finalPrice,
+            sellerId: auth.currentUser.uid,
+            sellerPhone: document.getElementById('reg-phone').value // Optionnel
+        });
+        alert("Article publié avec succès !");
+        showPage('market');
+    };
 
-function renderCart(){
-  const cl = document.getElementById('cartList'); cl.innerHTML = shoppingCart.length ? "" : "Panier vide";
-  shoppingCart.forEach((p, i) => {
-    cl.innerHTML += `<div class="card"><h3>${p.title}</h3><div class="price">${(p.price * 1.2).toFixed(2)} €</div><button onclick="order(${i})">Commander</button></div>`;
-  });
-}
-
-// L'acheteur commande : l'article passe en statut "en_cours"
-async function order(i){
-  const p = shoppingCart[i];
-  await updateDoc(doc(db, "products", p.id), { status: "en_cours", buyerId: currentUser.uid });
-  shoppingCart.splice(i, 1);
-  alert("Commande envoyée ! Attendez la réception pour confirmer.");
-  show("profile");
-}
-
-async function renderProfile(){
-  const uSnap = await getDoc(doc(db, "users", currentUser.uid));
-  document.getElementById('points').innerText = uSnap.data().points || 0;
-  
-  const purch = document.getElementById('my-purchases'); purch.innerHTML = "Chargement...";
-  const q = query(collection(db, "products"), where("buyerId", "==", currentUser.uid), where("status", "==", "en_cours"));
-  const snap = await getDocs(q);
-  purch.innerHTML = snap.empty ? "Aucun achat en attente." : "";
-  snap.forEach(d => {
-    const p = d.data();
-    purch.innerHTML += `<div class="card"><h4>${p.title}</h4><button class="btn-confirm" onclick="confirmArrival('${d.id}', ${p.price}, '${p.sellerId}')">Commande Reçue ✅</button></div>`;
-  });
-}
-
-// C'EST ICI QUE L'ARGENT EST TRANSFÉRÉ
-async function confirmArrival(prodId, price, sellerId){
-  if(confirm("Confirmez-vous avoir reçu l'article ? Le vendeur recevra alors ses points.")){
-    // 1. Donner les points au vendeur
-    const sRef = doc(db, "users", sellerId);
-    const sSnap = await getDoc(sRef);
-    await updateDoc(sRef, { points: (sSnap.data().points || 0) + price });
-    
-    // 2. Marquer l'article comme vendu (disparaît de partout)
-    await updateDoc(doc(db, "products", prodId), { status: "vendu" });
-    
-    alert("Terminé ! Points transférés au vendeur.");
-    renderProfile();
-  }
-}
-
-window.deleteItem = async (id) => { if(confirm("Supprimer ?")) { await deleteDoc(doc(db, "products", id)); renderMarket(); } };
-window.show=show; window.signup=signup; window.publish=publish; window.order=order; window.confirmArrival=confirmArrival;
+    window.showPage = (id) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('main-nav').style.display = (id === 'signup') ? 'none' : 'flex';
+    };
 </script>
 </body>
 </html>
