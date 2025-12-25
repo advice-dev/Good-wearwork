@@ -14,12 +14,12 @@ h1,h2,h3{color:#ff6600}
 .container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15)}
 input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3}
 button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700;cursor:pointer}
+.btn-delete{background:linear-gradient(135deg,#ff3333,#cc0000);margin-top:5px}
 .nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;display:none;justify-content:space-around;padding:12px 0;box-shadow:0 -5px 15px rgba(0,0,0,0.05)}
 .nav button{background:none;color:#ff6600;font-size:22px;width:auto;margin:0}
 .card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0}
 .card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
 .price{font-size:22px;font-weight:800;color:#ff6600}
-.original-price {font-size: 14px; text-decoration: line-through; color: #999;}
 </style>
 </head>
 <body>
@@ -67,6 +67,8 @@ button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none
     <h3 id="shopNameDisplay">Chargement...</h3>
     <p>Points : <span id="points">0</span> ⭐</p>
     <div id="orders"></div>
+    <hr>
+    <button class="btn-delete" onclick="deleteAccount()">Supprimer mon compte</button>
   </div>
 </div>
 
@@ -79,8 +81,8 @@ button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -152,20 +154,42 @@ async function renderMarket(){
   list.innerHTML = "";
   snap.forEach(d => {
     const p = d.data();
-    // Affichage du prix majoré de 20%
     const displayPrice = (p.price * 1.2).toFixed(2);
+    const isMine = p.sellerId === currentUser.uid;
+    
     list.innerHTML += `<div class="card">
       <img src="${p.img}">
       <h3>${p.title}</h3>
       <p>${p.desc}</p>
       <div class="price">${displayPrice} €</div>
-      <button onclick="addCart('${d.id}')">Ajouter au panier</button>
+      ${isMine ? 
+        `<button class="btn-delete" onclick="deleteItem('${d.id}')">Supprimer mon article</button>` : 
+        `<button onclick="addCart('${d.id}')">Ajouter au panier</button>`
+      }
     </div>`;
   });
 }
 
+async function deleteItem(id){
+  if(confirm("Supprimer cet article ?")){
+    await deleteDoc(doc(db, "products", id));
+    renderMarket();
+  }
+}
+
+async function deleteAccount(){
+  if(confirm("⚠️ Supprimer définitivement votre boutique et votre compte ?")){
+    try {
+      await deleteDoc(doc(db, "users", currentUser.uid));
+      await deleteUser(currentUser);
+      alert("Compte supprimé.");
+      location.reload();
+    } catch(e) { alert("Veuillez vous reconnecter avant de supprimer le compte."); }
+  }
+}
+
 async function addCart(id){
-  const snap = await getDoc(doc(doc(db, "products", id)));
+  const snap = await getDoc(doc(db, "products", id));
   shoppingCart.push({...snap.data(), id: snap.id});
   alert("Ajouté au panier !");
 }
@@ -181,25 +205,19 @@ function renderCart(){
 
 async function buy(i){
   const product = shoppingCart[i];
-  
-  // 1. Empêcher l'achat de ses propres articles
   if(product.sellerId === currentUser.uid){
-    alert("Interdit : Vous ne pouvez pas acheter vos propres articles !");
+    alert("Impossible d'acheter chez soi.");
     shoppingCart.splice(i, 1);
     renderCart();
     return;
   }
-
-  // 2. Transfert du prix RÉEL (sans les 20%)
   const pointsReels = product.price;
-
   const userRef = doc(db, "users", currentUser.uid);
   const snap = await getDoc(userRef);
   await updateDoc(userRef, {
     points: (snap.data().points || 0) + pointsReels,
     history: arrayUnion(product)
   });
-  
   shoppingCart.splice(i, 1);
   alert(`Achat réussi ! ${pointsReels} points transférés.`);
   renderCart();
@@ -215,8 +233,7 @@ async function renderProfile(){
   (data.history || []).forEach(h => { ord.innerHTML += `<p>📦 ${h.title} - ${h.price}€</p>`; });
 }
 
-window.show=show; window.signup=signup; window.login=login; window.publish=publish; window.addCart=addCart; window.buy=buy;
+window.show=show; window.signup=signup; window.login=login; window.publish=publish; window.addCart=addCart; window.buy=buy; window.deleteItem=deleteItem; window.deleteAccount=deleteAccount;
 </script>
 </body>
-  </html>
-  
+</html>
