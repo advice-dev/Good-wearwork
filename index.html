@@ -3,128 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOOD Wear - Officiel</title>
+    <title>GOOD WEAR - L'Ultime Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --orange: #FF8C00; --dark: #333; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f8f9fa; color: var(--dark); }
-        
-        /* HEADER */
-        .header { background: white; padding: 20px 15px; text-align: center; border-bottom: 3px solid var(--orange); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .logo { margin: 0; color: var(--orange); font-size: 26px; font-weight: 800; letter-spacing: 1px; }
-        .slogan { color: #666; font-size: 14px; font-weight: 500; margin-top: 4px; font-style: italic; }
-        
-        .container { padding: 20px; max-width: 450px; margin: auto; }
-        
-        /* FORMULAIRE & CARDS */
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; border: 1px solid #eee; }
-        h2 { font-size: 20px; margin-bottom: 15px; text-align: center; color: var(--dark); }
-        
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--orange); outline: none; box-shadow: 0 0 5px rgba(255, 140, 0, 0.2); }
-        
-        .btn { background: var(--orange); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; }
-        .btn:active { transform: scale(0.98); background: #e67e00; }
-        
-        /* NAVIGATION */
-        .page { display: none; animation: fadeIn 0.4s; }
+        :root {
+            --primary: #FF8C00;
+            --primary-dark: #e67e00;
+            --secondary: #2D3436;
+            --bg: #F8F9FD;
+            --white: #FFFFFF;
+            --shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; background: var(--bg); 
+            color: var(--secondary);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+        }
+
+        /* HEADER LUXE */
+        .header { 
+            background: var(--white);
+            padding: 30px 15px; 
+            text-align: center; 
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: var(--shadow);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { 
+            margin: 0; color: var(--primary); 
+            font-size: 30px; font-weight: 800; 
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        .slogan { 
+            color: #636e72; font-size: 14px; 
+            font-weight: 600; margin-top: 5px; 
+            letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .container { padding: 20px; max-width: 500px; margin: auto; }
+
+        /* INPUTS & FORM */
+        .card { 
+            background: var(--white); padding: 25px; 
+            border-radius: 25px; margin-bottom: 20px; 
+            box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.7);
+        }
+
+        input { 
+            width: 100%; padding: 18px; margin: 10px 0;
+            border: 2px solid #f1f1f1; background: #fdfdfd;
+            border-radius: 15px; box-sizing: border-box; 
+            font-size: 15px; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; background: white; }
+
+        .btn-main { 
+            background: linear-gradient(45deg, var(--primary), #FFA502);
+            color: white; border: none; padding: 18px; 
+            width: 100%; border-radius: 15px; 
+            font-weight: 800; cursor: pointer;
+            font-size: 16px; text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(255,140,0,0.3);
+            margin-top: 10px;
+        }
+        .btn-main:active { transform: scale(0.96); }
+
+        /* NAV BAR FLOTTANTE */
+        .nav-bar { 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            position: fixed; bottom: 20px; left: 20px; right: 20px;
+            height: 70px; display: flex; justify-content: space-around; 
+            align-items: center; border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            z-index: 2000; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .nav-item { text-align: center; color: #b2bec3; cursor: pointer; transition: 0.3s; flex: 1; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+
+        /* PAGES */
+        .page { display: none; animation: slideUp 0.5s ease; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* INFOS SESSION */
-        .session-info { background: #fff3e0; border-left: 4px solid var(--orange); padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
-        .price-tag { color: var(--orange); font-weight: bold; font-size: 1.5em; margin: 10px 0; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge-user {
+            background: var(--secondary); color: white;
+            padding: 12px 20px; border-radius: 15px;
+            font-size: 13px; margin-bottom: 25px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">GOOD WEAR</div>
-    <div class="slogan">Achetez, Vendez, Gagnez</div>
+    <div class="slogan">Achetez • Vendez • Gagnez</div>
 </div>
 
 <div class="container">
-    <div id="signup-page" class="page active">
-        <h2>Créer ma Boutique</h2>
-        <input type="text" id="in-shop" placeholder="Nom de la boutique">
-        <input type="text" id="in-name" placeholder="Nom du responsable">
-        <input type="tel" id="in-phone" placeholder="Numéro de téléphone">
-        <input type="email" id="in-email" placeholder="Adresse Email">
-        <input type="password" id="in-pass" placeholder="Mot de passe">
-        <button class="btn" onclick="inscrireCompte()">Lancer ma boutique</button>
+    <div id="page-signup" class="page active">
+        <h2 style="text-align:center;">Lancez votre Empire 🚀</h2>
+        <div class="card">
+            <input type="text" id="reg-shop" placeholder="Nom de votre Boutique">
+            <input type="text" id="reg-name" placeholder="Nom du responsable">
+            <input type="tel" id="reg-phone" placeholder="Numéro de téléphone">
+            <input type="email" id="reg-email" placeholder="Adresse Email">
+            <input type="password" id="reg-pass" placeholder="Mot de passe">
+            <button class="btn-main" onclick="validerInscription()">CRÉER MON COMPTE</button>
+        </div>
     </div>
 
-    <div id="market-page" class="page">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 id="user-shop-display" style="margin:0; color: var(--orange);">Marketplace</h2>
-            <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer; font-size:12px; font-weight:bold;">Quitter</button>
-        </div>
+    <div id="page-home" class="page">
+        <div id="recap-profil" class="badge-user"></div>
         
-        <div id="user-data-bar" class="session-info"></div>
-
         <div class="card">
-            <div style="display:flex; justify-content:space-between;">
-                <span style="font-size:11px; font-weight:bold; color:green;">STATUT: VÉRIFIÉ</span>
-                <span style="font-size:11px; color:#999;">ID: #9967</span>
-            </div>
-            <h3 style="margin:10px 0;">Article Collection Premium</h3>
-            <p style="font-size: 14px; color:#666; margin:0;">Prix initial + 20% commission incluse.</p>
-            <div class="price-tag">Total : 60.00 $</div>
-            
-            <button class="btn" onclick="acheterArticle('0836344645', 'Article Premium', 60)">Acheter</button>
+            <div style="width:100%; height:180px; background:#f0f0f0; border-radius:20px; margin-bottom:15px; display:flex; align-items:center; justify-content:center; color:#999; font-weight:bold;">PHOTO ARTICLE</div>
+            <h3 style="margin:0;">Veste Edition Spéciale</h3>
+            <p style="color:#636e72; font-size:13px;">Inclus commission GOOD Wear (20%)</p>
+            <div style="color:var(--primary); font-size:26px; font-weight:800; margin:10px 0;">80.00 $</div>
+            <button class="btn-main" onclick="ouvrirPaiement('0836344645', 'Veste Edition Spéciale', 80)">Acheter Maintenant</button>
         </div>
+    </div>
+
+    <div id="page-sell" class="page">
+        <h2>Mettre en vente</h2>
+        <div class="card">
+            <input type="text" placeholder="Nom de l'article">
+            <input type="number" id="input-prix" oninput="calculerTaxe()" placeholder="Votre prix vendeur ($)">
+            <div style="background: #FFF5E6; padding: 15px; border-radius: 15px; margin: 10px 0; border: 1px dashed var(--primary);">
+                <p id="prix-final" style="color:var(--primary); font-weight:bold; margin:0; text-align:center;">Prix affiché au client : 0.00 $</p>
+            </div>
+            <button class="btn-main">Publier l'annonce</button>
+        </div>
+    </div>
+
+    <div id="page-profile" class="page">
+        <h2>Mon Profil</h2>
+        <div id="recap-complet" class="card"></div>
+        <button class="btn-main" style="background:#ff7675;" onclick="logout()">Se Déconnecter</button>
     </div>
 </div>
 
+<div class="nav-bar" id="main-nav" style="display:none;">
+    <div class="nav-item active" onclick="nav('page-home', this)"><span class="nav-icon">🏠</span>Accueil</div>
+    <div class="nav-item" onclick="nav('page-sell', this)"><span class="nav-icon">➕</span>Vendre</div>
+    <div class="nav-item" onclick="nav('page-profile', this)"><span class="nav-icon">👤</span>Profil</div>
+</div>
+
 <script>
-    let activeUser = JSON.parse(localStorage.getItem('goodwear_final_session')) || null;
+    let sessionUser = JSON.parse(localStorage.getItem('goodwear_final_pro_session')) || null;
 
-    // --- FONCTION INSCRIPTION ---
-    function inscrireCompte() {
-        const shop = document.getElementById('in-shop').value;
-        const nom = document.getElementById('in-name').value;
-        const tel = document.getElementById('in-phone').value;
-        const email = document.getElementById('in-email').value;
-        const pass = document.getElementById('in-pass').value;
+    function validerInscription() {
+        const shop = document.getElementById('reg-shop').value;
+        const nom = document.getElementById('reg-name').value;
+        const tel = document.getElementById('reg-phone').value;
+        const email = document.getElementById('reg-email').value;
 
-        if(!shop || !nom || !tel || !email || !pass) {
-            alert("⚠️ Erreur : Remplissez TOUS les champs (Boutique, Responsable, Tel, Email, Passe).");
-            return;
-        }
+        if(!shop || !nom || !tel || !email) return alert("⚠️ Erreur : Remplissez tous les champs obligatoires !");
 
-        const data = { 
-            boutique: shop, 
-            responsable: nom, 
-            telephone: tel.trim(), 
-            email: email 
-        };
-
-        localStorage.setItem('goodwear_final_session', JSON.stringify(data));
-        activeUser = data;
-        alert("Succès ! Bienvenue dans l'univers GOOD Wear.");
-        refreshApp();
+        sessionUser = { shop: shop, name: nom, phone: tel.trim(), email: email };
+        localStorage.setItem('goodwear_final_pro_session', JSON.stringify(sessionUser));
+        
+        alert("Félicitations ! Votre boutique " + shop + " est prête.");
+        lancerApp();
     }
 
-    // --- FONCTION ACHAT AVEC BLOCAGE ---
-    function acheterArticle(telVendeur, nomProd, prix) {
-        if(!activeUser) {
-            alert("Inscrivez-vous pour acheter.");
-            location.reload();
-            return;
+    function lancerApp() {
+        if(sessionUser) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-home').classList.add('active');
+            document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('page-signup').style.display = 'none';
+            
+            document.getElementById('recap-profil').innerHTML = `<span>🏬 ${sessionUser.shop}</span> <span style="font-size:10px; opacity:0.8;">${sessionUser.name}</span>`;
+            document.getElementById('recap-complet').innerHTML = `
+                <p><b>Boutique:</b> ${sessionUser.shop}</p>
+                <p><b>Propriétaire:</b> ${sessionUser.name}</p>
+                <p><b>Téléphone:</b> ${sessionUser.phone}</p>
+                <p><b>Email:</b> ${sessionUser.email}</p>
+            `;
         }
+    }
 
-        // SÉCURITÉ : On compare le téléphone de l'acheteur avec celui du vendeur
-        if(activeUser.telephone === telVendeur) {
-            alert("❌ ACTION IMPOSSIBLE\n\nLogique de sécurité : Vous ne pouvez pas acheter vos propres articles !");
+    function nav(pageId, element) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function calculerTaxe() {
+        const p = document.getElementById('input-prix').value;
+        const final = (p * 1.2).toFixed(2);
+        document.getElementById('prix-final').innerText = "Prix final client (+20%) : " + final + " $";
+    }
+
+    function ouvrirPaiement(telVendeur, produit, prix) {
+        if(sessionUser.phone === telVendeur) {
+            alert("❌ ACTION BLOQUÉE\n\nVous ne pouvez pas acheter votre propre article !");
         } else {
             const ticket = `
-📢 TICKET DE PAIEMENT
+💎 CONFIRMATION GOOD WEAR
 -----------------------------------
-Produit : ${nomProd}
-Montant : ${prix} $
+Produit : ${produit}
+Total à payer : ${prix} $
 
-Veuillez payer sur nos numéros officiels :
-💰 M-PESA : 0836344645
-💰 AIRTEL MONEY : 0970428667
+ENVOYEZ LE PAIEMENT ICI :
+👉 M-PESA : 0836344645
+👉 AIRTEL : 0970428667
 
 Achetez, Vendez, Gagnez !
             `;
@@ -132,29 +230,14 @@ Achetez, Vendez, Gagnez !
         }
     }
 
-    // --- AFFICHAGE ET SESSION ---
-    function refreshApp() {
-        if(activeUser) {
-            document.getElementById('signup-page').classList.remove('active');
-            document.getElementById('market-page').classList.add('active');
-            document.getElementById('user-shop-display').innerText = activeUser.boutique;
-            document.getElementById('user-data-bar').innerHTML = `
-                <strong>Responsable :</strong> ${activeUser.responsable}<br>
-                <strong>Email :</strong> ${activeUser.email}<br>
-                <strong>Tel :</strong> ${activeUser.telephone}
-            `;
-        }
-    }
-
     function logout() {
-        if(confirm("Voulez-vous vous déconnecter ?")) {
-            localStorage.removeItem('goodwear_final_session');
+        if(confirm("Se déconnecter de GOOD WEAR ?")) {
+            localStorage.removeItem('goodwear_final_pro_session');
             location.reload();
         }
     }
 
-    window.onload = refreshApp;
+    if(sessionUser) lancerApp();
 </script>
-
 </body>
 </html>
