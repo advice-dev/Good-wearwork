@@ -1,116 +1,242 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOOD Wear</title>
-    <style>
-        :root { --orange: #FF8C00; }
-        body { font-family: sans-serif; margin: 0; background: #f4f4f4; }
-        .header { background: white; padding: 15px; text-align: center; border-bottom: 3px solid var(--orange); }
-        .logo { color: var(--orange); font-size: 24px; font-weight: bold; margin: 0; }
-        .slogan { font-size: 12px; color: #666; font-style: italic; }
-        .container { padding: 20px; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn { background: var(--orange); color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; }
-        .nav-item { flex: 1; text-align: center; padding: 10px; font-size: 12px; color: #888; cursor: pointer; }
-        .nav-item.active { color: var(--orange); font-weight: bold; }
-        .page { display: none; }
-        .active { display: block; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOODWEAR Marketplace</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
+body{margin:0;background:linear-gradient(135deg,#fffaf5,#fff0e6);color:#333;padding-bottom:90px}
+h1,h2,h3{color:#ff6600}.page{display:none}.active{display:block}
+.container{max-width:900px;margin:auto;background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px rgba(255,102,0,.15);border:1px solid #ffe0cc}
+input,textarea,button{width:100%;padding:13px;margin:10px 0;border-radius:12px;border:2px solid #ffccb3;font-size:15px;background:#fff;color:#333}
+input::placeholder,textarea::placeholder{color:#999}
+button{background:linear-gradient(135deg,#ff6600,#ff8c33);color:#fff;border:none;font-weight:700;box-shadow:0 4px 12px rgba(255,102,0,.3);cursor:pointer}
+button:hover{opacity:.9;transform:translateY(-1px)}
+.nav{position:fixed;bottom:0;left:0;width:100%;background:#fff;border-top:2px solid #ffccb3;display:flex;justify-content:space-around;padding:12px 0;z-index:1000}
+.nav button{background:none;color:#ff6600;font-size:22px;width:auto;box-shadow:none}
+.card{border:1px solid #ffe0cc;border-radius:18px;padding:15px;margin:16px 0;background:#fffaf8}
+.card img{width:100%;height:230px;object-fit:cover;border-radius:14px}
+.price{font-size:22px;font-weight:800;color:#ff6600}
+.badge{background:#ff6600;color:#fff;padding:8px 16px;border-radius:30px;display:inline-block;margin-bottom:12px;font-weight:700}
+.notice{background:#fff3e6;padding:15px;border:1px solid #ffccb3;border-radius:10px;color:#333;margin-top:10px; font-weight:bold}
+.small{color:#777;font-size:13px}
+</style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo">GOOD WEAR</div>
-    <div class="slogan">Achetez, Vendez, Gagnez</div>
+<div id="signup" class="page active">
+  <div class="container">
+    <h1>GOODWEAR</h1><p class="small">Acheter. Vendre. Gagnez.</p>
+    <input type="email" id="email" placeholder="Email de la boutique">
+    <input type="password" id="password" placeholder="Mot de passe">
+    <input id="username" placeholder="Nom de la boutique">
+    <input id="phone" placeholder="Numéro de téléphone (ex: 083...)">
+    <button id="btnSignup">S'inscrire</button>
+    <button id="btnLogin">Se connecter</button>
+  </div>
 </div>
 
-<div class="container">
-    <div id="page-signup" class="page active">
-        <h3>Créer un compte</h3>
-        <input type="text" id="reg-shop" placeholder="Nom de la boutique">
-        <input type="text" id="reg-name" placeholder="Nom du responsable">
-        <input type="tel" id="reg-phone" placeholder="Numéro de téléphone">
-        <input type="email" id="reg-email" placeholder="Adresse Email">
-        <button class="btn" onclick="inscrire()">S'INSCRIRE</button>
+<div id="market" class="page">
+  <div class="container">
+    <h2 id="welcomeShop">Marketplace</h2>
+    <div id="list"></div>
+  </div>
+  <div class="nav">
+    <button onclick="window.showPage('market')"><i class="fa fa-shop"></i></button>
+    <button onclick="window.showPage('add')"><i class="fa fa-plus"></i></button>
+    <button onclick="window.showPage('cart')"><i class="fa fa-cart-shopping"></i></button>
+    <button onclick="window.showPage('profile')"><i class="fa fa-user"></i></button>
+  </div>
+</div>
+
+<div id="add" class="page">
+  <div class="container">
+    <h2>Publier un article</h2>
+    <input id="title" placeholder="Nom du produit">
+    <input id="price" type="number" placeholder="Votre prix vendeur ($)">
+    <p class="small" id="taxInfo">Prix final client (+20% frais) : 0 $</p>
+    <input id="colors" placeholder="Couleurs disponibles">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input type="file" id="img" accept="image/*">
+    <button id="btnPublish">Publier</button>
+  </div>
+</div>
+
+<div id="cart" class="page">
+  <div class="container">
+    <h2>Mon Panier</h2>
+    <div id="cartList"></div>
+    <div id="paymentInstructions" class="notice" style="display:none;">
+      📢 MODE DE PAIEMENT :<br>
+      Veuillez envoyer le montant total au :<br>
+      Airtel Money : +243 970 428 667<br>
+      M-Pesa : +243 836 344 645
     </div>
-
-    <div id="page-home" class="page">
-        <div class="card">
-            <h4>Article de Test</h4>
-            <p>Prix : 60$ (Taxe incluse)</p>
-            <button class="btn" onclick="acheter('0836344645', 'Article de Test', 60)">ACHETER</button>
-        </div>
-    </div>
+  </div>
 </div>
 
-<div class="nav-bar" id="bottom-nav" style="display:none;">
-    <div class="nav-item active" onclick="changerPage('page-home')">Accueil</div>
-    <div class="nav-item">Vendre</div>
-    <div class="nav-item">Profil</div>
+<div id="profile" class="page">
+  <div class="container">
+    <h2>Mon Profil</h2>
+    <div id="profileDetails" class="small" style="margin-bottom:15px;"></div>
+    <div class="badge">Points : <span id="points">0</span></div>
+    <input type="number" id="convertPoints" placeholder="Nombre de points à convertir">
+    <button onclick="alert('Bientôt disponible !')">Convertir mes points</button>
+    <h3>Historique de commandes</h3>
+    <div id="orders"></div>
+    <button onclick="location.reload()" style="background:grey;">Se déconnecter</button>
+  </div>
 </div>
 
-<script>
-    let userSession = JSON.parse(localStorage.getItem('goodwear_user')) || null;
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // FONCTION INSCRIPTION (Ce que tu as demandé)
-    function inscrire() {
-        const shop = document.getElementById('reg-shop').value;
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-        const email = document.getElementById('reg-email').value;
+const firebaseConfig = {
+  apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
+  authDomain: "good-wear-apk-84677.firebaseapp.com",
+  projectId: "good-wear-apk-84677",
+  storageBucket: "good-wear-apk-84677.firebasestorage.app",
+  messagingSenderId: "293506727538",
+  appId: "1:293506727538:web:a8a2cc194bca78272d4ceb"
+};
 
-        if(!shop || !name || !phone || !email) {
-            alert("Veuillez tout remplir !");
-            return;
-        }
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let currentUser=null, cart=[], userData=null;
 
-        userSession = { shop, name, phone: phone.trim(), email };
-        localStorage.setItem('goodwear_user', JSON.stringify(userSession));
-        
-        alert("Boutique " + shop + " créée !");
-        lancerApplication();
-    }
+// Navigation Globale
+window.showPage = (p) => {
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById(p).classList.add('active');
+  if(p==='market') renderMarket();
+  if(p==='cart') renderCart();
+  if(p==='profile') renderProfile();
+};
 
-    // FONCTION ACHAT (Avec tes numéros et la sécurité)
-    function acheter(telVendeur, produit, prix) {
-        // SÉCURITÉ : Bloque si le numéro du client est celui du vendeur
-        if(userSession.phone === telVendeur) {
-            alert("❌ Action refusée : Vous ne pouvez pas acheter votre propre article !");
-        } else {
-            // MESSAGE DE PAIEMENT UNIQUEMENT ICI
-            const msg = `
-📢 PAIEMENT À EFFECTUER
----------------------------
-Produit : ${produit}
-Total : ${prix} $
+// Inscription
+async function signup(){
+  const email=document.getElementById('email').value, password=document.getElementById('password').value;
+  const username=document.getElementById('username').value, phone=document.getElementById('phone').value;
+  if(!email||!password||!username||!phone) return alert("Tous les champs sont requis");
+  try{
+    const userCred = await createUserWithEmailAndPassword(auth,email,password);
+    await setDoc(doc(db,"users",userCred.user.uid),{email,username,phone,points:0,history:[]});
+    alert("Boutique créée !"); window.showPage('market');
+  }catch(e){alert(e.message);}
+}
+document.getElementById('btnSignup').onclick = signup;
 
-Envoyez l'argent au :
-💰 M-PESA : 0836344645
-💰 AIRTEL : 0970428667
-            `;
-            alert(msg);
-        }
-    }
+// Connexion
+async function login(){
+  const email=document.getElementById('email').value, password=document.getElementById('password').value;
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+    alert("Bienvenue !"); window.showPage('market');
+  }catch(e){alert("Erreur de connexion");}
+}
+document.getElementById('btnLogin').onclick = login;
 
-    function lancerApplication() {
-        if(userSession) {
-            document.getElementById('page-signup').style.display = 'none';
-            document.getElementById('page-home').classList.add('active');
-            document.getElementById('bottom-nav').style.display = 'flex';
-        }
-    }
+// Auth State
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    currentUser=user;
+    const uSnap = await getDoc(doc(db,"users",user.uid));
+    userData = uSnap.data();
+    document.getElementById('welcomeShop').innerText = "Market : " + userData.username;
+    window.showPage('market');
+  }
+});
 
-    function changerPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
+// Publish
+document.getElementById('price').oninput = (e) => {
+  const final = (e.target.value * 1.2).toFixed(2);
+  document.getElementById('taxInfo').innerText = `Prix final client (+20% frais) : ${final} $`;
+};
 
-    if(userSession) lancerApplication();
+async function publish(){
+  const title=document.getElementById('title').value, price=document.getElementById('price').value;
+  const colors=document.getElementById('colors').value, desc=document.getElementById('desc').value;
+  const imgFile=document.getElementById('img').files[0];
+  if(!title||!price||!imgFile) return alert("Champs requis");
+
+  const reader=new FileReader();
+  reader.onload=async ()=>{
+    await addDoc(collection(db,"products"),{
+      title, 
+      price: +(price * 1.2).toFixed(2), // Prix avec taxe
+      sellerPhone: userData.phone,
+      sellerId: currentUser.uid,
+      colors, desc, img:reader.result
+    });
+    alert("Produit en ligne !"); window.showPage('market');
+  };
+  reader.readAsDataURL(imgFile);
+}
+document.getElementById('btnPublish').onclick = publish;
+
+// Render Market
+async function renderMarket(){
+  const list=document.getElementById('list'); list.innerHTML="Chargement...";
+  const snap=await getDocs(collection(db,"products"));
+  list.innerHTML="";
+  snap.forEach(docSnap=>{
+    const p=docSnap.data();
+    const item = document.createElement('div');
+    item.className = 'card';
+    item.innerHTML = `<img src='${p.img}'><h3>${p.title}</h3><div class='price'>$${p.price}</div>
+      <button onclick='window.addToCart("${docSnap.id}")'>🛒 Ajouter au panier</button>`;
+    list.appendChild(item);
+  });
+}
+
+window.addToCart = async (id) => {
+  const snap = await getDocs(collection(db,"products"));
+  const p = snap.docs.find(d=>d.id===id).data();
+  // SECURITÉ : On vérifie si c'est notre propre produit
+  if(p.sellerId === currentUser.uid){
+    alert("❌ Impossible d'acheter votre propre article !");
+  } else {
+    cart.push(p); alert("Ajouté au panier !");
+  }
+};
+
+function renderCart(){
+  const div=document.getElementById('cartList'); div.innerHTML=cart.length===0?"Panier vide":"";
+  document.getElementById('paymentInstructions').style.display = cart.length > 0 ? "block" : "none";
+  cart.forEach((p,i)=>{
+    div.innerHTML+=`<div class='card'><h3>${p.title}</h3><div class='price'>$${p.price}</div>
+      <button onclick='window.buy(${i})'>Confirmer l'achat</button></div>`;
+  });
+}
+
+window.buy = async (i) => {
+  const p=cart[i];
+  const userDoc=doc(db,"users",currentUser.uid);
+  const uData = (await getDoc(userDoc)).data();
+  const newHistory=[...(uData.history||[]), p];
+  const newPoints=(uData.points||0)+Math.floor(p.price);
+  await updateDoc(userDoc,{history:newHistory,points:newPoints});
+  cart.splice(i,1);
+  alert("Commande validée ! Effectuez le paiement maintenant.");
+  window.showPage('profile');
+};
+
+async function renderProfile(){
+  if(!userData) return;
+  document.getElementById('profileDetails').innerHTML = `Boutique : ${userData.username}<br>Email : ${userData.email}<br>Tel : ${userData.phone}`;
+  const uSnap = await getDoc(doc(db,"users",currentUser.uid));
+  const data = uSnap.data();
+  document.getElementById('points').innerText=data.points||0;
+  const orders = document.getElementById('orders'); orders.innerHTML="";
+  (data.history||[]).forEach(p=>{
+    orders.innerHTML+=`<div class='card'><b>${p.title}</b> - $${p.price}</div>`;
+  });
+}
+
 </script>
-
 </body>
-</html>
+    </html>
+    
