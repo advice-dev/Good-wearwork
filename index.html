@@ -7,53 +7,67 @@
     <style>
         :root { --orange: #FF8C00; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f9f9f9; color: #333; }
+        
+        /* HEADER PRO */
         .header { background: white; padding: 15px; text-align: center; border-bottom: 3px solid var(--orange); position: sticky; top: 0; z-index: 100; }
-        /* Style pour ton nouveau slogan */
+        .logo { margin: 0; color: var(--orange); font-size: 24px; font-weight: bold; letter-spacing: 1px; }
         .slogan { color: #555; font-size: 14px; font-weight: 500; margin-top: 5px; font-style: italic; }
         
         .container { padding: 20px; max-width: 500px; margin: auto; }
-        .card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #eee; }
-        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        
+        /* CARDS & INPUTS */
+        .card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 20px; border: 1px solid #eee; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: var(--orange); }
+        
         .btn { background: var(--orange); color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn:active { transform: scale(0.98); background: #e67e00; }
+        
+        /* PAGES */
         .page { display: none; }
         .active { display: block; }
-        .user-info { font-size: 12px; color: #777; margin-bottom: 15px; background: #f0f0f0; padding: 8px; border-radius: 5px; border-left: 3px solid var(--orange); }
+        
+        /* INFOS UTILISATEUR */
+        .user-info-bar { font-size: 12px; color: #666; background: #f0f0f0; padding: 10px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--orange); line-height: 1.4; }
+        .price-final { color: var(--orange); font-weight: bold; font-size: 1.4em; margin: 10px 0; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1 style="margin:0; color:var(--orange); font-size: 22px; letter-spacing: 1px;">GOOD WEAR</h1>
+    <div class="logo">GOOD WEAR</div>
     <div class="slogan">Achetez, Vendez, Gagnez</div>
 </div>
 
 <div class="container">
     <div id="page-signup" class="page active">
-        <h2 style="text-align: center; margin-top: 10px;">Créer votre Boutique</h2>
+        <h2 style="text-align: center; margin-bottom: 5px;">Créer votre Boutique</h2>
+        <p style="text-align: center; color: #888; font-size: 14px; margin-bottom: 20px;">Rejoignez le réseau leader de la mode.</p>
+        
         <input type="text" id="reg-shop-name" placeholder="Nom de la boutique">
         <input type="text" id="reg-name" placeholder="Nom complet du responsable">
         <input type="tel" id="reg-phone" placeholder="Numéro de téléphone (ex: 083...)">
         <input type="email" id="reg-email" placeholder="Adresse Email officielle">
         <input type="password" id="reg-pass" placeholder="Mot de passe">
         
-        <button class="btn" onclick="inscrire()">CRÉER MON COMPTE</button>
+        <button class="btn" onclick="inscrire()">OUVRIR MA BOUTIQUE</button>
     </div>
 
     <div id="page-market" class="page">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <h2 id="display-shop-name" style="margin:0; color: var(--orange); font-size: 20px;">Ma Boutique</h2>
-            <button onclick="deconnexion()" style="background:none; border:none; color:#999; font-size: 12px; text-decoration: underline; cursor:pointer;">Quitter</button>
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 id="display-shop-title" style="margin:0; color: var(--orange); font-size: 20px;">Marketplace</h2>
+            <button onclick="deconnexion()" style="background:none; border:none; color:#bbb; font-size: 12px; cursor:pointer;">Se déconnecter</button>
         </div>
         
-        <div id="user-details" class="user-info"></div>
+        <div id="user-summary" class="user-info-bar"></div>
 
         <div class="card">
-            <div style="background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; margin-bottom: 10px;">Article en vente</div>
-            <h3>Vêtement de Test (+20% Taxe)</h3>
-            <div style="color: var(--orange); font-weight: bold; font-size: 1.3em; margin-bottom: 15px;">Total : 60.00 $</div>
+            <div style="background: #fff3e0; color: #e65100; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-bottom: 10px;">Vendeur vérifié</div>
+            <h3 style="margin: 5px 0;">Article de Démonstration</h3>
+            <p style="color: #777; font-size: 14px; margin: 0;">Prix base : 50 $ + Taxe service (20%)</p>
+            <div class="price-final">Total : 60.00 $</div>
             
-            <button class="btn" onclick="verifierEtAcheter('0970428667', 'Vêtement de Test', 60)">ACHETER MAINTENANT</button>
+            <button class="btn" onclick="procederAchat('0970428667', 'Article de Démonstration', 60)">ACHETER</button>
         </div>
     </div>
 </div>
@@ -61,72 +75,83 @@
 <script>
     let session = JSON.parse(localStorage.getItem('goodwear_session')) || null;
 
+    // --- FONCTION INSCRIPTION ---
     function inscrire() {
-        const shop = document.getElementById('reg-shop-name').value;
+        const boutique = document.getElementById('reg-shop-name').value;
         const nom = document.getElementById('reg-name').value;
         const tel = document.getElementById('reg-phone').value;
-        const mail = document.getElementById('reg-email').value;
+        const email = document.getElementById('reg-email').value;
         
-        if(!shop || !nom || !tel || !mail) {
-            alert("⚠️ Erreur : Toutes les informations sont obligatoires !");
+        if(!boutique || !nom || !tel || !email) {
+            alert("⚠️ Erreur : Boutique, Nom, Téléphone et Email sont obligatoires !");
             return;
         }
 
-        const user = { 
-            shopName: shop, 
+        const userData = { 
+            shop: boutique, 
             responsable: nom, 
             telephone: tel.trim(), 
-            email: mail 
+            email: email 
         };
         
-        localStorage.setItem('goodwear_session', JSON.stringify(user));
-        session = user;
+        localStorage.setItem('goodwear_session', JSON.stringify(userData));
+        session = userData;
         
-        alert("Succès ! La boutique " + shop + " est maintenant en ligne.");
+        alert("Bravo ! Votre boutique '" + boutique + "' est créée.");
         ouvrirPage('page-market');
     }
 
-    function verifierEtAcheter(numeroVendeur, nomArticle, prix) {
+    // --- FONCTION ACHAT SÉCURISÉE ---
+    function procederAchat(idVendeur, nomArticle, prix) {
         if(!session) {
-            alert("Veuillez vous inscrire.");
+            alert("Veuillez vous inscrire pour acheter.");
             ouvrirPage('page-signup');
             return;
         }
 
-        if(session.telephone === numeroVendeur) {
-            alert("❌ ACTION REFUSÉE\n\nVous ne pouvez pas acheter vos propres articles !");
+        // RÈGLE ANTI-ACHAT DE SOI-MÊME
+        if(session.telephone === idVendeur) {
+            alert("❌ ACTION BLOQUÉE\n\nVous ne pouvez pas acheter vos propres articles sur GOOD Wear !");
         } else {
-            const message = `
-📢 CONFIRMATION DE COMMANDE
+            // AFFICHAGE DES NUMÉROS DE PAIEMENT UNIQUEMENT ICI
+            const msgPaiement = `
+📢 CONFIRMATION D'ACHAT
 -----------------------------------
 Produit : ${nomArticle}
-Prix Final : ${prix} $
+Total à payer : ${prix} $
 
-Envoyez le paiement aux numéros :
+Veuillez envoyer l'argent au :
 👉 M-PESA : 0836344645
 👉 AIRTEL MONEY : 0970428667
 
-GOOD Wear : Achetez, Vendez, Gagnez !
+Achetez, Vendez, Gagnez avec GOOD Wear !
             `;
-            alert(message);
+            alert(msgPaiement);
         }
     }
 
+    // --- NAVIGATION ---
     function ouvrirPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         
         if(id === 'page-market' && session) {
-            document.getElementById('display-shop-name').innerText = session.shopName;
-            document.getElementById('user-details').innerText = `Connecté : ${session.responsable} | Tel : ${session.telephone} | Email : ${session.email}`;
+            document.getElementById('display-shop-title').innerText = session.shop;
+            document.getElementById('user-summary').innerHTML = `
+                <strong>Responsable :</strong> ${session.responsable}<br>
+                <strong>Contact :</strong> ${session.telephone} | ${session.email}
+            `;
         }
     }
 
     function deconnexion() {
-        localStorage.removeItem('goodwear_session');
-        location.reload();
+        if(confirm("Voulez-vous quitter votre session ?")) {
+            localStorage.removeItem('goodwear_session');
+            location.reload();
+        }
     }
 
+    // Lancement automatique si déjà connecté
     if(session) ouvrirPage('page-market');
 </script>
 
