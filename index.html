@@ -2,586 +2,219 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOODWEAR Marketplace</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GOODWEAR | Official Marketplace</title>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+:root {
+    --primary: #FF6600;
+    --dark: #121212;
+    --gray-bg: #F9FAFB;
+    --gray-border: #E5E7EB;
+    --white: #FFFFFF;
 }
 
-body {
-    background: linear-gradient(135deg, #fff9f5 0%, #fff0e8 100%);
-    min-height: 100vh;
-    color: #333;
-    padding-bottom: 85px;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
 
-.page {
-    display: none;
-    animation: fadeIn 0.4s ease;
-}
+body { margin: 0; background: var(--gray-bg); color: var(--dark); padding-bottom: 100px; }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- NAVIGATION --- */
+.bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white); display: flex; justify-content: space-around;
+    padding: 12px 0 25px 0; border-top: 1px solid var(--gray-border);
+    z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
 }
-
-.active {
-    display: block;
-}
-
-.container {
-    max-width: 420px;
-    margin: 20px auto;
-    padding: 25px;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(255, 102, 0, 0.08);
-    border: 1px solid #ffefe5;
-}
-
-/* Header Styles */
-.header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.logo {
-    color: #ff6600;
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 5px;
-    letter-spacing: -0.5px;
-}
-
-.tagline {
-    color: #ff944d;
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-/* Form Elements */
-.input-group {
-    position: relative;
-    margin-bottom: 18px;
-}
-
-.input-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ff944d;
-}
-
-input, textarea, select {
-    width: 100%;
-    padding: 16px 16px 16px 45px;
-    border: 2px solid #ffebdd;
-    border-radius: 14px;
-    font-size: 15px;
-    background: #fffaf7;
-    color: #333;
-    transition: all 0.3s ease;
-}
-
-input:focus, textarea:focus {
-    outline: none;
-    border-color: #ff6600;
-    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
-}
-
-textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-input::placeholder, textarea::placeholder {
-    color: #b3b3b3;
-}
-
-/* Buttons */
-.btn {
-    width: 100%;
-    padding: 16px;
-    border: none;
-    border-radius: 14px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #ff6600, #ff8c33);
-    color: white;
-    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.25);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 102, 0, 0.35);
-}
-
-.btn-secondary {
-    background: #f8f9fa;
-    color: #ff6600;
-    border: 2px solid #ffebdd;
-}
-
-.btn-secondary:hover {
-    background: #fff5ef;
-}
-
-/* Navigation */
-.nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 2px solid #ffefe5;
-    display: flex;
-    justify-content: space-around;
-    padding: 15px 0;
-    z-index: 1000;
-    backdrop-filter: blur(10px);
-}
-
 .nav-btn {
-    background: none;
-    border: none;
-    color: #ccc;
-    font-size: 22px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    padding: 8px 20px;
-    border-radius: 50px;
+    background: none; border: none; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; color: #9CA3AF; cursor: pointer; width: 25%;
 }
+.nav-btn i { width: 24px; height: 24px; }
+.nav-btn span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.nav-btn.active { color: var(--primary); }
 
-.nav-btn.active {
-    color: #ff6600;
-    background: #fff5ef;
+/* --- BOUTONS PRO --- */
+.btn-main {
+    background: var(--primary); color: var(--white); border: none;
+    padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px;
+    width: 100%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
+.btn-main:active { transform: scale(0.98); opacity: 0.9; }
 
-.nav-btn:hover {
-    color: #ff6600;
-}
+/* --- UI ELEMENTS --- */
+.container { max-width: 500px; margin: 0 auto; padding: 20px; }
+.page { display: none; }
+.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Cards */
-.card {
-    background: white;
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 18px;
-    border: 1px solid #ffefe5;
-    box-shadow: 0 5px 15px rgba(255, 102, 0, 0.05);
-    transition: transform 0.3s ease;
-}
+.top-bar { padding: 15px; text-align: center; background: white; border-bottom: 1px solid var(--gray-border); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
 
-.card:hover {
-    transform: translateY(-3px);
+.input-field {
+    width: 100%; padding: 14px; margin-bottom: 15px;
+    border: 1.5px solid var(--gray-border); border-radius: 12px; font-size: 15px;
 }
+.input-field:focus { border-color: var(--primary); outline: none; }
 
-.card-img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 16px;
-    margin-bottom: 15px;
-}
+.card-item { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--gray-border); }
+.card-img { width: 100%; height: 280px; object-fit: cover; }
+.card-body { padding: 15px; }
+.card-price { font-size: 20px; font-weight: 800; color: var(--primary); margin: 5px 0; }
 
-.price-tag {
-    font-size: 24px;
-    font-weight: 700;
-    color: #ff6600;
-    margin: 10px 0;
-}
-
-.badge {
-    background: linear-gradient(135deg, #ff6600, #ff944d);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-/* Notice & Alert */
-.notice {
-    background: linear-gradient(135deg, #fff5ef, #ffebdd);
-    border: 2px solid #ffd9c2;
-    border-radius: 16px;
-    padding: 20px;
-    margin: 20px 0;
-    color: #cc5200;
-    font-weight: 500;
-}
-
-.notice i {
-    color: #ff6600;
-    margin-right: 10px;
-}
-
-/* Points Display */
-.points-display {
-    background: linear-gradient(135deg, #fff9f5, #fff0e8);
-    border-radius: 16px;
-    padding: 20px;
-    text-align: center;
-    margin: 20px 0;
-}
-
-.points-count {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #ff6600;
-    line-height: 1;
-    margin: 10px 0;
-}
-
-/* Loading State */
-.loading {
-    text-align: center;
-    padding: 40px;
-    color: #ff944d;
-}
-
-.loading i {
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
-}
-
-.empty-state i {
-    font-size: 3rem;
-    color: #ffd9c2;
-    margin-bottom: 15px;
-}
-
-/* File Input Custom */
-.file-input-wrapper {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    width: 100%;
-    margin: 10px 0;
-}
-
-.file-input-wrapper input[type=file] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    opacity: 0;
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-}
-
-.file-input-label {
-    display: block;
-    padding: 16px;
-    background: #f8f9fa;
-    border: 2px dashed #ffd9c2;
-    border-radius: 14px;
-    text-align: center;
-    color: #ff944d;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.file-input-label:hover {
-    background: #fff5ef;
-    border-color: #ff6600;
-}
-
-/* Cart Items */
-.cart-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: #fafafa;
-    border-radius: 16px;
-    margin-bottom: 10px;
-}
-
-.cart-item img {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    object-fit: cover;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .container {
-        margin: 10px;
-        padding: 20px;
-        border-radius: 20px;
-    }
-    
-    .nav {
-        padding: 12px 0;
-    }
-    
-    .nav-btn {
-        font-size: 20px;
-        padding: 6px 16px;
-    }
-}
+.payment-box { background: var(--dark); color: white; padding: 20px; border-radius: 16px; margin-top: 20px; }
 </style>
 </head>
 <body>
 
-<div id="signup" class="page active">
-    <div class="container">
-        <div class="header">
-            <div class="logo">GOODWEAR</div>
-            <div class="tagline">Acheter. Vendre. Gagnez.</div>
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-store input-icon"></i>
-            <input type="text" id="username" placeholder="Nom de la boutique">
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-envelope input-icon"></i>
-            <input type="email" id="email" placeholder="Email de la boutique">
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-lock input-icon"></i>
-            <input type="password" id="password" placeholder="Mot de passe">
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-phone input-icon"></i>
-            <input type="tel" id="phone" placeholder="Numéro de téléphone">
-        </div>
-        
-        <button class="btn btn-primary" id="btnSignup">
-            <i class="fas fa-user-plus"></i>S'inscrire
-        </button>
-        
-        <button class="btn btn-secondary" id="btnLogin">
-            <i class="fas fa-sign-in-alt"></i>Se connecter
-        </button>
-    </div>
-</div>
+<div class="top-bar">GOODWEAR</div>
 
-<div id="market" class="page">
-    <div class="container">
-        <div class="header">
-            <div class="logo" id="welcomeShop">Marketplace</div>
-        </div>
-        
-        <div id="list">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Chargement des produits...</p>
-            </div>
-        </div>
+<div class="container">
+    <div id="signup" class="page active">
+        <h2 style="font-size: 26px;">Démarrez ici</h2>
+        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique">
+        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (ex: 083...)">
+        <input type="email" id="email" class="input-field" placeholder="Email">
+        <input type="password" id="password" class="input-field" placeholder="Mot de passe">
+        <button class="btn-main" id="btnSignup"><i data-lucide="user-plus"></i> S'INSCRIRE</button>
+        <button id="btnLogin" style="width:100%; background:none; border:none; color:var(--primary); margin-top:15px; font-weight:600;">Se connecter</button>
     </div>
-    
-    <div class="nav">
-        <button class="nav-btn active" onclick="window.showPage('market')">
-            <i class="fas fa-shop"></i>
-        </button>
-        <button class="nav-btn" onclick="window.showPage('add')">
-            <i class="fas fa-plus"></i>
-        </button>
-        <button class="nav-btn" onclick="window.showPage('cart')">
-            <i class="fas fa-cart-shopping"></i>
-        </button>
-        <button class="nav-btn" onclick="window.showPage('profile')">
-            <i class="fas fa-user"></i>
-        </button>
-    </div>
-</div>
 
-<div id="add" class="page">
-    <div class="container">
-        <div class="header">
-            <div class="logo">Publier un article</div>
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-tag input-icon"></i>
-            <input id="title" placeholder="Nom du produit">
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-dollar-sign input-icon"></i>
-            <input id="price" type="number" placeholder="Votre prix vendeur ($)">
-        </div>
-        
-        <div class="badge" id="taxInfo">Prix final client : 0 $</div>
-        
-        <div class="input-group">
-            <i class="fas fa-palette input-icon"></i>
-            <input id="colors" placeholder="Couleurs disponibles">
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-align-left input-icon"></i>
-            <textarea id="desc" placeholder="Description"></textarea>
-        </div>
-        
-        <div class="file-input-wrapper">
-            <label class="file-input-label">
-                <i class="fas fa-camera"></i> Choisir une image
-            </label>
-            <input type="file" id="img" accept="image/*">
-        </div>
-        
-        <button class="btn btn-primary" id="btnPublish">
-            <i class="fas fa-upload"></i>Publier l'article
-        </button>
+    <div id="market" class="page">
+        <div id="list"></div>
     </div>
-</div>
 
-<div id="cart" class="page">
-    <div class="container">
-        <div class="header">
-            <div class="logo">Mon Panier</div>
-        </div>
-        
-        <div id="cartList">
-            <div class="empty-state">
-                <i class="fas fa-shopping-cart"></i>
-                <p>Votre panier est vide</p>
-            </div>
-        </div>
-        
-        <div class="notice" id="paymentInstructions" style="display:none;">
-            <i class="fas fa-info-circle"></i>
-            <strong>MODE DE PAIEMENT :</strong><br><br>
-            Veuillez envoyer le montant total à :<br><br>
-            <strong>Airtel Money :</strong> +243 970 428 667<br>
-            <strong>M-Pesa :</strong> +243 836 344 645
+    <div id="add" class="page">
+        <h2>Vendre un article</h2>
+        <input type="file" id="img" accept="image/*" class="input-field">
+        <input type="text" id="title" class="input-field" placeholder="Titre de l'article">
+        <input type="number" id="price" class="input-field" placeholder="Prix vendeur ($)">
+        <p id="taxInfo" style="font-size:12px; color:var(--primary); font-weight:700; margin-bottom:20px;">Prix client final : 0 $</p>
+        <button class="btn-main" id="btnPublish"><i data-lucide="check-circle"></i> PUBLIER</button>
+    </div>
+
+    <div id="cart" class="page">
+        <h2>Mon Panier</h2>
+        <div id="cartList"></div>
+        <div id="paymentInstructions" class="payment-box" style="display:none;">
+            <p style="font-size:12px; opacity:0.7;">TOTAL À ENVOYER AU :</p>
+            <p style="font-size:18px; font-weight:bold;">AIRTEL: +243 970 428 667<br>M-PESA: +243 836 344 645</p>
         </div>
     </div>
 </div>
 
-<div id="profile" class="page">
-    <div class="container">
-        <div class="header">
-            <div class="logo">Mon Profil</div>
-        </div>
-        
-        <div class="points-display">
-            <div class="badge">Mes Points</div>
-            <div class="points-count" id="points">0</div>
-            <p>Échangeables contre des récompenses</p>
-        </div>
-        
-        <div class="card" id="profileDetails">
-            <!-- Les détails seront injectés ici -->
-        </div>
-        
-        <div class="input-group">
-            <i class="fas fa-exchange-alt input-icon"></i>
-            <input type="number" id="convertPoints" placeholder="Points à convertir">
-        </div>
-        
-        <button class="btn btn-secondary" onclick="alert('Bientôt disponible !')">
-            <i class="fas fa-gift"></i>Convertir mes points
-        </button>
-        
-        <div class="header" style="margin-top: 30px;">
-            <div class="tagline">Historique de commandes</div>
-        </div>
-        
-        <div id="orders">
-            <div class="empty-state">
-                <i class="fas fa-receipt"></i>
-                <p>Aucune commande passée</p>
-            </div>
-        </div>
-        
-        <button class="btn btn-primary" onclick="location.reload()" style="background: #666; margin-top: 20px;">
-            <i class="fas fa-sign-out-alt"></i>Se déconnecter
-        </button>
-    </div>
-</div>
+<nav class="bottom-nav" id="main-nav" style="display:none;">
+    <button class="nav-btn active" onclick="window.showPage('market', this)"><i data-lucide="shopping-bag"></i><span>Market</span></button>
+    <button class="nav-btn" onclick="window.showPage('add', this)"><i data-lucide="plus-square"></i><span>Vendre</span></button>
+    <button class="nav-btn" onclick="window.showPage('cart', this)"><i data-lucide="shopping-cart"></i><span>Panier</span></button>
+    <button class="nav-btn" onclick="window.showPage('profile', this)"><i data-lucide="user"></i><span>Profil</span></button>
+</nav>
 
-<!-- Le script Firebase reste identique -->
 <script type="module">
-// VOTRE CODE FIREBASE EXISTANT RESTE IDENTIQUE ICI
-// Je ne l'ai pas modifié comme demandé
-</script>
+// --- FIREBASE EST BIEN ICI ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<script>
-// Navigation améliorée avec animation
-window.showPage = (pageId) => {
-    // Animation de sortie
-    const currentPage = document.querySelector('.page.active');
-    if (currentPage) {
-        currentPage.style.animation = 'fadeIn 0.4s ease reverse';
-        setTimeout(() => {
-            currentPage.classList.remove('active');
-            
-            // Animation d'entrée
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
-            document.getElementById(pageId).style.animation = 'fadeIn 0.4s ease';
-            
-            // Mise à jour de la navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.nav-btn:nth-child(${getNavIndex(pageId)})`)?.classList.add('active');
-        }, 200);
-    }
+const firebaseConfig = {
+  apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
+  authDomain: "good-wear-apk-84677.firebaseapp.com",
+  projectId: "good-wear-apk-84677",
+  storageBucket: "good-wear-apk-84677.firebasestorage.app",
+  messagingSenderId: "293506727538",
+  appId: "1:293506727538:web:a8a2cc194bca78272d4ceb"
 };
 
-function getNavIndex(pageId) {
-    const pages = ['market', 'add', 'cart', 'profile'];
-    return pages.indexOf(pageId) + 1;
-}
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let currentUser=null, cart=[], userData=null;
 
-// Mise à jour du prix en temps réel
-document.getElementById('price')?.addEventListener('input', function(e) {
-    const price = parseFloat(e.target.value) || 0;
-    const finalPrice = (price * 1.2).toFixed(2);
-    document.getElementById('taxInfo').innerHTML = `
-        <i class="fas fa-calculator"></i> Prix final client : <strong>${finalPrice} $</strong>
-    `;
-});
+lucide.createIcons();
 
-// Preview de l'image sélectionnée
-document.getElementById('img')?.addEventListener('change', function(e) {
-    const label = document.querySelector('.file-input-label');
-    if (e.target.files.length > 0) {
-        label.innerHTML = `<i class="fas fa-check"></i> ${e.target.files[0].name}`;
-        label.style.background = '#e6f7ee';
-        label.style.borderColor = '#34c759';
+window.showPage = (p, btn) => {
+    document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+    document.getElementById(p).classList.add('active');
+    if(btn){
+        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    if(p==='market') renderMarket();
+    if(p==='cart') renderCart();
+};
+
+document.getElementById('btnSignup').onclick = async () => {
+    const email=document.getElementById('email').value, password=document.getElementById('password').value;
+    const userN=document.getElementById('username').value, phone=document.getElementById('phone').value;
+    try {
+        const uc = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone, points:0, history:[]});
+        location.reload();
+    } catch(e) { alert(e.message); }
+};
+
+onAuthStateChanged(auth, async user => {
+    if(user) {
+        currentUser = user;
+        const snap = await getDoc(doc(db, "users", user.uid));
+        userData = snap.data();
+        document.getElementById('main-nav').style.display = 'flex';
+        window.showPage('market');
     }
 });
-</script>
 
+document.getElementById('price').oninput = (e) => {
+    document.getElementById('taxInfo').innerText = `Prix client final (+20%) : ${(e.target.value * 1.2).toFixed(2)} $`;
+};
+
+document.getElementById('btnPublish').onclick = async () => {
+    const title=document.getElementById('title').value, price=document.getElementById('price').value;
+    const imgFile=document.getElementById('img').files[0];
+    if(!title || !price || !imgFile) return alert("Tout remplir !");
+    
+    const reader = new FileReader();
+    reader.onload = async () => {
+        await addDoc(collection(db, "products"), {
+            title, price: +(price * 1.2).toFixed(2), sellerId: currentUser.uid, img: reader.result
+        });
+        alert("En ligne !"); window.showPage('market');
+    };
+    reader.readAsDataURL(imgFile);
+};
+
+async function renderMarket() {
+    const list = document.getElementById('list'); list.innerHTML = "";
+    const snap = await getDocs(collection(db, "products"));
+    snap.forEach(d => {
+        const p = d.data();
+        list.innerHTML += `
+            <div class="card-item">
+                <img src="${p.img}" class="card-img">
+                <div class="card-body">
+                    <div style="font-weight:700; font-size:18px;">${p.title}</div>
+                    <div class="card-price">$${p.price}</div>
+                    <button class="btn-main" onclick="window.addToCart('${d.id}')"><i data-lucide="shopping-cart"></i> ACHETER</button>
+                </div>
+            </div>`;
+    });
+    lucide.createIcons();
+}
+
+window.addToCart = async (id) => {
+    const snap = await getDocs(collection(db, "products"));
+    const p = snap.docs.find(d => d.id === id).data();
+    if(p.sellerId === currentUser.uid) return alert("C'est votre produit !");
+    cart.push(p);
+    alert("Ajouté au panier !");
+};
+
+function renderCart(){
+    const div=document.getElementById('cartList'); div.innerHTML=cart.length===0?"<p>Vide</p>":"";
+    document.getElementById('paymentInstructions').style.display = cart.length > 0 ? "block" : "none";
+    cart.forEach((p,i)=>{
+        div.innerHTML+=`<div class="card-item" style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
+            <div><b>${p.title}</b><br><span style="color:var(--primary)">$${p.price}</span></div>
+            <button class="btn-main" style="width:auto; padding:8px 15px;" onclick="window.buy(${i})">PAYER</button>
+        </div>`;
+    });
+}
+</script>
 </body>
-  </html>
+</html>
