@@ -4,121 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOOD Wear - Officiel</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { margin: 0; background: #fdfdfd; padding-bottom: 80px; }
-        .orange { color: #FF8C00; }
-        .page { display: none; padding: 20px; }
+        :root { --orange: #FF8C00; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f9f9f9; color: #333; }
+        .header { background: white; padding: 15px; text-align: center; border-bottom: 3px solid var(--orange); position: sticky; top: 0; z-index: 100; }
+        .container { padding: 20px; max-width: 500px; margin: auto; }
+        .card { background: white; border-radius: 15px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #eee; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--orange); color: white; border: none; padding: 16px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn:active { transform: scale(0.98); background: #e67e00; }
+        .price-box { color: var(--orange); font-weight: bold; font-size: 1.3em; margin: 10px 0; }
+        .badge { background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 5px; font-size: 12px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+        .page { display: none; }
         .active { display: block; }
-        input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; }
-        button { background: #FF8C00; color: white; border: none; font-weight: bold; cursor: pointer; }
-        .card { border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; overflow: hidden; background: white; }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .price-tag { font-size: 20px; font-weight: bold; color: #FF8C00; padding: 10px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #eee; }
-        .nav i { font-size: 24px; color: #FF8C00; }
-        .info-box { background: #fff3e0; border: 1px solid #ffb74d; padding: 15px; border-radius: 8px; font-size: 14px; }
+        .nav-info { font-size: 12px; color: #666; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="signup" class="page active">
-    <h2 class="orange">Rejoindre GOOD Wear</h2>
-    <div class="info-box">
-        <strong>⚠️ PAIEMENT UNIQUEMENT VIA :</strong><br>
-        M-Pesa : [NUMERO_MPESA]<br>
-        Orange Money : [NUMERO_ORANGE]
+<div class="header">
+    <h1 style="margin:0; color:var(--orange); font-size: 22px; letter-spacing: 1px;">GOOD WEAR</h1>
+</div>
+
+<div class="container">
+    <div id="page-signup" class="page active">
+        <h2 style="text-align: center;">Rejoindre la communauté</h2>
+        <p style="text-align: center; color: #666;">Inscrivez-vous avec votre numéro pour acheter ou vendre.</p>
+        <input type="text" id="reg-name" placeholder="Nom complet">
+        <input type="tel" id="reg-phone" placeholder="Numéro de téléphone (ex: 083...)">
+        <input type="password" id="reg-pass" placeholder="Mot de passe">
+        <button class="btn" onclick="inscrire()">CRÉER MON COMPTE</button>
+        <p class="nav-info">En vous inscrivant, vous acceptez nos conditions de vente.</p>
     </div>
-    <input type="text" id="reg-name" placeholder="Nom complet">
-    <input type="tel" id="reg-phone" placeholder="Numéro de téléphone (Obligatoire)">
-    <input type="email" id="reg-email" placeholder="Email">
-    <input type="password" id="reg-pass" placeholder="Mot de passe (6 car. min)">
-    <button onclick="handleSignup()">Créer mon compte</button>
-</div>
 
-<div id="market" class="page">
-    <h2 class="orange">Marketplace (+20% Taxe incluse)</h2>
-    <div id="product-list"></div>
-</div>
-
-<div id="add" class="page">
-    <h2 class="orange">Vendre un article</h2>
-    <input type="text" id="p-title" placeholder="Nom de l'article">
-    <input type="number" id="p-price" placeholder="Prix de base (votre gain)">
-    <p id="calc-preview" style="font-size: 13px; color: gray;">Prix affiché au client : 0 €</p>
-    <textarea id="p-desc" placeholder="Description" style="width:100%; height:80px;"></textarea>
-    <input type="file" id="p-img">
-    <button onclick="handlePublish()">Mettre en vente</button>
-</div>
-
-<div class="nav" id="main-nav" style="display:none;">
-    <i class="fa fa-shop" onclick="showPage('market')"></i>
-    <i class="fa fa-plus-circle" onclick="showPage('add')"></i>
-    <i class="fa fa-user" onclick="showPage('profile')"></i>
-</div>
-
-<script type="module">
-    // --- CONFIGURATION FIREBASE ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    const config = { /* Tes clés Firebase ici */ };
-    const app = initializeApp(config);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let userSession = null;
-
-    // --- CALCUL DE LA TAXE 20% ---
-    document.getElementById('p-price').addEventListener('input', (e) => {
-        const base = Number(e.target.value);
-        const total = base * 1.20; // Ajout des 20%
-        document.getElementById('calc-preview').innerText = `Prix affiché au client (Taxe incluse) : ${total.toFixed(2)} €`;
-    });
-
-    window.handleSignup = async () => {
-        const name = document.getElementById('reg-name').value;
-        const phone = document.getElementById('reg-phone').value;
-        const email = document.getElementById('reg-email').value;
-        const pass = document.getElementById('reg-pass').value;
-
-        if(!phone || phone.length < 10) return alert("Numéro de téléphone invalide");
-
-        try {
-            const res = await createUserWithEmailAndPassword(auth, email, pass);
-            await setDoc(doc(db, "users", res.user.uid), {
-                name, phone, email, points: 0, status: "actif"
-            });
-            userSession = res.user;
-            alert("Compte créé ! Bienvenue.");
-            showPage('market');
-        } catch(e) { alert(e.message); }
-    };
-
-    window.handlePublish = async () => {
-        const title = document.getElementById('p-title').value;
-        const basePrice = Number(document.getElementById('p-price').value);
-        const finalPrice = basePrice * 1.20; // Le prix que l'acheteur voit
+    <div id="page-market" class="page">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin:0;">Articles récents</h2>
+            <button onclick="deconnexion()" style="background:none; border:none; color:#999; text-decoration: underline; cursor:pointer;">Déconnexion</button>
+        </div>
         
-        // Règle : Enregistre qui est le vendeur
-        await addDoc(collection(db, "products"), {
-            title,
-            originalPrice: basePrice,
-            displayPrice: finalPrice,
-            sellerId: auth.currentUser.uid,
-            sellerPhone: document.getElementById('reg-phone').value // Optionnel
-        });
-        alert("Article publié avec succès !");
-        showPage('market');
-    };
+        <div class="card">
+            <div class="badge">Vendeur : Boutique Officielle</div>
+            <div style="width:100%; height:200px; background:#eee; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#999;">Photo de l'article</div>
+            <h3>Veste Modern Orange</h3>
+            <p style="font-size: 14px; color:#777;">Prix vendeur : 50 $ <br> + Taxe GOOD Wear (20%)</p>
+            <div class="price-box">Total : 60.00 $</div>
+            
+            <button class="btn" onclick="verifierEtAcheter('0970428667', 'Veste Modern Orange', 60)">ACHETER</button>
+        </div>
+    </div>
+</div>
 
-    window.showPage = (id) => {
+<script>
+    let utilisateurConnecte = JSON.parse(localStorage.getItem('goodwear_session')) || null;
+
+    // --- INSCRIPTION ---
+    function inscrire() {
+        const nom = document.getElementById('reg-name').value;
+        const tel = document.getElementById('reg-phone').value;
+        
+        if(!nom || !tel) {
+            alert("⚠️ Erreur : Veuillez remplir votre nom et votre numéro.");
+            return;
+        }
+
+        const user = { nom: nom, telephone: tel.trim() };
+        localStorage.setItem('goodwear_session', JSON.stringify(user));
+        utilisateurConnecte = user;
+        
+        alert("Félicitations " + nom + " ! Compte activé.");
+        ouvrirPage('page-market');
+    }
+
+    // --- LOGIQUE ACHAT & SÉCURITÉ ---
+    function verifierEtAcheter(numeroVendeur, nomArticle, prix) {
+        if(!utilisateurConnecte) {
+            alert("Veuillez d'abord créer un compte.");
+            ouvrirPage('page-signup');
+            return;
+        }
+
+        // SÉCURITÉ ANTI-ACHAT SOI-MÊME
+        // On compare le numéro de celui qui clique avec celui du vendeur
+        if(utilisateurConnecte.telephone === numeroVendeur) {
+            alert("❌ ACTION REFUSÉE\n\nVous ne pouvez pas acheter votre propre article sur GOOD Wear.");
+        } else {
+            // FENÊTRE DE PAIEMENT PROPRE AVEC TES NUMÉROS
+            const message = `
+📢 CONFIRMATION DE COMMANDE
+-----------------------------------
+Produit : ${nomArticle}
+Total à payer : ${prix} $
+
+Veuillez effectuer le transfert au :
+
+👉 M-PESA : 0836344645
+👉 AIRTEL MONEY : 0970428667
+
+Une fois le transfert effectué, votre commande sera validée par l'administrateur.
+            `;
+            alert(message);
+        }
+    }
+
+    // --- NAVIGATION ---
+    function ouvrirPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('main-nav').style.display = (id === 'signup') ? 'none' : 'flex';
-    };
+        window.scrollTo(0,0);
+    }
+
+    function deconnexion() {
+        localStorage.removeItem('goodwear_session');
+        location.reload();
+    }
+
+    if(utilisateurConnecte) ouvrirPage('page-market');
 </script>
+
 </body>
 </html>
