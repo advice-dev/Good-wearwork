@@ -45,9 +45,7 @@
         <button id="btnLogin" style="width:100%; background:none; border:none; color:var(--primary); margin-top:15px; font-weight:600;">Déjà un compte ? Se connecter</button>
     </div>
 
-    <div id="market" class="page">
-        <div id="list"></div>
-    </div>
+    <div id="market" class="page"><div id="list"></div></div>
 
     <div id="add" class="page">
         <h2>Vendre un article</h2>
@@ -62,7 +60,6 @@
         <h2>Mon Panier</h2>
         <div id="cartList"></div>
         <div id="paymentInstructions" class="payment-box" style="display:none;">
-            <p style="font-size:12px; opacity:0.7;">TOTAL À ENVOYER AU :</p>
             <p style="font-size:18px; font-weight:bold;">AIRTEL: +243 970 428 667<br>M-PESA: +243 836 344 645</p>
         </div>
     </div>
@@ -74,10 +71,10 @@
 </div>
 
 <nav class="bottom-nav" id="main-nav" style="display:none;">
-    <button class="nav-btn" onclick="window.showPage('market', this)"><i data-lucide="shopping-bag"></i><span>Market</span></button>
-    <button class="nav-btn" onclick="window.showPage('add', this)"><i data-lucide="plus-square"></i><span>Vendre</span></button>
-    <button class="nav-btn" onclick="window.showPage('cart', this)"><i data-lucide="shopping-cart"></i><span>Panier</span></button>
-    <button class="nav-btn" onclick="window.showPage('profile', this)"><i data-lucide="user"></i><span>Profil</span></button>
+    <button class="nav-btn" id="nav-market"><i data-lucide="shopping-bag"></i><span>Market</span></button>
+    <button class="nav-btn" id="nav-add"><i data-lucide="plus-square"></i><span>Vendre</span></button>
+    <button class="nav-btn" id="nav-cart"><i data-lucide="shopping-cart"></i><span>Panier</span></button>
+    <button class="nav-btn" id="nav-profile"><i data-lucide="user"></i><span>Profil</span></button>
 </nav>
 
 <script type="module">
@@ -85,6 +82,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// --- TA FIREBASE GARDEE ---
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -95,22 +93,32 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser=null, cart=[], userData=null;
+let currentUser=null, userData=null;
 
 lucide.createIcons();
 
-window.showPage = (p, btn) => {
-    document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-    document.getElementById(p).classList.add('active');
-    if(btn){
-        document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-    if(p==='market') renderMarket();
-    if(p==='cart') renderCart();
-    if(p==='profile') renderProfile();
+// --- LOGIQUE DE NAVIGATION ---
+window.showPage = (pageId) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    
+    const target = document.getElementById(pageId);
+    if(target) target.classList.add('active');
+    
+    const btn = document.getElementById('nav-' + pageId);
+    if(btn) btn.classList.add('active');
+
+    if(pageId === 'market') renderMarket();
+    if(pageId === 'profile') renderProfile();
 };
 
+// Attribution des clics sur la nav
+document.getElementById('nav-market').onclick = () => window.showPage('market');
+document.getElementById('nav-add').onclick = () => window.showPage('add');
+document.getElementById('nav-cart').onclick = () => window.showPage('cart');
+document.getElementById('nav-profile').onclick = () => window.showPage('profile');
+
+// --- AUTHENTIFICATION ---
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
@@ -118,7 +126,7 @@ onAuthStateChanged(auth, async user => {
         userData = snap.data();
         document.getElementById('signup').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
-        window.showPage('market', document.querySelector('[onclick*="market"]'));
+        window.showPage('market');
     } else {
         document.getElementById('signup').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
@@ -136,51 +144,35 @@ document.getElementById('btnSignup').onclick = async () => {
 
 document.getElementById('btnLogin').onclick = async () => {
     const email=document.getElementById('email').value, password=document.getElementById('password').value;
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-    } catch(e) { alert("Erreur: " + e.message); }
+    try { await signInWithEmailAndPassword(auth, email, password); } 
+    catch(e) { alert("Erreur: " + e.message); }
 };
 
 window.logout = () => signOut(auth).then(() => location.reload());
 
-document.getElementById('price').oninput = (e) => {
-    document.getElementById('taxInfo').innerText = `Prix client final (+20%) : ${(e.target.value * 1.2).toFixed(2)} $`;
-};
-
-document.getElementById('btnPublish').onclick = async () => {
-    const title=document.getElementById('title').value, price=document.getElementById('price').value;
-    const imgFile=document.getElementById('img').files[0];
-    if(!title || !price || !imgFile) return alert("Tout remplir !");
-    const reader = new FileReader();
-    reader.onload = async () => {
-        await addDoc(collection(db, "products"), { title, price: +(price * 1.2).toFixed(2), sellerId: currentUser.uid, img: reader.result });
-        alert("En ligne !"); window.showPage('market');
-    };
-    reader.readAsDataURL(imgFile);
-};
-
-async function renderMarket() {
-    const list = document.getElementById('list'); list.innerHTML = "Chargement...";
-    const snap = await getDocs(collection(db, "products"));
-    list.innerHTML = "";
-    snap.forEach(d => {
-        const p = d.data();
-        list.innerHTML += `<div class="card-item"><img src="${p.img}" class="card-img"><div class="card-body"><b>${p.title}</b><div class="card-price">$${p.price}</div><button class="btn-main" onclick="window.addToCart('${d.id}')">ACHETER</button></div></div>`;
-    });
-}
-
+// --- PROFIL ---
 function renderProfile() {
     if(!userData) return;
     document.getElementById('profileContent').innerHTML = `
         <div class="payment-box">
-            <p> Boutique : <b>${userData.username}</b></p>
-            <p> Téléphone : <b>${userData.phone}</b></p>
-            <p> Points : <b>${userData.points || 0} pts</b></p>
+            <p>Boutique : <b>${userData.username}</b></p>
+            <p>Téléphone : <b>${userData.phone}</b></p>
+            <p>Points : <b>${userData.points || 0} pts</b></p>
         </div>
         <button class="btn-main" onclick="window.logout()" style="background:#ff4444; margin-top:20px;">DÉCONNEXION</button>`;
 }
 
-window.addToCart = (id) => { alert("Ajouté !"); /* Logique panier simplifiée */ };
+// --- MARKET ---
+async function renderMarket() {
+    const list = document.getElementById('list');
+    list.innerHTML = "Chargement...";
+    const snap = await getDocs(collection(db, "products"));
+    list.innerHTML = "";
+    snap.forEach(d => {
+        const p = d.data();
+        list.innerHTML += `<div class="card-item"><img src="${p.img}" class="card-img"><div class="card-body"><b>${p.title}</b><div class="card-price">$${p.price}</div></div></div>`;
+    });
+}
 </script>
 </body>
 </html>
