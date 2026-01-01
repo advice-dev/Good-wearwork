@@ -21,13 +21,14 @@
         .page { display: none; }
         .active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .top-bar { padding: 15px; text-align: center; background: white; border-bottom: 1px solid var(--gray-border); font-weight: 800; font-size: 18px; letter-spacing: 1px; }
-        .input-field { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid var(--gray-border); border-radius: 12px; font-size: 15px; }
+        .top-bar { padding: 15px; text-align: center; background: white; border-bottom: 1px solid var(--gray-border); font-weight: 800; font-size: 18px; letter-spacing: 1px; position: sticky; top: 0; z-index: 100; }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid var(--gray-border); border-radius: 12px; font-size: 15px; outline: none; }
+        .input-field:focus { border-color: var(--primary); }
         .card-item { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--gray-border); }
-        .card-img { width: 100%; height: 280px; object-fit: cover; }
+        .card-img { width: 100%; height: 320px; object-fit: cover; background: #eee; }
         .card-body { padding: 15px; }
-        .card-price { font-size: 20px; font-weight: 800; color: var(--primary); margin: 5px 0; }
-        .payment-box { background: var(--dark); color: white; padding: 20px; border-radius: 16px; margin-top: 20px; }
+        .card-price { font-size: 22px; font-weight: 800; color: var(--primary); margin: 5px 0; }
+        .payment-box { background: var(--dark); color: white; padding: 20px; border-radius: 16px; margin-top: 20px; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -36,31 +37,42 @@
 
 <div class="container">
     <div id="signup" class="page active">
-        <h2 style="font-size: 26px;">Démarrez ici</h2>
-        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique">
-        <input type="tel" id="phone" class="input-field" placeholder="Téléphone">
+        <h2 style="font-size: 26px;">Bienvenue</h2>
+        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique / Pseudo">
+        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (WhatsApp)">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
         <button class="btn-main" id="btnSignup"><i data-lucide="user-plus"></i> S'INSCRIRE</button>
-        <button id="btnLogin" style="width:100%; background:none; border:none; color:var(--primary); margin-top:15px; font-weight:600;">Déjà un compte ? Se connecter</button>
+        <button id="btnLogin" style="width:100%; background:none; border:none; color:var(--primary); margin-top:15px; font-weight:600; cursor:pointer;">Déjà un compte ? Se connecter</button>
     </div>
 
-    <div id="market" class="page"><div id="list"></div></div>
+    <div id="market" class="page">
+        <h2 style="margin-bottom:20px;">Nouveautés</h2>
+        <div id="list"></div>
+    </div>
 
     <div id="add" class="page">
         <h2>Vendre un article</h2>
+        <label style="font-size: 13px; color: #666; margin-bottom: 5px; display: block;">Photo de l'article</label>
         <input type="file" id="img" accept="image/*" class="input-field">
-        <input type="text" id="title" class="input-field" placeholder="Titre de l'article">
-        <input type="number" id="price" class="input-field" placeholder="Prix vendeur ($)">
-        <p id="taxInfo" style="font-size:12px; color:var(--primary); font-weight:700; margin-bottom:20px;">Prix client final (+20%) : 0 $</p>
-        <button class="btn-main" id="btnPublish"><i data-lucide="check-circle"></i> PUBLIER</button>
+        <input type="text" id="title" class="input-field" placeholder="Titre (ex: Jordan 4 Retro)">
+        <input type="number" id="priceInput" class="input-field" placeholder="Ton prix vendeur ($)">
+        <div id="taxInfo" style="background: #FFF4ED; padding: 12px; border-radius: 10px; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">
+            Prix client final (+20%) : 0 $
+        </div>
+        <button class="btn-main" id="btnPublish"><i data-lucide="upload-cloud"></i> PUBLIER MAINTENANT</button>
     </div>
 
     <div id="cart" class="page">
         <h2>Mon Panier</h2>
-        <div id="cartList"></div>
-        <div id="paymentInstructions" class="payment-box" style="display:none;">
-            <p style="font-size:18px; font-weight:bold;">AIRTEL: +243 970 428 667<br>M-PESA: +243 836 344 645</p>
+        <div id="cartList" style="text-align:center; padding: 40px 0; color: #999;">
+            <i data-lucide="shopping-cart" style="width:48px; height:48px; opacity:0.3;"></i>
+            <p>Votre panier est vide</p>
+        </div>
+        <div class="payment-box">
+            <p style="margin-top:0; color: var(--primary); font-weight: 800;">PAIEMENT MOBILE MONEY</p>
+            <p>AIRTEL: <b>+243 970 428 667</b><br>M-PESA: <b>+243 836 344 645</b></p>
+            <span style="font-size:11px; opacity:0.7;">Envoyez une capture d'écran après paiement.</span>
         </div>
     </div>
 
@@ -80,9 +92,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// --- TA FIREBASE GARDEE ---
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -92,19 +103,20 @@ const firebaseConfig = {
   appId: "1:293506727538:web:a8a2cc194bca78272d4ceb"
 };
 
-const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser=null, userData=null;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let currentUser = null;
+let userData = null;
 
 lucide.createIcons();
 
-// --- LOGIQUE DE NAVIGATION ---
+// --- NAVIGATION ---
 window.showPage = (pageId) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    const target = document.getElementById(pageId);
-    if(target) target.classList.add('active');
-    
+    document.getElementById(pageId).classList.add('active');
     const btn = document.getElementById('nav-' + pageId);
     if(btn) btn.classList.add('active');
 
@@ -112,13 +124,12 @@ window.showPage = (pageId) => {
     if(pageId === 'profile') renderProfile();
 };
 
-// Attribution des clics sur la nav
 document.getElementById('nav-market').onclick = () => window.showPage('market');
 document.getElementById('nav-add').onclick = () => window.showPage('add');
 document.getElementById('nav-cart').onclick = () => window.showPage('cart');
 document.getElementById('nav-profile').onclick = () => window.showPage('profile');
 
-// --- AUTHENTIFICATION ---
+// --- GESTION UTILISATEUR ---
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
@@ -134,8 +145,12 @@ onAuthStateChanged(auth, async user => {
 });
 
 document.getElementById('btnSignup').onclick = async () => {
-    const email=document.getElementById('email').value, password=document.getElementById('password').value;
-    const userN=document.getElementById('username').value, phone=document.getElementById('phone').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const userN = document.getElementById('username').value;
+    const phone = document.getElementById('phone').value;
+    if(!email || !password || !userN) return alert("Champs vides !");
+    
     try {
         const uc = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone, points:0});
@@ -143,35 +158,100 @@ document.getElementById('btnSignup').onclick = async () => {
 };
 
 document.getElementById('btnLogin').onclick = async () => {
-    const email=document.getElementById('email').value, password=document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     try { await signInWithEmailAndPassword(auth, email, password); } 
     catch(e) { alert("Erreur: " + e.message); }
 };
 
 window.logout = () => signOut(auth).then(() => location.reload());
 
-// --- PROFIL ---
+// --- LOGIQUE DE VENTE (PUBLIER) ---
+document.getElementById('priceInput').oninput = (e) => {
+    const prixVendeur = parseFloat(e.target.value) || 0;
+    const prixFinal = (prixVendeur * 1.2).toFixed(2);
+    document.getElementById('taxInfo').innerText = `Prix client final (+20%) : ${prixFinal} $`;
+};
+
+document.getElementById('btnPublish').onclick = async () => {
+    const file = document.getElementById('img').files[0];
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('priceInput').value;
+    const btn = document.getElementById('btnPublish');
+
+    if(!file || !title || !price) return alert("Veuillez remplir tous les champs et choisir une photo.");
+
+    btn.disabled = true;
+    btn.innerText = "Chargement...";
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        try {
+            await addDoc(collection(db, "products"), {
+                title: title,
+                price: (parseFloat(price) * 1.2).toFixed(2),
+                img: reader.result,
+                sellerName: userData.username,
+                sellerId: currentUser.uid,
+                createdAt: new Date()
+            });
+            alert("Article en ligne !");
+            btn.disabled = false;
+            btn.innerHTML = '<i data-lucide="upload-cloud"></i> PUBLIER MAINTENANT';
+            lucide.createIcons();
+            window.showPage('market');
+        } catch(e) {
+            alert(e.message);
+            btn.disabled = false;
+        }
+    };
+};
+
+// --- AFFICHAGE MARKET ---
+async function renderMarket() {
+    const list = document.getElementById('list');
+    list.innerHTML = `<p style="text-align:center;">Mise à jour du catalogue...</p>`;
+    
+    try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+        const snap = await getDocs(q);
+        list.innerHTML = "";
+        
+        if(snap.empty) {
+            list.innerHTML = "<p style='text-align:center; opacity:0.5;'>Aucun article pour le moment.</p>";
+            return;
+        }
+
+        snap.forEach(d => {
+            const p = d.data();
+            list.innerHTML += `
+                <div class="card-item">
+                    <img src="${p.img}" class="card-img">
+                    <div class="card-body">
+                        <div style="font-size:12px; color:var(--primary); font-weight:700;">${p.sellerName || 'Boutique'}</div>
+                        <b style="font-size:16px;">${p.title}</b>
+                        <div class="card-price">${p.price} $</div>
+                        <button class="btn-main" style="padding:10px; font-size:13px;">ACHETER</button>
+                    </div>
+                </div>`;
+        });
+    } catch(e) {
+        list.innerHTML = "Erreur de chargement.";
+        console.log(e);
+    }
+}
+
 function renderProfile() {
     if(!userData) return;
     document.getElementById('profileContent').innerHTML = `
         <div class="payment-box">
             <p>Boutique : <b>${userData.username}</b></p>
-            <p>Téléphone : <b>${userData.phone}</b></p>
-            <p>Points : <b>${userData.points || 0} pts</b></p>
+            <p>ID : <small>${currentUser.uid.substring(0,8)}...</small></p>
+            <p>Téléphone : <b>${userData.phone || 'Non renseigné'}</b></p>
+            <p>Mes Points : <b>${userData.points || 0} pts</b></p>
         </div>
         <button class="btn-main" onclick="window.logout()" style="background:#ff4444; margin-top:20px;">DÉCONNEXION</button>`;
-}
-
-// --- MARKET ---
-async function renderMarket() {
-    const list = document.getElementById('list');
-    list.innerHTML = "Chargement...";
-    const snap = await getDocs(collection(db, "products"));
-    list.innerHTML = "";
-    snap.forEach(d => {
-        const p = d.data();
-        list.innerHTML += `<div class="card-item"><img src="${p.img}" class="card-img"><div class="card-body"><b>${p.title}</b><div class="card-price">$${p.price}</div></div></div>`;
-    });
 }
 </script>
 </body>
