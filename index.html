@@ -3,32 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | Official Marketplace</title>
+    <title>GOODWEAR | Your Style Marketplace</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #FF6600; --dark: #121212; --gray-bg: #F9FAFB; --gray-border: #E5E7EB; --white: #FFFFFF; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { margin: 0; background: var(--gray-bg); color: var(--dark); padding-bottom: 100px; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px 0 25px 0; border-top: 1px solid var(--gray-border); z-index: 1000; box-shadow: 0 -4px 12px rgba(0,0,0,0.03); }
-        .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #9CA3AF; cursor: pointer; width: 25%; }
+        /* Variables CSS pour un thème facile à modifier */
+        :root {
+            --primary-start: #FF6600; /* Orange vif */
+            --primary-end: #FF3366;   /* Rose-rouge */
+            --dark-text: #1A1A1A;     /* Noir profond */
+            --light-bg: #F8F9FA;      /* Arrière-plan très clair */
+            --border-color: #E0E0E0;  /* Bordure douce */
+            --white: #FFFFFF;
+            --gray-text: #6B7280;     /* Texte gris pour les détails */
+            --shadow: rgba(0, 0, 0, 0.08); /* Ombre douce */
+        }
+
+        /* Réinitialisation et base */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif; /* Typo principale */
+        }
+        body {
+            margin: 0;
+            background: var(--light-bg);
+            color: var(--dark-text);
+            padding-bottom: 90px; /* Espace pour la barre de navigation */
+            overflow-x: hidden; /* Empêche le défilement horizontal */
+        }
+
+        /* Titres */
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif; /* Typo pour les titres */
+            font-weight: 700;
+            margin-top: 0;
+        }
+        h2 { font-size: 26px; margin-bottom: 25px; }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Barre supérieure */
+        .top-bar {
+            padding: 15px 20px;
+            text-align: center;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: var(--dark-text);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        /* Pages (transitions) */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Champs de saisie */
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--dark-text);
+            background-color: var(--white);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+        .input-field::placeholder { color: var(--gray-text); }
+        .input-field:focus {
+            border-color: var(--primary-start);
+            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
+        }
+
+        /* Boutons principaux */
+        .btn-main {
+            background: linear-gradient(45deg, var(--primary-start), var(--primary-end));
+            color: var(--white);
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+        }
+        .btn-main:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+        }
+        .btn-main:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
+        }
+        .btn-secondary {
+            background: none;
+            border: none;
+            color: var(--primary-start);
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 15px;
+            width: 100%;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .btn-secondary:hover { color: var(--primary-end); }
+
+        /* Cartes d'articles */
+        .card-item {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 6px 20px var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .card-img {
+            width: 100%;
+            height: 280px; /* Hauteur fixe pour les images */
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0f0f0, #e0e0e0); /* Placeholder */
+            display: block;
+        }
+        .card-body {
+            padding: 18px 20px;
+        }
+        .card-category {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary-start);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .card-price {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-start);
+            margin-bottom: 15px;
+        }
+        .card-seller-info {
+            font-size: 11px;
+            color: var(--gray-text);
+            margin-bottom: 8px;
+        }
+
+        /* Badge "Votre article" */
+        .owner-badge {
+            background: #e0e7ff; /* Bleu doux */
+            color: #4338ca;      /* Bleu foncé */
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Box d'informations (Paiement, Profil) */
+        .info-box {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            margin-top: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px var(--shadow);
+            line-height: 1.7;
+        }
+        .info-box p { margin: 0 0 8px 0; font-size: 15px; }
+        .info-box b { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--dark-text); }
+        .info-box .title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--primary-start);
+            margin-bottom: 15px;
+            display: block;
+        }
+        .info-box small { font-size: 12px; color: var(--gray-text); }
+
+        /* Texte pour les articles vides */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray-text);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .empty-state i {
+            width: 60px;
+            height: 60px;
+            opacity: 0.2;
+            margin-bottom: 15px;
+        }
+
+        /* Barre de navigation inférieure */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 25px 0; /* Plus d'espace en bas pour les téléphones modernes */
+            border-top: 1px solid var(--border-color);
+            z-index: 1000;
+            box-shadow: 0 -4px 15px var(--shadow);
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: var(--gray-text);
+            cursor: pointer;
+            width: 25%;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
         .nav-btn i { width: 24px; height: 24px; }
-        .nav-btn span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .nav-btn.active { color: var(--primary); }
-        .btn-main { background: var(--primary); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px; width: 100%; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .page { display: none; }
-        .active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .top-bar { padding: 15px; text-align: center; background: white; border-bottom: 1px solid var(--gray-border); font-weight: 800; font-size: 18px; letter-spacing: 1px; position: sticky; top: 0; z-index: 100; }
-        .input-field { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid var(--gray-border); border-radius: 12px; font-size: 15px; outline: none; }
-        .input-field:focus { border-color: var(--primary); }
-        .card-item { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--gray-border); }
-        .card-img { width: 100%; height: 320px; object-fit: cover; background: #eee; }
-        .card-body { padding: 15px; }
-        .card-price { font-size: 22px; font-weight: 800; color: var(--primary); margin: 5px 0; }
-        .payment-box { background: var(--dark); color: white; padding: 20px; border-radius: 16px; margin-top: 20px; line-height: 1.6; }
+        .nav-btn span {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .nav-btn.active { color: var(--primary-start); transform: translateY(-3px); }
+        .nav-btn:hover:not(.active) { color: var(--primary-end); transform: translateY(-2px); }
+
+        /* Animation de chargement */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-start);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -37,48 +296,73 @@
 
 <div class="container">
     <div id="signup" class="page active">
-        <h2 style="font-size: 26px;">Bienvenue</h2>
-        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique / Pseudo">
-        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (WhatsApp)">
+        <h2>Démarrez ici</h2>
+        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique ou Pseudo">
+        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (ex: +243812345678)">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
         <button class="btn-main" id="btnSignup"><i data-lucide="user-plus"></i> S'INSCRIRE</button>
-        <button id="btnLogin" style="width:100%; background:none; border:none; color:var(--primary); margin-top:15px; font-weight:600; cursor:pointer;">Déjà un compte ? Se connecter</button>
+        <button class="btn-secondary" id="btnLogin">Déjà un compte ? Se connecter</button>
     </div>
 
     <div id="market" class="page">
-        <h2 style="margin-bottom:20px;">Nouveautés</h2>
-        <div id="list"></div>
+        <h2>Découvrez les dernières pépites</h2>
+        <div id="list">
+            <div class="empty-state">
+                <i data-lucide="refresh-cw"></i>
+                <p>Chargement des articles...</p>
+            </div>
+        </div>
     </div>
 
     <div id="add" class="page">
         <h2>Vendre un article</h2>
-        <label style="font-size: 13px; color: #666; margin-bottom: 5px; display: block;">Photo de l'article</label>
-        <input type="file" id="img" accept="image/*" class="input-field">
-        <input type="text" id="title" class="input-field" placeholder="Titre (ex: Jordan 4 Retro)">
-        <input type="number" id="priceInput" class="input-field" placeholder="Ton prix vendeur ($)">
-        <div id="taxInfo" style="background: #FFF4ED; padding: 12px; border-radius: 10px; color: var(--primary); font-weight: 700; margin-bottom: 20px; font-size: 14px;">
-            Prix client final (+20%) : 0 $
+        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
+            Photo de l'article <span style="color:red;">*</span>
+        </label>
+        <input type="file" id="img" accept="image/*" class="input-field" required>
+        
+        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
+            Titre de l'article (ex: Air Jordan 1 Retro High) <span style="color:red;">*</span>
+        </label>
+        <input type="text" id="title" class="input-field" placeholder="Titre de l'article" required>
+        
+        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
+            Ton prix vendeur ($) <span style="color:red;">*</span>
+        </label>
+        <input type="number" id="priceInput" class="input-field" placeholder="Ex: 120" required>
+        
+        <div id="taxInfo" class="info-box" style="margin-top:0; margin-bottom: 25px; padding: 15px; background: #FFF7EB; border-color: #FFDDAA;">
+            <span class="title" style="font-size:15px; color: var(--primary-start); margin-bottom:5px;">Prix client final (+20% de commission) : <b style="color: var(--primary-end);">0 $</b></span>
+            <small style="color: var(--gray-text);">Ce prix inclut notre commission de 20% pour la mise en relation et la gestion.</small>
         </div>
-        <button class="btn-main" id="btnPublish"><i data-lucide="upload-cloud"></i> PUBLIER MAINTENANT</button>
+        
+        <button class="btn-main" id="btnPublish"><i data-lucide="upload-cloud"></i> PUBLIER L'ARTICLE</button>
     </div>
 
     <div id="cart" class="page">
         <h2>Mon Panier</h2>
-        <div id="cartList" style="text-align:center; padding: 40px 0; color: #999;">
-            <i data-lucide="shopping-cart" style="width:48px; height:48px; opacity:0.3;"></i>
-            <p>Votre panier est vide</p>
+        <div id="cartList" class="empty-state">
+            <i data-lucide="shopping-cart"></i>
+            <p>Votre panier est vide pour le moment.</p>
         </div>
-        <div class="payment-box">
-            <p style="margin-top:0; color: var(--primary); font-weight: 800;">PAIEMENT MOBILE MONEY</p>
-            <p>AIRTEL: <b>+243 970 428 667</b><br>M-PESA: <b>+243 836 344 645</b></p>
-            <span style="font-size:11px; opacity:0.7;">Envoyez une capture d'écran après paiement.</span>
+        <div class="info-box">
+            <span class="title">Instructions de paiement</span>
+            <p>Veuillez utiliser les numéros ci-dessous pour effectuer votre paiement mobile money.</p>
+            <p>AIRTEL Money : <b>+243 970 428 667</b></p>
+            <p>M-PESA : <b>+243 836 344 645</b></p>
+            <small>N'oubliez pas d'envoyer une capture d'écran du reçu de paiement à notre service client.</small>
         </div>
     </div>
 
     <div id="profile" class="page">
         <h2>Mon Profil</h2>
-        <div id="profileContent"></div>
+        <div id="profileContent">
+            <div class="info-box empty-state">
+                <i data-lucide="user"></i>
+                <p>Chargement de votre profil...</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -94,6 +378,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// --- Configuration Firebase (À NE PAS MODIFIER SAUF SI TU CHANGES DE PROJET) ---
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -106,13 +391,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-let currentUser = null;
-let userData = null;
+let currentUser = null; // L'utilisateur Firebase actuellement connecté
+let userData = null;    // Les données de profil de l'utilisateur (nom, tel, points)
 
-lucide.createIcons();
+lucide.createIcons(); // Initialise les icônes Lucide
 
-// --- NAVIGATION ---
-window.showPage = (pageId) => {
+// --- Fonction générique pour changer de page ---
+window.showPage = async (pageId) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
@@ -120,139 +405,240 @@ window.showPage = (pageId) => {
     const btn = document.getElementById('nav-' + pageId);
     if(btn) btn.classList.add('active');
 
-    if(pageId === 'market') renderMarket();
-    if(pageId === 'profile') renderProfile();
+    // Charge les données spécifiques à chaque page
+    if(pageId === 'market') await renderMarket();
+    if(pageId === 'profile') await renderProfile();
 };
 
+// --- Gestion des clics sur la barre de navigation ---
 document.getElementById('nav-market').onclick = () => window.showPage('market');
 document.getElementById('nav-add').onclick = () => window.showPage('add');
 document.getElementById('nav-cart').onclick = () => window.showPage('cart');
 document.getElementById('nav-profile').onclick = () => window.showPage('profile');
 
-// --- GESTION UTILISATEUR ---
+// --- AUTHENTIFICATION (Inscription / Connexion / Déconnexion) ---
 onAuthStateChanged(auth, async user => {
     if(user) {
+        // Utilisateur connecté
         currentUser = user;
-        const snap = await getDoc(doc(db, "users", user.uid));
-        userData = snap.data();
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
+        
+        if (snap.exists()) {
+            userData = snap.data();
+        } else {
+            // Si l'utilisateur est nouveau, créer son profil de base
+            await setDoc(userDocRef, {
+                email: user.email,
+                username: document.getElementById('username').value || "Utilisateur",
+                phone: document.getElementById('phone').value || "",
+                points: 0
+            });
+            const newSnap = await getDoc(userDocRef); // Re-fetch pour avoir les data
+            userData = newSnap.data();
+        }
+        
         document.getElementById('signup').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
-        window.showPage('market');
+        window.showPage('market'); // Affiche la page du marché après connexion
     } else {
+        // Aucun utilisateur connecté
+        currentUser = null;
+        userData = null;
         document.getElementById('signup').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
+        // Réinitialise les champs de connexion
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
     }
 });
 
+// Gérer l'inscription
 document.getElementById('btnSignup').onclick = async () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const userN = document.getElementById('username').value;
+    const username = document.getElementById('username').value;
     const phone = document.getElementById('phone').value;
-    if(!email || !password || !userN) return alert("Champs vides !");
+
+    if (!email || !password || !username || !phone) {
+        alert("Veuillez remplir tous les champs requis.");
+        return;
+    }
     
+    // Validation simple du numéro de téléphone
+    if (!phone.startsWith('+') || phone.length < 10) {
+        alert("Le numéro de téléphone doit inclure l'indicatif (ex: +243812345678).");
+        return;
+    }
+
     try {
-        const uc = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone, points:0});
-    } catch(e) { alert(e.message); }
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Créer le document utilisateur dans Firestore
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+            email: email,
+            username: username,
+            phone: phone,
+            points: 0 // Commence avec 0 points
+        });
+        alert("Compte créé avec succès ! Bienvenue.");
+    } catch(e) {
+        alert("Erreur lors de l'inscription : " + e.message);
+    }
 };
 
+// Gérer la connexion
 document.getElementById('btnLogin').onclick = async () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    try { await signInWithEmailAndPassword(auth, email, password); } 
-    catch(e) { alert("Erreur: " + e.message); }
+    if (!email || !password) {
+        alert("Veuillez entrer votre email et votre mot de passe.");
+        return;
+    }
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Connexion réussie !");
+    } catch(e) {
+        alert("Erreur de connexion : " + e.message);
+    }
 };
 
+// Fonction de déconnexion globale
 window.logout = () => signOut(auth).then(() => location.reload());
 
-// --- LOGIQUE DE VENTE (PUBLIER) ---
+// --- LOGIQUE DE VENTE (PUBLICATION D'ARTICLE) ---
+// Mise à jour du prix final en temps réel
 document.getElementById('priceInput').oninput = (e) => {
     const prixVendeur = parseFloat(e.target.value) || 0;
-    const prixFinal = (prixVendeur * 1.2).toFixed(2);
-    document.getElementById('taxInfo').innerText = `Prix client final (+20%) : ${prixFinal} $`;
+    const prixFinal = (prixVendeur * 1.2).toFixed(2); // +20% commission
+    document.querySelector('#taxInfo b').innerText = `${prixFinal} $`;
 };
 
+// Gérer la publication d'un article
 document.getElementById('btnPublish').onclick = async () => {
-    const file = document.getElementById('img').files[0];
+    const fileInput = document.getElementById('img');
+    const file = fileInput.files[0];
     const title = document.getElementById('title').value;
     const price = document.getElementById('priceInput').value;
-    const btn = document.getElementById('btnPublish');
+    const publishButton = document.getElementById('btnPublish');
 
-    if(!file || !title || !price) return alert("Veuillez remplir tous les champs et choisir une photo.");
+    if (!file || !title || !price) {
+        alert("Veuillez remplir tous les champs et sélectionner une photo.");
+        return;
+    }
 
-    btn.disabled = true;
-    btn.innerText = "Chargement...";
+    publishButton.disabled = true;
+    publishButton.innerHTML = '<span class="loading-spinner"></span> PUBLICATION...';
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); 
+
     reader.onload = async () => {
         try {
             await addDoc(collection(db, "products"), {
                 title: title,
-                price: (parseFloat(price) * 1.2).toFixed(2),
-                img: reader.result,
+                price: (parseFloat(price) * 1.2).toFixed(2), 
+                img: reader.result, 
                 sellerName: userData.username,
+                sellerPhone: userData.phone,
                 sellerId: currentUser.uid,
-                createdAt: new Date()
+                createdAt: new Date() 
             });
-            alert("Article en ligne !");
-            btn.disabled = false;
-            btn.innerHTML = '<i data-lucide="upload-cloud"></i> PUBLIER MAINTENANT';
-            lucide.createIcons();
-            window.showPage('market');
+            alert("Votre article a été publié avec succès !");
+            fileInput.value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('priceInput').value = '';
+            document.querySelector('#taxInfo b').innerText = '0 $';
+            window.showPage('market'); 
         } catch(e) {
-            alert(e.message);
-            btn.disabled = false;
+            alert("Erreur lors de la publication : " + e.message);
+        } finally {
+            publishButton.disabled = false;
+            publishButton.innerHTML = '<i data-lucide="upload-cloud"></i> PUBLIER L\'ARTICLE';
+            lucide.createIcons();
         }
     };
 };
 
-// --- AFFICHAGE MARKET ---
+// --- AFFICHAGE DU MARCHÉ (Produits) ---
 async function renderMarket() {
     const list = document.getElementById('list');
-    list.innerHTML = `<p style="text-align:center;">Mise à jour du catalogue...</p>`;
-    
+    list.innerHTML = `
+        <div class="empty-state">
+            <i data-lucide="refresh-cw" class="loading-spinner"></i>
+            <p>Chargement des pépites...</p>
+        </div>`; 
+
     try {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const snap = await getDocs(q);
-        list.innerHTML = "";
-        
-        if(snap.empty) {
-            list.innerHTML = "<p style='text-align:center; opacity:0.5;'>Aucun article pour le moment.</p>";
+        const querySnapshot = await getDocs(q);
+        list.innerHTML = ""; 
+
+        if (querySnapshot.empty) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <i data-lucide="box"></i>
+                    <p>Aucun article pour le moment.<br>Soyez le premier à vendre !</p>
+                </div>`;
+            lucide.createIcons();
             return;
         }
 
-        snap.forEach(d => {
-            const p = d.data();
+        querySnapshot.forEach(d => {
+            const product = d.data();
+            const isMyItem = (product.sellerId === currentUser?.uid); 
+            
+            const actionSection = isMyItem
+                ? `<div class="owner-badge">C'est votre article</div>`
+                : `<button class="btn-main" onclick="buyItem('${product.title.replace(/'/g, "\\'")}', '${product.price}', '${product.sellerPhone}')" style="padding:12px; font-size:14px; gap:8px;">
+                    <i data-lucide="shopping-cart" style="width:20px; height:20px;"></i> ACHETER
+                   </button>`;
+
             list.innerHTML += `
                 <div class="card-item">
-                    <img src="${p.img}" class="card-img">
+                    <img src="${product.img}" class="card-img">
                     <div class="card-body">
-                        <div style="font-size:12px; color:var(--primary); font-weight:700;">${p.sellerName || 'Boutique'}</div>
-                        <b style="font-size:16px;">${p.title}</b>
-                        <div class="card-price">${p.price} $</div>
-                        <button class="btn-main" style="padding:10px; font-size:13px;">ACHETER</button>
+                        <div class="card-category">Vendu par ${product.sellerName}</div>
+                        <h3 class="card-title">${product.title}</h3>
+                        <div class="card-price">${product.price} $</div>
+                        ${actionSection}
                     </div>
                 </div>`;
         });
+        lucide.createIcons(); 
     } catch(e) {
-        list.innerHTML = "Erreur de chargement.";
-        console.log(e);
+        list.innerHTML = `<div class="empty-state" style="color:#FF3366;"><p>Erreur de connexion.</p></div>`;
+        lucide.createIcons();
     }
 }
 
-function renderProfile() {
+// --- FONCTION D'ACHAT (WHATSAPP) ---
+window.buyItem = (title, price, sellerPhone) => {
+    const cleanPhone = sellerPhone.replace(/\s+/g, '');
+    const message = `Bonjour ! Je suis très intéressé(e) par votre article "${title}" (${price}$) vu sur GOODWEAR. Est-il toujours disponible ?`;
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+};
+
+// --- AFFICHAGE DU PROFIL ---
+async function renderProfile() {
+    const profileContent = document.getElementById('profileContent');
     if(!userData) return;
-    document.getElementById('profileContent').innerHTML = `
-        <div class="payment-box">
-            <p>Boutique : <b>${userData.username}</b></p>
-            <p>ID : <small>${currentUser.uid.substring(0,8)}...</small></p>
-            <p>Téléphone : <b>${userData.phone || 'Non renseigné'}</b></p>
-            <p>Mes Points : <b>${userData.points || 0} pts</b></p>
+
+    profileContent.innerHTML = `
+        <div class="info-box">
+            <span class="title">Ma Boutique</span>
+            <p>Nom : <b>${userData.username}</b></p>
+            <p>Email : <b>${currentUser.email}</b></p>
+            <p>WhatsApp : <b>${userData.phone}</b></p>
+            <p>Points Fidélité : <b style="color:var(--primary-start)">${userData.points || 0} pts</b></p>
         </div>
-        <button class="btn-main" onclick="window.logout()" style="background:#ff4444; margin-top:20px;">DÉCONNEXION</button>`;
+        <button class="btn-main" onclick="window.logout()" style="background: linear-gradient(45deg, #444, #000); margin-top:25px;">
+            <i data-lucide="log-out"></i> SE DÉCONNECTER
+        </button>`;
+    lucide.createIcons();
 }
+
+lucide.createIcons();
 </script>
 </body>
 </html>
