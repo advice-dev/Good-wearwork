@@ -3,291 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | Your Style Marketplace</title>
+    <title>GOODWEAR | Transaction System</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Variables CSS pour un thème facile à modifier */
         :root {
-            --primary-start: #FF6600; /* Orange vif */
-            --primary-end: #FF3366;   /* Rose-rouge */
-            --dark-text: #1A1A1A;     /* Noir profond */
-            --light-bg: #F8F9FA;      /* Arrière-plan très clair */
-            --border-color: #E0E0E0;  /* Bordure douce */
-            --white: #FFFFFF;
-            --gray-text: #6B7280;     /* Texte gris pour les détails */
-            --shadow: rgba(0, 0, 0, 0.08); /* Ombre douce */
+            --primary-start: #FF6600; --primary-end: #FF3366; --dark-text: #1A1A1A;
+            --light-bg: #F8F9FA; --border-color: #E0E0E0; --white: #FFFFFF;
+            --gray-text: #6B7280; --shadow: rgba(0, 0, 0, 0.08);
         }
-
-        /* Réinitialisation et base */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Inter', sans-serif; /* Typo principale */
-        }
-        body {
-            margin: 0;
-            background: var(--light-bg);
-            color: var(--dark-text);
-            padding-bottom: 90px; /* Espace pour la barre de navigation */
-            overflow-x: hidden; /* Empêche le défilement horizontal */
-        }
-
-        /* Titres */
-        h1, h2, h3 {
-            font-family: 'Outfit', sans-serif; /* Typo pour les titres */
-            font-weight: 700;
-            margin-top: 0;
-        }
-        h2 { font-size: 26px; margin-bottom: 25px; }
-
-        /* Conteneur principal */
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Barre supérieure */
-        .top-bar {
-            padding: 15px 20px;
-            text-align: center;
-            background: var(--white);
-            border-bottom: 1px solid var(--border-color);
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 20px;
-            letter-spacing: 1px;
-            color: var(--dark-text);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        /* Pages (transitions) */
-        .page {
-            display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-        .page.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Champs de saisie */
-        .input-field {
-            width: 100%;
-            padding: 14px 18px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            font-size: 15px;
-            color: var(--dark-text);
-            background-color: var(--white);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            outline: none;
-        }
-        .input-field::placeholder { color: var(--gray-text); }
-        .input-field:focus {
-            border-color: var(--primary-start);
-            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2);
-        }
-
-        /* Boutons principaux */
-        .btn-main {
-            background: linear-gradient(45deg, var(--primary-start), var(--primary-end));
-            color: var(--white);
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
-        }
-        .btn-main:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
-        }
-        .btn-main:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
-        }
-        .btn-secondary {
-            background: none;
-            border: none;
-            color: var(--primary-start);
-            margin-top: 15px;
-            font-weight: 600;
-            font-size: 15px;
-            width: 100%;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-        .btn-secondary:hover { color: var(--primary-end); }
-
-        /* Cartes d'articles */
-        .card-item {
-            background: var(--white);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 6px 20px var(--shadow);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        }
-        .card-img {
-            width: 100%;
-            height: 280px; /* Hauteur fixe pour les images */
-            object-fit: cover;
-            background: linear-gradient(135deg, #f0f0f0, #e0e0e0); /* Placeholder */
-            display: block;
-        }
-        .card-body {
-            padding: 18px 20px;
-        }
-        .card-category {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--primary-start);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .card-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-        .card-price {
-            font-family: 'Outfit', sans-serif;
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--primary-start);
-            margin-bottom: 15px;
-        }
-        .card-seller-info {
-            font-size: 11px;
-            color: var(--gray-text);
-            margin-bottom: 8px;
-        }
-
-        /* Badge "Votre article" */
-        .owner-badge {
-            background: #e0e7ff; /* Bleu doux */
-            color: #4338ca;      /* Bleu foncé */
-            text-align: center;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Box d'informations (Paiement, Profil) */
-        .info-box {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 16px;
-            margin-top: 25px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px var(--shadow);
-            line-height: 1.7;
-        }
-        .info-box p { margin: 0 0 8px 0; font-size: 15px; }
-        .info-box b { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--dark-text); }
-        .info-box .title {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 800;
-            font-size: 18px;
-            color: var(--primary-start);
-            margin-bottom: 15px;
-            display: block;
-        }
-        .info-box small { font-size: 12px; color: var(--gray-text); }
-
-        /* Texte pour les articles vides */
-        .empty-state {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--gray-text);
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        .empty-state i {
-            width: 60px;
-            height: 60px;
-            opacity: 0.2;
-            margin-bottom: 15px;
-        }
-
-        /* Barre de navigation inférieure */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0 25px 0; /* Plus d'espace en bas pour les téléphones modernes */
-            border-top: 1px solid var(--border-color);
-            z-index: 1000;
-            box-shadow: 0 -4px 15px var(--shadow);
-        }
-        .nav-btn {
-            background: none;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray-text);
-            cursor: pointer;
-            width: 25%;
-            transition: color 0.2s ease, transform 0.2s ease;
-        }
-        .nav-btn i { width: 24px; height: 24px; }
-        .nav-btn span {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-family: 'Outfit', sans-serif;
-            letter-spacing: 0.5px;
-        }
-        .nav-btn.active { color: var(--primary-start); transform: translateY(-3px); }
-        .nav-btn:hover:not(.active) { color: var(--primary-end); transform: translateY(-2px); }
-
-        /* Animation de chargement */
-        .loading-spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: var(--primary-start);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
+        body { margin: 0; background: var(--light-bg); color: var(--dark-text); padding-bottom: 90px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .top-bar { padding: 15px; text-align: center; background: var(--white); border-bottom: 1px solid var(--border-color); font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px var(--shadow); }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 12px; outline: none; }
+        .btn-main { background: linear-gradient(45deg, var(--primary-start), var(--primary-end)); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3); }
+        .card-item { background: var(--white); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow); }
+        .card-img { width: 100%; height: 250px; object-fit: cover; }
+        .card-body { padding: 15px; }
+        .card-price { font-size: 22px; font-weight: 800; color: var(--primary-start); margin: 10px 0; }
+        .order-item { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid var(--primary-start); font-size: 14px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid var(--border-color); z-index: 1000; }
+        .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: var(--gray-text); cursor: pointer; width: 25%; }
+        .nav-btn.active { color: var(--primary-start); }
+        .owner-badge { background: #F3F4F6; color: #9CA3AF; text-align: center; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -296,89 +38,51 @@
 
 <div class="container">
     <div id="signup" class="page active">
-        <h2>Démarrez ici</h2>
-        <input type="text" id="username" class="input-field" placeholder="Nom de la boutique ou Pseudo">
-        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (ex: +243812345678)">
+        <h2>Connexion</h2>
+        <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
+        <input type="tel" id="phone" class="input-field" placeholder="Téléphone">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnSignup"><i data-lucide="user-plus"></i> S'INSCRIRE</button>
-        <button class="btn-secondary" id="btnLogin">Déjà un compte ? Se connecter</button>
+        <button class="btn-main" id="btnSignup">S'INSCRIRE</button>
+        <button class="btn-main" id="btnLogin" style="background:gray; margin-top:10px;">SE CONNECTER</button>
     </div>
 
     <div id="market" class="page">
-        <h2>Découvrez les dernières pépites</h2>
-        <div id="list">
-            <div class="empty-state">
-                <i data-lucide="refresh-cw"></i>
-                <p>Chargement des articles...</p>
-            </div>
-        </div>
+        <div id="list"></div>
     </div>
 
     <div id="add" class="page">
-        <h2>Vendre un article</h2>
-        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
-            Photo de l'article <span style="color:red;">*</span>
-        </label>
-        <input type="file" id="img" accept="image/*" class="input-field" required>
-        
-        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
-            Titre de l'article (ex: Air Jordan 1 Retro High) <span style="color:red;">*</span>
-        </label>
-        <input type="text" id="title" class="input-field" placeholder="Titre de l'article" required>
-        
-        <label style="font-size: 13px; color: var(--gray-text); margin-bottom: 8px; display: block; font-weight: 500;">
-            Ton prix vendeur ($) <span style="color:red;">*</span>
-        </label>
-        <input type="number" id="priceInput" class="input-field" placeholder="Ex: 120" required>
-        
-        <div id="taxInfo" class="info-box" style="margin-top:0; margin-bottom: 25px; padding: 15px; background: #FFF7EB; border-color: #FFDDAA;">
-            <span class="title" style="font-size:15px; color: var(--primary-start); margin-bottom:5px;">Prix client final (+20% de commission) : <b style="color: var(--primary-end);">0 $</b></span>
-            <small style="color: var(--gray-text);">Ce prix inclut notre commission de 20% pour la mise en relation et la gestion.</small>
-        </div>
-        
-        <button class="btn-main" id="btnPublish"><i data-lucide="upload-cloud"></i> PUBLIER L'ARTICLE</button>
+        <h2>Publier un article</h2>
+        <input type="file" id="img" accept="image/*" class="input-field">
+        <input type="text" id="title" class="input-field" placeholder="Titre">
+        <input type="number" id="priceInput" class="input-field" placeholder="Prix vendeur ($)">
+        <p id="taxInfo">Prix final (+20%) : <b>0 $</b></p>
+        <button class="btn-main" id="btnPublish">PUBLIER</button>
     </div>
 
     <div id="cart" class="page">
-        <h2>Mon Panier</h2>
-        <div id="cartList" class="empty-state">
-            <i data-lucide="shopping-cart"></i>
-            <p>Votre panier est vide pour le moment.</p>
-        </div>
-        <div class="info-box">
-            <span class="title">Instructions de paiement</span>
-            <p>Veuillez utiliser les numéros ci-dessous pour effectuer votre paiement mobile money.</p>
-            <p>AIRTEL Money : <b>+243 970 428 667</b></p>
-            <p>M-PESA : <b>+243 836 344 645</b></p>
-            <small>N'oubliez pas d'envoyer une capture d'écran du reçu de paiement à notre service client.</small>
-        </div>
+        <h2>Historique des Transactions</h2>
+        <div id="orderList"></div>
     </div>
 
     <div id="profile" class="page">
         <h2>Mon Profil</h2>
-        <div id="profileContent">
-            <div class="info-box empty-state">
-                <i data-lucide="user"></i>
-                <p>Chargement de votre profil...</p>
-            </div>
-        </div>
+        <div id="profileContent"></div>
     </div>
 </div>
 
 <nav class="bottom-nav" id="main-nav" style="display:none;">
     <button class="nav-btn" id="nav-market"><i data-lucide="shopping-bag"></i><span>Market</span></button>
     <button class="nav-btn" id="nav-add"><i data-lucide="plus-square"></i><span>Vendre</span></button>
-    <button class="nav-btn" id="nav-cart"><i data-lucide="shopping-cart"></i><span>Panier</span></button>
+    <button class="nav-btn" id="nav-cart"><i data-lucide="list"></i><span>Commandes</span></button>
     <button class="nav-btn" id="nav-profile"><i data-lucide="user"></i><span>Profil</span></button>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// --- Configuration Firebase (À NE PAS MODIFIER SAUF SI TU CHANGES DE PROJET) ---
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -388,257 +92,146 @@ const firebaseConfig = {
   appId: "1:293506727538:web:a8a2cc194bca78272d4ceb"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-let currentUser = null; // L'utilisateur Firebase actuellement connecté
-let userData = null;    // Les données de profil de l'utilisateur (nom, tel, points)
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let currentUser=null, userData=null;
 
-lucide.createIcons(); // Initialise les icônes Lucide
+lucide.createIcons();
 
-// --- Fonction générique pour changer de page ---
-window.showPage = async (pageId) => {
+// --- NAVIGATION ---
+window.showPage = (pageId) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    
     document.getElementById(pageId).classList.add('active');
-    const btn = document.getElementById('nav-' + pageId);
-    if(btn) btn.classList.add('active');
-
-    // Charge les données spécifiques à chaque page
-    if(pageId === 'market') await renderMarket();
-    if(pageId === 'profile') await renderProfile();
+    document.getElementById('nav-' + pageId).classList.add('active');
+    if(pageId === 'market') renderMarket();
+    if(pageId === 'cart') renderOrders();
+    if(pageId === 'profile') renderProfile();
 };
 
-// --- Gestion des clics sur la barre de navigation ---
 document.getElementById('nav-market').onclick = () => window.showPage('market');
 document.getElementById('nav-add').onclick = () => window.showPage('add');
 document.getElementById('nav-cart').onclick = () => window.showPage('cart');
 document.getElementById('nav-profile').onclick = () => window.showPage('profile');
 
-// --- AUTHENTIFICATION (Inscription / Connexion / Déconnexion) ---
+// --- AUTH ---
 onAuthStateChanged(auth, async user => {
     if(user) {
-        // Utilisateur connecté
         currentUser = user;
-        const userDocRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userDocRef);
-        
-        if (snap.exists()) {
-            userData = snap.data();
-        } else {
-            // Si l'utilisateur est nouveau, créer son profil de base
-            await setDoc(userDocRef, {
-                email: user.email,
-                username: document.getElementById('username').value || "Utilisateur",
-                phone: document.getElementById('phone').value || "",
-                points: 0
-            });
-            const newSnap = await getDoc(userDocRef); // Re-fetch pour avoir les data
-            userData = newSnap.data();
-        }
-        
+        const snap = await getDoc(doc(db, "users", user.uid));
+        userData = snap.data();
         document.getElementById('signup').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
-        window.showPage('market'); // Affiche la page du marché après connexion
+        window.showPage('market');
     } else {
-        // Aucun utilisateur connecté
-        currentUser = null;
-        userData = null;
         document.getElementById('signup').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
-        // Réinitialise les champs de connexion
-        document.getElementById('email').value = '';
-        document.getElementById('password').value = '';
     }
 });
 
-// Gérer l'inscription
 document.getElementById('btnSignup').onclick = async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const username = document.getElementById('username').value;
-    const phone = document.getElementById('phone').value;
-
-    if (!email || !password || !username || !phone) {
-        alert("Veuillez remplir tous les champs requis.");
-        return;
-    }
-    
-    // Validation simple du numéro de téléphone
-    if (!phone.startsWith('+') || phone.length < 10) {
-        alert("Le numéro de téléphone doit inclure l'indicatif (ex: +243812345678).");
-        return;
-    }
-
+    const email=document.getElementById('email').value, password=document.getElementById('password').value;
+    const userN=document.getElementById('username').value, phone=document.getElementById('phone').value;
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // Créer le document utilisateur dans Firestore
-        await setDoc(doc(db, "users", userCredential.user.uid), {
-            email: email,
-            username: username,
-            phone: phone,
-            points: 0 // Commence avec 0 points
-        });
-        alert("Compte créé avec succès ! Bienvenue.");
-    } catch(e) {
-        alert("Erreur lors de l'inscription : " + e.message);
-    }
+        const uc = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone});
+    } catch(e) { alert(e.message); }
 };
 
-// Gérer la connexion
 document.getElementById('btnLogin').onclick = async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    if (!email || !password) {
-        alert("Veuillez entrer votre email et votre mot de passe.");
-        return;
-    }
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Connexion réussie !");
-    } catch(e) {
-        alert("Erreur de connexion : " + e.message);
-    }
+    const email=document.getElementById('email').value, password=document.getElementById('password').value;
+    try { await signInWithEmailAndPassword(auth, email, password); } catch(e) { alert(e.message); }
 };
 
-// Fonction de déconnexion globale
-window.logout = () => signOut(auth).then(() => location.reload());
-
-// --- LOGIQUE DE VENTE (PUBLICATION D'ARTICLE) ---
-// Mise à jour du prix final en temps réel
+// --- PUBLICATION ---
 document.getElementById('priceInput').oninput = (e) => {
-    const prixVendeur = parseFloat(e.target.value) || 0;
-    const prixFinal = (prixVendeur * 1.2).toFixed(2); // +20% commission
-    document.querySelector('#taxInfo b').innerText = `${prixFinal} $`;
+    document.querySelector('#taxInfo b').innerText = `${(parseFloat(e.target.value || 0) * 1.2).toFixed(2)} $`;
 };
 
-// Gérer la publication d'un article
 document.getElementById('btnPublish').onclick = async () => {
-    const fileInput = document.getElementById('img');
-    const file = fileInput.files[0];
-    const title = document.getElementById('title').value;
-    const price = document.getElementById('priceInput').value;
-    const publishButton = document.getElementById('btnPublish');
-
-    if (!file || !title || !price) {
-        alert("Veuillez remplir tous les champs et sélectionner une photo.");
-        return;
-    }
-
-    publishButton.disabled = true;
-    publishButton.innerHTML = '<span class="loading-spinner"></span> PUBLICATION...';
-
+    const file = document.getElementById('img').files[0], title = document.getElementById('title').value, price = document.getElementById('priceInput').value;
+    if(!file || !title || !price) return alert("Champs vides");
+    
     const reader = new FileReader();
-    reader.readAsDataURL(file); 
-
+    reader.readAsDataURL(file);
     reader.onload = async () => {
-        try {
-            await addDoc(collection(db, "products"), {
-                title: title,
-                price: (parseFloat(price) * 1.2).toFixed(2), 
-                img: reader.result, 
-                sellerName: userData.username,
-                sellerPhone: userData.phone,
-                sellerId: currentUser.uid,
-                createdAt: new Date() 
-            });
-            alert("Votre article a été publié avec succès !");
-            fileInput.value = '';
-            document.getElementById('title').value = '';
-            document.getElementById('priceInput').value = '';
-            document.querySelector('#taxInfo b').innerText = '0 $';
-            window.showPage('market'); 
-        } catch(e) {
-            alert("Erreur lors de la publication : " + e.message);
-        } finally {
-            publishButton.disabled = false;
-            publishButton.innerHTML = '<i data-lucide="upload-cloud"></i> PUBLIER L\'ARTICLE';
-            lucide.createIcons();
-        }
+        await addDoc(collection(db, "products"), {
+            title, price: (parseFloat(price)*1.2).toFixed(2), img: reader.result,
+            sellerName: userData.username, sellerId: currentUser.uid, createdAt: new Date()
+        });
+        alert("Publié !");
+        window.showPage('market');
     };
 };
 
-// --- AFFICHAGE DU MARCHÉ (Produits) ---
+// --- MARCHÉ ET ACHAT TRAÇABLE ---
 async function renderMarket() {
     const list = document.getElementById('list');
-    list.innerHTML = `
-        <div class="empty-state">
-            <i data-lucide="refresh-cw" class="loading-spinner"></i>
-            <p>Chargement des pépites...</p>
-        </div>`; 
-
-    try {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        const querySnapshot = await getDocs(q);
-        list.innerHTML = ""; 
-
-        if (querySnapshot.empty) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <i data-lucide="box"></i>
-                    <p>Aucun article pour le moment.<br>Soyez le premier à vendre !</p>
-                </div>`;
-            lucide.createIcons();
-            return;
-        }
-
-        querySnapshot.forEach(d => {
-            const product = d.data();
-            const isMyItem = (product.sellerId === currentUser?.uid); 
-            
-            const actionSection = isMyItem
-                ? `<div class="owner-badge">C'est votre article</div>`
-                : `<button class="btn-main" onclick="buyItem('${product.title.replace(/'/g, "\\'")}', '${product.price}', '${product.sellerPhone}')" style="padding:12px; font-size:14px; gap:8px;">
-                    <i data-lucide="shopping-cart" style="width:20px; height:20px;"></i> ACHETER
-                   </button>`;
-
-            list.innerHTML += `
-                <div class="card-item">
-                    <img src="${product.img}" class="card-img">
-                    <div class="card-body">
-                        <div class="card-category">Vendu par ${product.sellerName}</div>
-                        <h3 class="card-title">${product.title}</h3>
-                        <div class="card-price">${product.price} $</div>
-                        ${actionSection}
-                    </div>
-                </div>`;
-        });
-        lucide.createIcons(); 
-    } catch(e) {
-        list.innerHTML = `<div class="empty-state" style="color:#FF3366;"><p>Erreur de connexion.</p></div>`;
-        lucide.createIcons();
-    }
-}
-
-// --- FONCTION D'ACHAT (WHATSAPP) ---
-window.buyItem = (title, price, sellerPhone) => {
-    const cleanPhone = sellerPhone.replace(/\s+/g, '');
-    const message = `Bonjour ! Je suis très intéressé(e) par votre article "${title}" (${price}$) vu sur GOODWEAR. Est-il toujours disponible ?`;
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-};
-
-// --- AFFICHAGE DU PROFIL ---
-async function renderProfile() {
-    const profileContent = document.getElementById('profileContent');
-    if(!userData) return;
-
-    profileContent.innerHTML = `
-        <div class="info-box">
-            <span class="title">Ma Boutique</span>
-            <p>Nom : <b>${userData.username}</b></p>
-            <p>Email : <b>${currentUser.email}</b></p>
-            <p>WhatsApp : <b>${userData.phone}</b></p>
-            <p>Points Fidélité : <b style="color:var(--primary-start)">${userData.points || 0} pts</b></p>
-        </div>
-        <button class="btn-main" onclick="window.logout()" style="background: linear-gradient(45deg, #444, #000); margin-top:25px;">
-            <i data-lucide="log-out"></i> SE DÉCONNECTER
-        </button>`;
+    list.innerHTML = "Chargement...";
+    const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
+    list.innerHTML = "";
+    snap.forEach(d => {
+        const p = d.data();
+        const isMine = p.sellerId === currentUser.uid;
+        list.innerHTML += `
+            <div class="card-item">
+                <img src="${p.img}" class="card-img">
+                <div class="card-body">
+                    <small>Par ${p.sellerName}</small>
+                    <h3>${p.title}</h3>
+                    <div class="card-price">${p.price} $</div>
+                    ${isMine ? '<div class="owner-badge">VOTRE ARTICLE</div>' : 
+                    `<button class="btn-main" onclick="buyItem('${d.id}', '${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.sellerId}', '${p.sellerName}')">COMMANDER</button>`}
+                </div>
+            </div>`;
+    });
     lucide.createIcons();
 }
 
-lucide.createIcons();
+window.buyItem = async (prodId, title, price, sId, sName) => {
+    if(confirm(`Confirmer la commande de ${title} pour ${price}$ ?`)) {
+        await addDoc(collection(db, "orders"), {
+            title, price, sellerId: sId, sellerName: sName,
+            buyerId: currentUser.uid, buyerName: userData.username, buyerPhone: userData.phone,
+            date: new Date(), status: "En attente"
+        });
+        alert("Commande enregistrée dans Firebase !");
+        window.showPage('cart');
+    }
+};
+
+// --- HISTORIQUE DES TRANSACTIONS ---
+async function renderOrders() {
+    const oList = document.getElementById('orderList');
+    oList.innerHTML = "Chargement des transactions...";
+    
+    // On cherche les commandes où l'utilisateur est soit acheteur, soit vendeur
+    const qAchat = query(collection(db, "orders"), where("buyerId", "==", currentUser.uid));
+    const qVente = query(collection(db, "orders"), where("sellerId", "==", currentUser.uid));
+    
+    const [snapAchat, snapVente] = await Promise.all([getDocs(qAchat), getDocs(qVente)]);
+    oList.innerHTML = "";
+
+    if(snapAchat.empty && snapVente.empty) oList.innerHTML = "Aucune transaction.";
+
+    snapAchat.forEach(d => {
+        const o = d.data();
+        oList.innerHTML += `<div class="order-item">🛍️ <b>ACHAT :</b> ${o.title}<br>Prix: ${o.price}$ | Vendeur: ${o.sellerName}<br><small>${o.date.toDate().toLocaleString()}</small></div>`;
+    });
+
+    snapVente.forEach(d => {
+        const o = d.data();
+        oList.innerHTML += `<div class="order-item" style="border-left-color:green;">💰 <b>VENTE :</b> ${o.title}<br>Prix: ${o.price}$ | Acheteur: ${o.buyerName} (${o.buyerPhone})<br><small>${o.date.toDate().toLocaleString()}</small></div>`;
+    });
+}
+
+function renderProfile() {
+    document.getElementById('profileContent').innerHTML = `
+        <div class="card-item" style="padding:20px;">
+            <b>Boutique :</b> ${userData.username}<br>
+            <b>Tel :</b> ${userData.phone}<br>
+            <button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="margin-top:20px; background:black;">DÉCONNEXION</button>
+        </div>`;
+}
 </script>
 </body>
 </html>
