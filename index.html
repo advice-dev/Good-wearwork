@@ -3,69 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | FINAL PRO</title>
+    <title>GOODWEAR | VERSION ULTIME SÉPARÉE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; }
+        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; --blue: #007BFF; --green: #28a745; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
+        #splash { position: fixed; inset: 0; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-weight: 800; font-size: 24px; color: var(--p); }
         .top-bar { padding: 15px; text-align: center; background: var(--w); font-family: 'Outfit'; font-weight: 800; font-size: 22px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         .page { display: none; } .page.active { display: block; }
         .input-field { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 12px; outline: none; background: #fff; }
         .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
-        .btn-sec { background: #eee; color: #333; border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-sec { background: #eee; color: #333; border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 10px; }
         .card { background: var(--w); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .card-img { width: 100%; height: 250px; object-fit: cover; }
+        .card-img { width: 100%; height: 280px; object-fit: cover; }
         .card-body { padding: 15px; }
+        .order-item { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid var(--p); display: flex; align-items: center; }
+        .order-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 12px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #ddd; z-index: 99; }
-        .nav-btn { background: none; border: none; color: #666; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 18%; cursor: pointer; }
+        .nav-btn { background: none; border: none; color: #666; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 18%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-        .order-item { background: #fff; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
-        
-        /* CHAT UI */
         #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f0f2f5; display: flex; flex-direction: column; gap: 8px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f0f2f5; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 15px; max-width: 80%; }
         .msg.me { background: var(--p); color: white; align-self: flex-end; }
         .msg.other { background: #ddd; align-self: flex-start; }
     </style>
 </head>
 <body>
 
+<div id="splash">GOODWEAR...</div>
 <div class="top-bar">GOODWEAR</div>
 
 <div id="chat-window">
-    <div style="padding:15px; border-bottom:1px solid #ddd; display:flex; align-items:center; gap:10px;">
-        <button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="arrow-left"></i></button>
-        <span id="chat-with-name" style="font-weight:700;">Discussion</span>
+    <div class="chat-header" style="padding:15px; border-bottom:1px solid #ddd; display:flex; align-items:center; gap:10px;">
+        <button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="arrow-left"></i></button> 
+        <span id="chat-with-name" style="font-weight:800">Chat</span>
     </div>
     <div id="chat-messages"></div>
     <div style="padding:15px; display:flex; gap:10px; border-top:1px solid #ddd;">
-        <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0;">
-        <button class="btn-main" onclick="sendMsg()" style="width:60px;">OK</button>
+        <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0">
+        <button class="btn-main" onclick="sendMsg()" style="width:60px">OK</button>
     </div>
 </div>
 
 <div class="container">
-    <div id="signup-page" class="page active">
+    <div id="signup" class="page">
         <h2 style="font-family:'Outfit'">Connexion</h2>
-        <div id="auth-box">
-            <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
-            <input type="text" id="address" class="input-field" placeholder="Adresse exacte">
-            <input type="email" id="email" class="input-field" placeholder="Email">
-            <input type="password" id="password" class="input-field" placeholder="Mot de passe">
-            <button class="btn-main" onclick="handleAuth('up')">CRÉER COMPTE</button>
-            <button class="btn-sec" onclick="handleAuth('in')" style="width:100%; margin-top:10px;">DÉJÀ UN COMPTE ? SE CONNECTER</button>
-        </div>
+        <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
+        <input type="text" id="address" class="input-field" placeholder="Adresse exacte">
+        <input type="email" id="email" class="input-field" placeholder="Email">
+        <input type="password" id="password" class="input-field" placeholder="Mot de passe">
+        <button class="btn-main" id="btnSignup">S'INSCRIRE</button>
+        <button class="btn-sec" id="btnLogin">SE CONNECTER</button>
     </div>
 
     <div id="market" class="page"><div id="list"></div></div>
     
-    <div id="chat-list-page" class="page"><h2>Mes Discussions</h2><div id="conv-list"></div></div>
-    
-    <div id="orders-page" class="page"><h2>Suivi Commandes</h2><div id="order-list"></div></div>
+    <div id="cart" class="page">
+        <h2>Mon Panier</h2>
+        <div id="cartList"></div>
+    </div>
     
     <div id="add" class="page">
         <h2>Vendre (+20% frais)</h2>
@@ -75,14 +75,19 @@
         <button class="btn-main" id="btnPublish">PUBLIER</button>
     </div>
 
+    <div id="messages-list" class="page"><h2>Mes Discussions</h2><div id="convs"></div></div>
+
+    <div id="track" class="page"><h2>Suivi Commandes</h2><div id="orderList"></div></div>
+    
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
 <nav class="bottom-nav" id="main-nav">
     <button class="nav-btn" onclick="showPage('market')"><i data-lucide="shopping-bag"></i>Market</button>
-    <button class="nav-btn" onclick="showPage('chat-list-page')"><i data-lucide="message-circle"></i>Chat</button>
+    <button class="nav-btn" onclick="showPage('cart')"><i data-lucide="shopping-cart"></i>Panier</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-square"></i>Vendre</button>
-    <button class="nav-btn" onclick="showPage('orders-page')"><i data-lucide="truck"></i>Suivi</button>
+    <button class="nav-btn" onclick="showPage('messages-list')"><i data-lucide="message-square"></i>Chat</button>
+    <button class="nav-btn" onclick="showPage('track')"><i data-lucide="truck"></i>Suivi</button>
     <button class="nav-btn" onclick="showPage('profile')"><i data-lucide="user"></i>Profil</button>
 </nav>
 
@@ -104,15 +109,16 @@ const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestor
 let currentUser=null, userData=null, currentChatId=null;
 
 onAuthStateChanged(auth, async user => {
+    document.getElementById('splash').style.display = 'none';
     if(user) {
         currentUser = user;
         const s = await getDoc(doc(db, "users", user.uid));
         userData = s.data();
-        document.getElementById('signup-page').classList.remove('active'); // CACHE L'INSCRIPTION
+        document.getElementById('signup').style.display = 'none'; // DISPARAIT
         document.getElementById('main-nav').style.display = 'flex';
         showPage('market');
     } else {
-        document.getElementById('signup-page').classList.add('active');
+        document.getElementById('signup').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
     }
 });
@@ -120,125 +126,98 @@ onAuthStateChanged(auth, async user => {
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if(id==='market') renderMarket();
-    if(id==='chat-list-page') renderConversations();
-    if(id==='orders-page') renderOrders();
-    if(id==='profile') renderProfile();
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if(id==='market') renderMarket(); if(id==='cart') renderCart(); if(id==='messages-list') renderConvs(); if(id==='track') renderOrders(); if(id==='profile') renderProfile();
     lucide.createIcons();
 };
 
-// --- AUTH ---
-window.handleAuth = async (type) => {
-    const e = document.getElementById('email').value, p = document.getElementById('password').value;
-    if(type==='up') {
-        const un = document.getElementById('username').value, ad = document.getElementById('address').value;
-        const uc = await createUserWithEmailAndPassword(auth, e, p);
-        await setDoc(doc(db, "users", uc.user.uid), {username:un, address:ad, email:e});
-    } else {
-        await signInWithEmailAndPassword(auth, e, p);
-    }
-};
-
-// --- MARKET & MODIFIER ---
+// --- MARKET & VENTE ---
 async function renderMarket() {
     const list = document.getElementById('list'); list.innerHTML = "";
     const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
     snap.forEach(d => {
-        const p = d.data(); const pid = d.id; const isMine = p.sellerId === currentUser.uid;
-        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body">
-            <h3>${p.title}</h3><b style="color:var(--p); font-size:20px;">${p.price} $</b>
-            <div style="margin-top:10px; display:flex; gap:5px;">
-                ${isMine ? `<button class="btn-sec" style="width:100%" onclick="editItem('${pid}','${p.title}')">MODIFIER</button>` : 
-                `<button class="btn-main" style="width:100%" onclick="buyItem('${pid}','${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>`}
-            </div>
-        </div></div>`;
+        const p = d.data(); const isMine = p.sellerId === currentUser.uid;
+        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b style="color:var(--p)">${p.price} $</b>
+        ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
+        `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-main" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>
+        <button class="btn-sec" onclick="openChat('${p.sellerId}','${p.sellerName}')"><i data-lucide="message-circle"></i></button></div>`}</div></div>`;
     });
 }
 
-window.editItem = async (id, oldTitle) => {
-    const newT = prompt("Nouveau titre :", oldTitle);
-    const newP = prompt("Nouveau prix vendeur ($) :");
-    if(newT && newP) {
-        await updateDoc(doc(db, "products", id), { title: newT, price: (parseFloat(newP)*1.2).toFixed(2) });
-        renderMarket();
-    }
+document.getElementById('btnPublish').onclick = async () => {
+    const t=document.getElementById('title').value, p=document.getElementById('price').value, img=document.getElementById('preview-img');
+    await addDoc(collection(db, "products"), { title: t, price: (parseFloat(p)*1.2).toFixed(2), img: img.src, sellerId: currentUser.uid, sellerName: userData.username, createdAt: serverTimestamp() });
+    alert("Publié !"); showPage('market');
 };
 
-// --- CHAT SEPARE ---
-async function renderConversations() {
-    const l = document.getElementById('conv-list');
-    onSnapshot(query(collection(db, "conversations"), where("participants", "array-contains", currentUser.uid)), (snap) => {
-        l.innerHTML = snap.empty ? "Aucun chat." : "";
-        snap.forEach(d => {
-            const c = d.data(); const otherId = c.participants.find(id => id !== currentUser.uid);
-            const otherName = c.names[otherId];
-            l.innerHTML += `<div class="order-item" onclick="openChat('${otherId}','${otherName}')">
-                <div style="width:40px; height:40px; background:var(--p); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center;">${otherName[0]}</div>
-                <b>${otherName}</b>
-            </div>`;
-        });
-    });
-}
-
-window.openChat = async (tid, tname) => {
-    const cid = [currentUser.uid, tid].sort().join("_"); currentChatId = cid;
-    document.getElementById('chat-with-name').innerText = tname;
+// --- CHAT SÉPARÉ ---
+window.openChat = async (tid, tn) => {
+    const cid = [currentUser.uid, tid].sort().join("_");
+    currentChatId = cid;
+    document.getElementById('chat-with-name').innerText = tn;
     document.getElementById('chat-window').style.display = 'flex';
-    
-    await setDoc(doc(db, "conversations", cid), { participants:[currentUser.uid, tid], names:{[currentUser.uid]:userData.username, [tid]:tname}, lastUpdate:serverTimestamp() }, {merge:true});
-    
-    onSnapshot(query(collection(db, "chats", cid, "messages"), orderBy("time")), snap => {
-        const box = document.getElementById('chat-messages'); box.innerHTML = "";
-        snap.forEach(mD => { const m=mD.data(); box.innerHTML += `<div class="msg ${m.sender===currentUser.uid?'me':'other'}">${m.text}</div>`; });
-        box.scrollTop = box.scrollHeight;
+    await setDoc(doc(db, "convs", cid), { parts:[currentUser.uid, tid], names:{[currentUser.uid]:userData.username, [tid]:tn}, last: serverTimestamp() }, {merge:true});
+    onSnapshot(query(collection(db, "chats", cid, "msgs"), orderBy("time")), (s) => {
+        const b = document.getElementById('chat-messages'); b.innerHTML = "";
+        s.forEach(d => { const m = d.data(); b.innerHTML += `<div class="msg ${m.send === currentUser.uid ? 'me' : 'other'}">${m.txt}</div>`; });
+        b.scrollTop = b.scrollHeight;
     });
 };
 
 window.sendMsg = async () => {
     const txt = document.getElementById('chat-input').value;
     if(/[0-9]{6,}/.test(txt) || txt.toLowerCase().includes("whatsapp")) return alert("Pas de numéros !");
-    if(txt.trim()) {
-        await addDoc(collection(db, "chats", currentChatId, "messages"), {sender:currentUser.uid, text:txt, time:serverTimestamp()});
-        await updateDoc(doc(db, "conversations", currentChatId), {lastUpdate:serverTimestamp()});
-        document.getElementById('chat-input').value = "";
-    }
+    await addDoc(collection(db, "chats", currentChatId, "msgs"), { send:currentUser.uid, txt:txt, time:serverTimestamp() });
+    await updateDoc(doc(db, "convs", currentChatId), { last: serverTimestamp() });
+    document.getElementById('chat-input').value = "";
 };
-window.closeChat = () => document.getElementById('chat-window').style.display='none';
 
-// --- SUIVI COMMANDES ---
-async function renderOrders() {
-    const l = document.getElementById('order-list'); l.innerHTML = "";
-    const snap = await getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid)));
-    const snapV = await getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)));
-    
-    snapV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item"><b>VENTE: ${o.title}</b><br>📍 ${o.address}</div>`; });
-    snap.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item"><b>ACHAT: ${o.title}</b><br>Statut: ${o.status}</div>`; });
+window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
+
+async function renderConvs() {
+    const l = document.getElementById('convs'); l.innerHTML = "";
+    onSnapshot(query(collection(db, "convs"), where("parts", "array-contains", currentUser.uid), orderBy("last", "desc")), (s) => {
+        l.innerHTML = s.empty ? "Aucun message" : "";
+        s.forEach(d => {
+            const c = d.data(); const oid = c.parts.find(i => i !== currentUser.uid);
+            l.innerHTML += `<div class="order-item" onclick="openChat('${oid}','${c.names[oid]}')"><b>Chat avec ${c.names[oid]}</b></div>`;
+        });
+    });
 }
 
-window.buyItem = async (pid, t, p, sid, sn, img) => {
-    await addDoc(collection(db, "orders"), { title:t, price:p, sellerId:sid, sellerName:sn, buyerId:currentUser.uid, buyerName:userData.username, address:userData.address, status:"EN COURS", img:img });
-    alert("Commandé ! Allez dans 'Suivi'");
-};
+// --- SUIVI & PROFIL ---
+async function renderOrders() {
+    const l = document.getElementById('orderList'); l.innerHTML = "";
+    const [sA, sV] = await Promise.all([getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid))), getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)))]);
+    sV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:green"><b>VENTE: ${o.title}</b><br>📍 ${o.address}</div>`; });
+    sA.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:blue"><b>ACHAT: ${o.title}</b><br>Statut: ${o.status}</div>`; });
+}
 
-document.getElementById('btnPublish').onclick = async () => {
-    const t = document.getElementById('title').value, p = document.getElementById('price').value, img = document.getElementById('preview-img');
-    await addDoc(collection(db, "products"), { title: t, price: (parseFloat(p)*1.2).toFixed(2), img: img.src, sellerId: currentUser.uid, sellerName: userData.username, createdAt: serverTimestamp() });
-    showPage('market');
-};
-
-document.getElementById('file-input').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => { 
-        let img = document.getElementById('preview-img');
-        if(!img) { img = document.createElement('img'); img.id="preview-img"; img.style.width="100%"; img.style.height="150px"; img.style.objectFit="cover"; document.getElementById('add').prepend(img); }
-        img.src = ev.target.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
+window.buyItem = async (t, p, sid, sn, img) => {
+    await addDoc(collection(db, "orders"), { title:t, price:p, img:img, sellerId:sid, buyerId:currentUser.uid, address:userData.address, status:"À LIVRER" });
+    alert("Commande envoyée !"); showPage('track');
 };
 
 function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Mon Profil</h3><p><b>Boutique:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000;">DÉCONNEXION</button></div>`;
+    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Profil</h3><p><b>Boutique:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><button class="btn-sec" onclick="editP()">MODIFIER</button><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000; margin-top:10px">DÉCONNEXION</button></div>`;
 }
+
+window.editP = async () => {
+    const n = prompt("Nom:", userData.username), a = prompt("Adresse:", userData.address);
+    if(n && a) { await updateDoc(doc(db, "users", currentUser.uid), {username:n, address:a}); location.reload(); }
+};
+
+document.getElementById('btnSignup').onclick = async () => {
+    const uc = await createUserWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+    await setDoc(doc(db, "users", uc.user.uid), {username:document.getElementById('username').value, address:document.getElementById('address').value});
+};
+document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+document.getElementById('file-input').onchange = (e) => {
+    const r = new FileReader(); r.onload = (ev) => { 
+        let i = document.getElementById('preview-img'); if(!i){ i=document.createElement('img'); i.id="preview-img"; i.style.width="100%"; document.getElementById('add').prepend(i); }
+        i.src=ev.target.result;
+    }; r.readAsDataURL(e.target.files[0]);
+};
 lucide.createIcons();
 </script>
 </body>
