@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | SÉCURITÉ TOTALE</title>
+    <title>GOODWEAR | CHAT PRIVÉ</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -24,15 +24,15 @@
         .nav-btn { background: none; border: none; color: #666; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
         
-        /* STYLE CHAT */
+        /* CHAT UI */
         #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
         .chat-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 10px; font-weight: 700; background: white; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f4f4f4; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 14px; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f9f9f9; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; }
         .msg.me { background: var(--p); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg.other { background: #ddd; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.other { background: #eee; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
         .chat-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; background: white; }
-        .conv-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+        .conv-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -43,30 +43,30 @@
 <div id="chat-window">
     <div class="chat-header">
         <button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="chevron-left"></i></button>
-        <span id="chat-with-name">...</span>
+        <span id="chat-with-name">Chargement...</span>
     </div>
     <div id="chat-messages"></div>
     <div class="chat-input-area">
-        <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0;">
+        <input type="text" id="chat-input" class="input-field" placeholder="Votre message..." style="margin-bottom:0;">
         <button class="btn-main" onclick="sendMsg()" style="width:50px; padding:0; height:50px;"><i data-lucide="send"></i></button>
     </div>
 </div>
 
 <div class="container">
     <div id="signup" class="page">
-        <h2 style="font-family:'Outfit'">Connexion / Inscription</h2>
-        <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
+        <h2 style="font-family:'Outfit'">Connexion Sécurisée</h2>
+        <input type="text" id="username" class="input-field" placeholder="Nom de boutique / Pseudo">
         <input type="text" id="address" class="input-field" placeholder="Adresse de livraison">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnSignup">ACCÉDER</button>
+        <button class="btn-main" id="btnSignup">COMMENCER</button>
         <button class="btn-sec" id="btnLogin">SE CONNECTER</button>
     </div>
 
     <div id="market" class="page"><div id="list"></div></div>
     
     <div id="track" class="page">
-        <h2 style="font-family:'Outfit'">Mes Messages</h2>
+        <h2 style="font-family:'Outfit'">Mes Discussions</h2>
         <div id="conv-list"></div>
     </div>
 
@@ -84,16 +84,15 @@
 <nav class="bottom-nav" id="main-nav">
     <button class="nav-btn" onclick="showPage('market')"><i data-lucide="shopping-bag"></i>Market</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-square"></i>Vendre</button>
-    <button class="nav-btn" onclick="showPage('track')"><i data-lucide="message-square"></i>Messages</button>
+    <button class="nav-btn" onclick="showPage('track')"><i data-lucide="message-square"></i>Chat</button>
     <button class="nav-btn" onclick="showPage('profile')"><i data-lucide="user"></i>Profil</button>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, onSnapshot, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// TES IDENTIFIANTS RÉINSÉRÉS CORRECTEMENT
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -104,7 +103,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser=null, userData=null, currentChatId=null;
+let currentUser=null, userData=null, currentChatId=null, otherUserId=null;
 
 onAuthStateChanged(auth, async user => {
     document.getElementById('splash').style.display = 'none';
@@ -120,13 +119,15 @@ onAuthStateChanged(auth, async user => {
     }
 });
 
-// LOGIQUE CHAT
+// SYSTÈME DE CHAT
 window.openChat = async (targetId, targetName) => {
+    otherUserId = targetId;
     const chatId = [currentUser.uid, targetId].sort().join("_");
     currentChatId = chatId;
     document.getElementById('chat-with-name').innerText = targetName;
     document.getElementById('chat-window').style.display = 'flex';
 
+    // Créer la conversation dans la liste si elle n'existe pas
     await setDoc(doc(db, "conversations", chatId), {
         participants: [currentUser.uid, targetId],
         names: { [currentUser.uid]: userData.username, [targetId]: targetName },
@@ -138,7 +139,8 @@ window.openChat = async (targetId, targetName) => {
         box.innerHTML = "";
         snap.forEach(d => {
             const m = d.data();
-            box.innerHTML += `<div class="msg ${m.sender === currentUser.uid ? 'me' : 'other'}">${m.text}</div>`;
+            const type = m.sender === currentUser.uid ? 'me' : 'other';
+            box.innerHTML += `<div class="msg ${type}">${m.text}</div>`;
         });
         box.scrollTop = box.scrollHeight;
     });
@@ -147,37 +149,41 @@ window.openChat = async (targetId, targetName) => {
 window.sendMsg = async () => {
     const text = document.getElementById('chat-input').value.trim();
     if(!text) return;
+
+    // SÉCURITÉ : Bloquer les chiffres (numéros) et mots interdits
+    const hasNumbers = /[0-9]{5,}/.test(text);
+    const forbidden = ["whatsapp", "+243", "numéro", "appelle", "contact", "09", "08"];
     
-    // FILTRE SÉCURITÉ
-    const forbiddenNumbers = /[0-9]{6,}/;
-    const forbiddenWords = ["whatsapp", "+243", "contact", "appelle-moi", "numéro"];
-    
-    if(forbiddenNumbers.test(text) || forbiddenWords.some(w => text.toLowerCase().includes(w))) {
-        alert("🔒 SÉCURITÉ : Coordonnées interdites.");
+    if(hasNumbers || forbidden.some(w => text.toLowerCase().includes(w))) {
+        alert("🔒 SÉCURITÉ : L'échange de coordonnées est interdit pour votre protection.");
         return;
     }
 
     await addDoc(collection(db, "chats", currentChatId, "messages"), {
         sender: currentUser.uid, text: text, time: serverTimestamp()
     });
+    
     await updateDoc(doc(db, "conversations", currentChatId), { lastUpdate: serverTimestamp() });
     document.getElementById('chat-input').value = "";
 };
 
 window.closeChat = () => { document.getElementById('chat-window').style.display = 'none'; };
 
+// LISTE DES CONVERSATIONS (POUR LE VENDEUR ET L'ACHETEUR)
 async function renderConversations() {
     const list = document.getElementById('conv-list');
+    list.innerHTML = "Chargement...";
     const q = query(collection(db, "conversations"), where("participants", "array-contains", currentUser.uid), orderBy("lastUpdate", "desc"));
+    
     onSnapshot(q, (snap) => {
-        list.innerHTML = snap.empty ? "<p style='text-align:center;'>Aucun message.</p>" : "";
+        list.innerHTML = snap.empty ? "<p style='text-align:center; color:#999;'>Aucune discussion en cours.</p>" : "";
         snap.forEach(d => {
             const c = d.data();
             const otherId = c.participants.find(id => id !== currentUser.uid);
             const otherName = c.names[otherId];
             list.innerHTML += `<div class="conv-item" onclick="openChat('${otherId}','${otherName}')">
-                <div style="background:var(--p); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;">${otherName[0]}</div>
-                <div><b>${otherName}</b><br><small>Appuyez pour discuter</small></div>
+                <div style="background:var(--p); color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">${otherName[0]}</div>
+                <div><b>${otherName}</b><br><span style="font-size:12px; color:#666;">Cliquez pour discuter</span></div>
             </div>`;
         });
     });
@@ -201,15 +207,20 @@ document.getElementById('btnSignup').onclick = async () => {
 document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
 
 async function renderMarket() {
-    const list = document.getElementById('list'); list.innerHTML = "Chargement...";
+    const list = document.getElementById('list'); list.innerHTML = "";
     const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
-    list.innerHTML = "";
     snap.forEach(d => {
         const p = d.data(); const isMine = p.sellerId === currentUser.uid;
-        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b>${p.price} $</b>
-        ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
-        `<button class="btn-main" onclick="openChat('${p.sellerId}','${p.sellerName}')" style="margin-top:10px">CONTACTER LE VENDEUR</button>`}</div></div>`;
+        list.innerHTML += `<div class="card">
+            <img src="${p.img}" class="card-img">
+            <div class="card-body">
+                <h3>${p.title}</h3><b>${p.price} $</b>
+                ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
+                `<button class="btn-main" style="margin-top:10px" onclick="openChat('${p.sellerId}','${p.sellerName}')">CONTACTER LE VENDEUR</button>`}
+            </div>
+        </div>`;
     });
+    lucide.createIcons();
 }
 
 document.getElementById('btnPublish').onclick = async () => {
@@ -225,7 +236,7 @@ document.getElementById('file-input').onchange = (e) => {
     const reader = new FileReader();
     reader.onload = (ev) => { 
         let img = document.getElementById('preview-img');
-        if(!img) { img = document.createElement('img'); img.id="preview-img"; img.style.width="100%"; img.style.height="180px"; img.style.objectFit="cover"; document.getElementById('add').prepend(img); }
+        if(!img) { img = document.createElement('img'); img.id="preview-img"; img.style.width="100%"; img.style.height="200px"; img.style.objectFit="cover"; document.getElementById('add').prepend(img); }
         img.src = ev.target.result;
     };
     reader.readAsDataURL(e.target.files[0]);
