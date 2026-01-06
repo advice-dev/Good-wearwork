@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | VERSION INTEGRALE</title>
+    <title>GOODWEAR | SOLUTION INTEGRALE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -25,7 +25,6 @@
         .nav-btn { background: none; border: none; color: #666; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
         
-        /* CHAT OVERLAY */
         #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
         .chat-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 10px; font-weight: 700; }
         #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f0f2f5; display: flex; flex-direction: column; }
@@ -41,7 +40,7 @@
 <div id="chat-window">
     <div class="chat-header"><button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="arrow-left"></i></button> <span id="chat-with-name">Chat</span></div>
     <div id="chat-messages"></div>
-    <div class="chat-input-area" style="padding:15px; display:flex; gap:10px;">
+    <div class="chat-input-area" style="padding:15px; display:flex; gap:10px; background:white; border-top:1px solid #ddd;">
         <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0;">
         <button class="btn-main" onclick="sendMsg()" style="width:60px;">OK</button>
     </div>
@@ -49,12 +48,12 @@
 
 <div class="container">
     <div id="signup" class="page active">
-        <h2 style="font-family:'Outfit'">Bienvenue</h2>
+        <h2 style="font-family:'Outfit'">Connexion / Inscription</h2>
         <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
         <input type="text" id="address" class="input-field" placeholder="Adresse de livraison exacte">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnSignup">S'INSCRIRE</button>
+        <button class="btn-main" id="btnSignup">ACCÉDER</button>
         <button class="btn-sec" id="btnLogin">SE CONNECTER</button>
     </div>
 
@@ -62,9 +61,6 @@
     
     <div id="cart" class="page">
         <h2>Mon Panier</h2>
-        <div style="background:#e0f0ff; color:#007BFF; padding:12px; border-radius:12px; font-size:13px; margin-bottom:15px; border:1px solid #007BFF;">
-            💳 PAYER : Airtel (0970428667) ou M-Pesa (+243 836 344 645)
-        </div>
         <div id="cartList"></div>
     </div>
     
@@ -72,11 +68,11 @@
         <h2>Vendre un article</h2>
         <input type="file" id="file-input" accept="image/*" class="input-field">
         <input type="text" id="title" class="input-field" placeholder="Titre">
-        <input type="number" id="price" class="input-field" placeholder="Prix vendeur ($)">
-        <button class="btn-main" id="btnPublish">PUBLIER (+20% frais)</button>
+        <input type="number" id="price" class="input-field" placeholder="Ton prix vendeur ($)">
+        <button class="btn-main" id="btnPublish">PUBLIER ARTICLE</button>
     </div>
 
-    <div id="track" class="page"><h2>Commandes & Chat</h2><div id="orderList"></div></div>
+    <div id="track" class="page"><h2>Suivi & Discussions</h2><div id="orderList"></div></div>
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
@@ -91,7 +87,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -123,34 +119,29 @@ window.showPage = (id) => {
     lucide.createIcons();
 };
 
-// --- LOGIQUE MARKET & VENTE (TAXE 20%) ---
 async function renderMarket() {
-    const list = document.getElementById('list'); list.innerHTML = "Chargement...";
+    const list = document.getElementById('list'); list.innerHTML = "";
     const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
-    list.innerHTML = "";
     snap.forEach(d => {
         const p = d.data(); const isMine = p.sellerId === currentUser.uid;
-        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b style="color:var(--p); font-size:22px;">${p.price} $</b>
+        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b style="color:var(--p); font-size:20px;">${p.price} $</b>
         ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
-        `<div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="btn-main" style="flex:2" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>
-            <button class="btn-sec" style="flex:1; margin-top:0;" onclick="saveItem('${p.title.replace(/'/g," ")}','${p.price}','${p.img}')"><i data-lucide="bookmark"></i></button>
-        </div>`}</div></div>`;
+        `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-main" style="flex:2" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>
+        <button class="btn-sec" style="flex:1; margin-top:0;" onclick="saveItem('${p.title.replace(/'/g," ")}','${p.price}','${p.img}')"><i data-lucide="bookmark"></i></button></div>`}</div></div>`;
     });
 }
 
 document.getElementById('btnPublish').onclick = async () => {
     const t = document.getElementById('title').value, p = document.getElementById('price').value, img = document.getElementById('preview-img');
-    if(!t || !p || !img) return alert("Photo + Titre + Prix requis !");
+    if(!t || !p || !img) return alert("Complétez tout !");
     await addDoc(collection(db, "products"), {
         title: t, price: (parseFloat(p)*1.2).toFixed(2), img: img.src,
         sellerId: currentUser.uid, sellerName: userData.username, createdAt: serverTimestamp()
     });
-    alert("Publié avec taxe de 20% !"); showPage('market');
+    alert("Publié (Taxe 20% incluse) !"); showPage('market');
 };
 
-// --- LOGIQUE PANIER & COMMANDES ---
-window.saveItem = async (t, p, i) => { await addDoc(collection(db, "cart"), {uid:currentUser.uid, title:t, price:p, img:i}); alert("Ajouté au panier !"); };
+window.saveItem = async (t, p, i) => { await addDoc(collection(db, "cart"), {uid:currentUser.uid, title:t, price:p, img:i}); alert("Panier mis à jour !"); };
 
 async function renderCart() {
     const l = document.getElementById('cartList'); l.innerHTML = "";
@@ -159,12 +150,11 @@ async function renderCart() {
 }
 
 window.buyItem = async (t, p, sid, sn, img) => {
-    if(confirm(`Confirmer l'achat de ${t} ?`)) {
+    if(confirm("Confirmer la commande ?")) {
         await addDoc(collection(db, "orders"), {
             title:t, price:p, img:img, sellerId:sid, sellerName:sn, buyerId:currentUser.uid, 
             buyerName:userData.username, address:userData.address, status:"À LIVRER", date:new Date()
         });
-        alert("Commande enregistrée ! Contactez le vendeur.");
         showPage('track');
     }
 };
@@ -172,17 +162,16 @@ window.buyItem = async (t, p, sid, sn, img) => {
 async function renderOrders() {
     const l = document.getElementById('orderList'); l.innerHTML = "";
     const [sA, sV] = await Promise.all([getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid))), getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)))]);
-    sV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:green"><img src="${o.img}" class="order-img"><div><b>VENTE : ${o.title}</b><br>📍 ${o.address}<br><button class="btn-sec" style="padding:5px; font-size:12px;" onclick="openChat('${o.buyerId}','${o.buyerName}')">CHAT AVEC ACHETEUR</button></div></div>`; });
-    sA.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:blue"><img src="${o.img}" class="order-img"><div><b>ACHAT : ${o.title}</b><br>Statut: ${o.status}<br><button class="btn-sec" style="padding:5px; font-size:12px;" onclick="openChat('${o.sellerId}','${o.sellerName}')">CHAT AVEC VENDEUR</button></div></div>`; });
+    sV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:var(--green)"><img src="${o.img}" class="order-img"><div><b>VENTE : ${o.title}</b><br>📍 ${o.address}<br><button class="btn-sec" onclick="openChat('${o.buyerId}','${o.buyerName}')">CHAT ACHETEUR</button></div></div>`; });
+    sA.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:var(--blue)"><img src="${o.img}" class="order-img"><div><b>ACHAT : ${o.title}</b><br>Vendeur: ${o.sellerName}<br><button class="btn-sec" onclick="openChat('${o.sellerId}','${o.sellerName}')">CHAT VENDEUR</button></div></div>`; });
 }
 
-// --- LOGIQUE CHAT SECURISE ---
-window.openChat = (otherId, otherName) => {
-    const chatId = [currentUser.uid, otherId].sort().join("_");
+window.openChat = (oid, on) => {
+    const chatId = [currentUser.uid, oid].sort().join("_");
     currentChatId = chatId;
-    document.getElementById('chat-with-name').innerText = otherName;
+    document.getElementById('chat-with-name').innerText = on;
     document.getElementById('chat-window').style.display = 'flex';
-    onSnapshot(query(collection(db, "chats", chatId, "messages"), orderBy("time")), (snap) => {
+    onSnapshot(query(collection(db, "chats", chatId, "messages"), orderBy("time")), snap => {
         const box = document.getElementById('chat-messages'); box.innerHTML = "";
         snap.forEach(d => { const m = d.data(); box.innerHTML += `<div class="msg ${m.sender === currentUser.uid ? 'me' : 'other'}">${m.text}</div>`; });
         box.scrollTop = box.scrollHeight;
@@ -191,17 +180,16 @@ window.openChat = (otherId, otherName) => {
 
 window.sendMsg = async () => {
     const text = document.getElementById('chat-input').value;
-    const forbidden = /[0-9]{6,}/; // Bloque les numéros
-    if(forbidden.test(text) || text.toLowerCase().includes("whatsapp")) return alert("Interdit d'envoyer un numéro !");
+    const forbidden = /[0-9]{6,}/;
+    if(forbidden.test(text) || text.toLowerCase().includes("whatsapp")) return alert("Coordonnées interdites !");
     if(text.trim()) {
         await addDoc(collection(db, "chats", currentChatId, "messages"), { sender: currentUser.uid, text: text, time: serverTimestamp() });
         document.getElementById('chat-input').value = "";
     }
 };
 
-window.closeChat = () => { document.getElementById('chat-window').style.display = 'none'; };
+window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
 
-// --- AUTH & TOOLS ---
 document.getElementById('btnSignup').onclick = async () => {
     const e=document.getElementById('email').value, p=document.getElementById('password').value, un=document.getElementById('username').value, ad=document.getElementById('address').value;
     const uc = await createUserWithEmailAndPassword(auth, e, p);
@@ -218,7 +206,7 @@ document.getElementById('file-input').onchange = (e) => {
     reader.readAsDataURL(e.target.files[0]);
 };
 function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Profil</h3><p><b>Nom:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000;">DÉCONNEXION</button></div>`;
+    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Profil</h3><p><b>Boutique:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000;">DÉCONNEXION</button></div>`;
 }
 lucide.createIcons();
 </script>
