@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | FINAL PRO</title>
+    <title>GOODWEAR | Plateforme Sécurisée</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; --blue: #007BFF; --green: #28a745; }
+        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; --blue: #007BFF; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
-        /* Splash screen pour éviter de voir le formulaire au chargement */
         #splash { position: fixed; inset: 0; background: white; z-index: 1000; display: flex; align-items: center; justify-content: center; font-family: 'Outfit'; font-weight: 800; font-size: 24px; color: var(--p); }
         .top-bar { padding: 15px; text-align: center; background: var(--w); font-family: 'Outfit'; font-weight: 800; font-size: 22px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
@@ -18,58 +17,67 @@
         .input-field { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 12px; outline: none; background: #fff; }
         .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
         .btn-sec { background: #eee; color: #333; border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; margin-top: 10px; }
-        .card { background: var(--w); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .card { background: var(--w); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid #eee; }
         .card-img { width: 100%; height: 280px; object-fit: cover; }
         .card-body { padding: 15px; }
-        .order-item { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid var(--p); display: flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .order-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 12px; }
-        .badge-new { background: var(--s); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-bottom: 5px; display: inline-block; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #ddd; z-index: 99; }
         .nav-btn { background: none; border: none; color: #666; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-        #preview-box { width: 100%; height: 200px; border: 2px dashed #ccc; border-radius: 12px; margin-bottom: 15px; display: none; overflow: hidden; }
-        #preview-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Styles Chat */
+        #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
+        .chat-header { padding: 15px; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f0f2f5; }
+        .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
+        .msg.me { background: var(--p); color: white; align-self: flex-end; margin-left: auto; }
+        .msg.other { background: white; align-self: flex-start; border: 1px solid #ddd; }
+        .chat-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-<div id="splash">GOODWEAR...</div>
+<div id="splash">GOODWEAR SECURE...</div>
 
 <div class="top-bar">GOODWEAR</div>
+
+<div id="chat-window">
+    <div class="chat-header"><button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="arrow-left"></i></button> <span id="chat-with-name">Discuter</span></div>
+    <div id="chat-messages" style="display:flex; flex-direction:column;"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0;">
+        <button class="btn-main" onclick="sendMsg()" style="width:60px; padding:0;"><i data-lucide="send"></i></button>
+    </div>
+</div>
+
 <div class="container">
     <div id="signup" class="page">
-        <h2 style="font-family:'Outfit'">Bienvenue</h2>
+        <h2>Bienvenue</h2>
         <div id="auth-fields">
             <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
             <input type="text" id="address" class="input-field" placeholder="Adresse de livraison exacte">
-            <input type="tel" id="phone" class="input-field" placeholder="Numéro WhatsApp">
         </div>
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnSignup">S'INSCRIRE</button>
-        <button class="btn-sec" id="btnLogin">DÉJÀ UN COMPTE ? SE CONNECTER</button>
+        <button class="btn-main" id="btnSignup">ACCÉDER</button>
+        <button class="btn-sec" id="btnLogin">SE CONNECTER</button>
     </div>
 
     <div id="market" class="page"><div id="list"></div></div>
     
     <div id="cart" class="page">
         <h2>Mon Panier</h2>
-        <div style="background:#e0f0ff; color:#007BFF; padding:12px; border-radius:12px; font-size:13px; font-weight:600; margin-bottom:15px; border:1px solid #007BFF;">
-            💳 PAIEMENT : Airtel (0970428667) ou M-Pesa (+243 836 344 645)
-        </div>
         <div id="cartList"></div>
     </div>
     
     <div id="add" class="page">
         <h2>Vendre un article</h2>
-        <div id="preview-box"><img id="preview-img"></div>
         <input type="file" id="file-input" accept="image/*" class="input-field">
-        <input type="text" id="title" class="input-field" placeholder="Titre de l'habit">
+        <input type="text" id="title" class="input-field" placeholder="Titre">
         <input type="number" id="price" class="input-field" placeholder="Prix vendeur ($)">
         <button class="btn-main" id="btnPublish">PUBLIER</button>
     </div>
 
-    <div id="track" class="page"><h2>Notifications & Suivi</h2><div id="orderList"></div></div>
+    <div id="track" class="page"><h2>Messages & Suivi</h2><div id="orderList"></div></div>
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
@@ -77,14 +85,14 @@
     <button class="nav-btn" onclick="showPage('market')"><i data-lucide="shopping-bag"></i>Market</button>
     <button class="nav-btn" onclick="showPage('cart')"><i data-lucide="shopping-cart"></i>Panier</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-square"></i>Vendre</button>
-    <button class="nav-btn" onclick="showPage('track')"><i data-lucide="bell"></i>Suivi</button>
+    <button class="nav-btn" onclick="showPage('track')"><i data-lucide="message-circle"></i>Chat</button>
     <button class="nav-btn" onclick="showPage('profile')"><i data-lucide="user"></i>Profil</button>
 </nav>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -96,9 +104,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser=null, userData=null;
+let currentUser=null, userData=null, currentChatId=null;
 
-// GESTION AUTOMATIQUE DE LA CONNEXION
 onAuthStateChanged(auth, async user => {
     document.getElementById('splash').style.display = 'none';
     if(user) {
@@ -110,112 +117,94 @@ onAuthStateChanged(auth, async user => {
         showPage('market');
     } else {
         document.getElementById('signup').classList.add('active');
-        document.getElementById('main-nav').style.display = 'none';
     }
 });
+
+// LOGIQUE CHAT SÉCURISÉ
+window.openChat = (otherId, otherName) => {
+    const chatId = [currentUser.uid, otherId].sort().join("_");
+    currentChatId = chatId;
+    document.getElementById('chat-window').style.display = 'flex';
+    document.getElementById('chat-with-name').innerText = otherName;
+    
+    onSnapshot(query(collection(db, "chats", chatId, "messages"), orderBy("time")), (snap) => {
+        const box = document.getElementById('chat-messages');
+        box.innerHTML = "";
+        snap.forEach(d => {
+            const m = d.data();
+            box.innerHTML += `<div class="msg ${m.sender === currentUser.uid ? 'me' : 'other'}">${m.text}</div>`;
+        });
+        box.scrollTop = box.scrollHeight;
+    });
+};
+
+window.sendMsg = async () => {
+    const text = document.getElementById('chat-input').value;
+    // FILTRE DE SÉCURITÉ : Interdiction de numéros ou mots clés
+    const forbidden = /[0-9]{5,}/; // Bloque plus de 5 chiffres à la suite
+    const keywords = ["whatsapp", "numéro", "appel", "+243", "081", "097", "082", "083", "contact"];
+    
+    if(forbidden.test(text) || keywords.some(k => text.toLowerCase().includes(k))) {
+        alert("🔒 SÉCURITÉ : L'échange de coordonnées personnelles est interdit. Restez sur GOODWEAR.");
+        return;
+    }
+
+    if(text.trim()) {
+        await addDoc(collection(db, "chats", currentChatId, "messages"), {
+            sender: currentUser.uid, text: text, time: new Date()
+        });
+        document.getElementById('chat-input').value = "";
+    }
+};
+
+window.closeChat = () => { document.getElementById('chat-window').style.display = 'none'; };
 
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    if(id==='market') renderMarket(); if(id==='cart') renderCart(); if(id==='track') renderOrders(); if(id==='profile') renderProfile();
+    if(id==='market') renderMarket(); if(id==='track') renderOrders(); if(id==='profile') renderProfile();
     lucide.createIcons();
 };
 
 document.getElementById('btnSignup').onclick = async () => {
-    try {
-        const e=document.getElementById('email').value, p=document.getElementById('password').value, un=document.getElementById('username').value, ad=document.getElementById('address').value, ph=document.getElementById('phone').value;
-        const uc = await createUserWithEmailAndPassword(auth, e, p);
-        await setDoc(doc(db, "users", uc.user.uid), {email:e, username:un, address:ad, phone:ph});
-    } catch(e) { alert("Erreur d'inscription : " + e.message); }
+    const e=document.getElementById('email').value, p=document.getElementById('password').value, un=document.getElementById('username').value, ad=document.getElementById('address').value;
+    const uc = await createUserWithEmailAndPassword(auth, e, p);
+    await setDoc(doc(db, "users", uc.user.uid), {email:e, username:un, address:ad});
 };
 
-document.getElementById('btnLogin').onclick = async () => {
-    try {
-        await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
-    } catch(e) { alert("Erreur : " + e.message); }
-};
+document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
 
-document.getElementById('file-input').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => { document.getElementById('preview-box').style.display='block'; document.getElementById('preview-img').src=ev.target.result; };
-    reader.readAsDataURL(e.target.files[0]);
-};
+async function renderMarket() {
+    const list = document.getElementById('list'); list.innerHTML = "";
+    const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
+    snap.forEach(d => {
+        const p = d.data(); const isMine = p.sellerId === currentUser.uid;
+        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b>${p.price} $</b>
+        ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
+        `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-main" onclick="openChat('${p.sellerId}','${p.sellerName}')">CONTACTER LE VENDEUR</button></div>`}</div></div>`;
+    });
+    lucide.createIcons();
+}
 
 document.getElementById('btnPublish').onclick = async () => {
     const t = document.getElementById('title').value, p = document.getElementById('price').value;
-    if(!t || !p || !document.getElementById('preview-img').src) return alert("Remplissez tout !");
     await addDoc(collection(db, "products"), {
         title: t, price: (parseFloat(p)*1.2).toFixed(2), img: document.getElementById('preview-img').src,
-        sellerId: currentUser.uid, sellerName: userData.username, sellerPhone: userData.phone, createdAt: new Date()
+        sellerId: currentUser.uid, sellerName: userData.username, createdAt: new Date()
     });
-    alert("Article publié !"); showPage('market');
+    alert("Publié !"); showPage('market');
 };
-
-async function renderMarket() {
-    const list = document.getElementById('list'); list.innerHTML = "Chargement...";
-    const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
-    list.innerHTML = "";
-    snap.forEach(d => {
-        const p = d.data(); const isMine = p.sellerId === currentUser.uid;
-        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b style="font-size:22px; color:var(--p)">${p.price} $</b>
-        ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px; font-weight:700;">VOTRE ARTICLE</div>` : 
-        `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-main" style="flex:2" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerPhone}','${p.img}')">ACHETER</button>
-        <button class="btn-sec" style="flex:1; margin-top:0;" onclick="saveItem('${p.title.replace(/'/g," ")}','${p.price}','${p.img}')"><i data-lucide="bookmark"></i></button></div>`}</div></div>`;
-    });
-}
-
-window.saveItem = async (t, p, i) => { await addDoc(collection(db, "cart"), {uid:currentUser.uid, title:t, price:p, img:i}); alert("Enregistré !"); };
-
-async function renderCart() {
-    const l = document.getElementById('cartList'); l.innerHTML = "";
-    const snap = await getDocs(query(collection(db, "cart"), where("uid", "==", currentUser.uid)));
-    snap.forEach(d => { const i=d.data(); l.innerHTML += `<div class="order-item"><img src="${i.img}" class="order-img"><div><b>${i.title}</b><br>${i.price}$</div></div>`; });
-}
-
-window.buyItem = async (t, p, sid, sph, img) => {
-    if(confirm(`Confirmer l'achat ?\nPayez sur Airtel (0970428667) ou M-Pesa (+243 836 344 645)`)) {
-        await addDoc(collection(db, "orders"), {title:t, price:p, img:img, sellerId:sid, buyerId:currentUser.uid, buyerName:userData.username, buyerPhone:userData.phone, address:userData.address, status:"À LIVRER", date:new Date()});
-        alert("Commande envoyée au vendeur !"); showPage('track');
-    }
-};
-
-async function renderOrders() {
-    const l = document.getElementById('orderList'); l.innerHTML = "Chargement...";
-    const [sA, sV] = await Promise.all([getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid))), getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)))]);
-    l.innerHTML = "";
-    // VENTES (Notifications pour le vendeur)
-    sV.forEach(d => { 
-        const o=d.data(); 
-        l.innerHTML += `<div class="order-item" style="border-left-color:var(--green)">
-            <img src="${o.img}" class="order-img">
-            <div>
-                <span class="badge-new">NOUVELLE VENTE !</span><br>
-                <b>${o.title}</b><br>📍 ${o.address}<br>📞 ${o.buyerPhone}<br>
-                ${o.status === "À LIVRER" ? `<button class="btn-main" style="padding:5px; font-size:12px; margin-top:5px;" onclick="confirmS('${d.id}')">MARQUER LIVRÉ</button>` : '✅ Livré'}
-            </div>
-        </div>`; 
-    });
-    // ACHATS (Suivi pour l'acheteur)
-    sA.forEach(d => { 
-        const o=d.data(); 
-        l.innerHTML += `<div class="order-item" style="border-left-color:var(--blue)">
-            <img src="${o.img}" class="order-img">
-            <div><b>VOTRE ACHAT : ${o.title}</b><br>Statut: <span style="color:var(--blue)">${o.status}</span></div>
-        </div>`; 
-    });
-}
-
-window.confirmS = async (id) => { if(confirm("Confirmer la livraison ?")) { await updateDoc(doc(db, "orders", id), {status:"LIVRÉ"}); renderOrders(); } };
 
 function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Mon Profil</h3><p><b>Nom:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><p><b>Tel:</b> ${userData.phone}</p><button class="btn-sec" onclick="editP()">MODIFIER PROFIL</button><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000; margin-top:20px">DÉCONNEXION</button></div>`;
+    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Mon Profil</h3><p><b>Nom:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000; margin-top:20px">DÉCONNEXION</button></div>`;
 }
 
-window.editP = async () => {
-    const n = prompt("Nom:", userData.username), a = prompt("Adresse:", userData.address), ph = prompt("Téléphone:", userData.phone);
-    if(n && a && ph) { await updateDoc(doc(db, "users", currentUser.uid), {username:n, address:a, phone:ph}); location.reload(); }
+document.getElementById('file-input').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => { document.getElementById('preview-img').src=ev.target.result; };
+    reader.readAsDataURL(e.target.files[0]);
 };
+lucide.createIcons();
 </script>
 </body>
 </html>
