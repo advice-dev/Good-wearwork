@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | Transaction System</title>
+    <title>GOODWEAR | Admin & Delivery System</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,49 +15,49 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
         body { margin: 0; background: var(--light-bg); color: var(--dark-text); padding-bottom: 90px; }
         
-        /* Splash Screen pour le passage direct */
         #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .top-bar { padding: 15px; text-align: center; background: var(--white); border-bottom: 1px solid var(--border-color); font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px var(--shadow); }
+        .top-bar { padding: 15px; text-align: center; background: var(--white); border-bottom: 1px solid var(--border-color); font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px; position: sticky; top: 0; z-index: 100; }
+        
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .input-field { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 12px; outline: none; }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 12px; outline: none; background: white; }
         .btn-main { background: linear-gradient(45deg, var(--primary-start), var(--primary-end)); color: var(--white); border: none; padding: 16px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        .card-item { background: var(--white); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
-        .card-img { width: 100%; height: 250px; object-fit: cover; }
+        .card-item { background: var(--white); border-radius: 20px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px var(--shadow); }
+        .card-img { width: 100%; height: 230px; object-fit: cover; }
         .card-body { padding: 15px; }
-        .card-price { font-size: 22px; font-weight: 800; color: var(--primary-start); margin: 10px 0; }
+        .card-price { font-size: 22px; font-weight: 800; color: var(--primary-start); margin: 5px 0; }
         
-        .order-item { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid var(--primary-start); }
-        
+        .order-item { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid var(--primary-start); box-shadow: 0 2px 5px var(--shadow); }
+        .admin-box { background: #1A1A1A; color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: none; justify-content: space-around; padding: 10px 0 25px 0; border-top: 1px solid var(--border-color); z-index: 1000; }
-        .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: var(--gray-text); cursor: pointer; width: 25%; }
+        .nav-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; color: var(--gray-text); cursor: pointer; width: 20%; font-size: 10px; }
         .nav-btn.active { color: var(--primary-start); }
-        .owner-badge { background: #F3F4F6; color: #9CA3AF; text-align: center; padding: 10px; border-radius: 8px; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div id="splash">
-    <h1 style="font-family:'Outfit'; color:var(--primary-start);">GOODWEAR</h1>
-    <p>Chargement de votre session...</p>
+    <h1 style="font-family:'Outfit'; color:var(--primary-start); font-size:35px;">GOODWEAR</h1>
+    <p>Vérification de session...</p>
 </div>
 
 <div class="top-bar">GOODWEAR</div>
 
 <div class="container">
     <div id="signup" class="page">
-        <h2 style="font-family:'Outfit';">Rejoindre GOODWEAR</h2>
+        <h2 style="font-family:'Outfit';">Bienvenue</h2>
         <input type="text" id="username" class="input-field" placeholder="Nom de boutique">
-        <input type="tel" id="phone" class="input-field" placeholder="Numéro WhatsApp (Airtel/M-Pesa)">
+        <input type="tel" id="phone" class="input-field" placeholder="Téléphone (WhatsApp)">
+        <input type="text" id="address" class="input-field" placeholder="Adresse de livraison par défaut">
         <input type="email" id="email" class="input-field" placeholder="Email">
         <input type="password" id="password" class="input-field" placeholder="Mot de passe">
         <button class="btn-main" id="btnSignup">CRÉER MON COMPTE</button>
-        <button class="btn-main" id="btnLogin" style="background:#444; margin-top:10px;">J'AI DÉJÀ UN COMPTE</button>
+        <button class="btn-main" id="btnLogin" style="background:#444; margin-top:10px;">SE CONNECTER</button>
     </div>
 
     <div id="market" class="page">
@@ -65,29 +65,36 @@
     </div>
 
     <div id="add" class="page">
-        <h2 style="font-family:'Outfit';">Vendre un article</h2>
+        <h2>Vendre un article</h2>
         <input type="file" id="img" accept="image/*" class="input-field">
         <input type="text" id="title" class="input-field" placeholder="Nom de l'article">
-        <input type="number" id="priceInput" class="input-field" placeholder="Prix que VOUS recevez ($)">
-        <p id="taxInfo" style="font-size:13px;">Prix affiché au client (+20%) : <b style="color:var(--primary-start);">0 $</b></p>
-        <button class="btn-main" id="btnPublish">PUBLIER L'ARTICLE</button>
+        <input type="number" id="priceInput" class="input-field" placeholder="Prix vendeur ($)">
+        <p id="taxInfo">Prix client (+20%) : <b style="color:var(--primary-start);">0 $</b></p>
+        <button class="btn-main" id="btnPublish">PUBLIER</button>
     </div>
 
     <div id="cart" class="page">
-        <h2 style="font-family:'Outfit';">Mes Transactions</h2>
+        <h2>Suivi des Transactions</h2>
         <div id="orderList"></div>
     </div>
 
+    <div id="admin" class="page">
+        <h2>Tableau de Bord Admin</h2>
+        <div id="adminStats" class="admin-box">Chargement...</div>
+        <div id="allOrdersList"></div>
+    </div>
+
     <div id="profile" class="page">
-        <h2 style="font-family:'Outfit';">Ma Boutique</h2>
+        <h2>Mon Profil</h2>
         <div id="profileContent"></div>
     </div>
 </div>
 
 <nav class="bottom-nav" id="main-nav">
-    <button class="nav-btn" id="nav-market"><i data-lucide="shopping-bag"></i><span>Boutique</span></button>
+    <button class="nav-btn" id="nav-market"><i data-lucide="shopping-bag"></i><span>Market</span></button>
     <button class="nav-btn" id="nav-add"><i data-lucide="plus-square"></i><span>Vendre</span></button>
-    <button class="nav-btn" id="nav-cart"><i data-lucide="history"></i><span>Suivi</span></button>
+    <button class="nav-btn" id="nav-cart"><i data-lucide="truck"></i><span>Suivi</span></button>
+    <button class="nav-btn" id="nav-admin"><i data-lucide="shield-check"></i><span>Admin</span></button>
     <button class="nav-btn" id="nav-profile"><i data-lucide="user"></i><span>Profil</span></button>
 </nav>
 
@@ -96,6 +103,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// TA CONFIGURATION FIREBASE (CONSERVÉE)
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
   authDomain: "good-wear-apk-84677.firebaseapp.com",
@@ -108,29 +116,25 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let currentUser=null, userData=null;
 
-// Configurer la persistance pour rester connecté sur l'appareil
 setPersistence(auth, browserLocalPersistence);
 
-// --- GESTION DE LA SESSION (PASSAGE DIRECT) ---
 onAuthStateChanged(auth, async user => {
     const splash = document.getElementById('splash');
     if(user) {
         currentUser = user;
         const snap = await getDoc(doc(db, "users", user.uid));
         userData = snap.data();
-        
         document.getElementById('signup').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
-        splash.style.display = 'none'; // On cache le splash, l'utilisateur entre direct
+        splash.style.display = 'none';
         window.showPage('market');
     } else {
         document.getElementById('signup').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
-        splash.style.display = 'none'; // Pas de compte, on montre le formulaire
+        splash.style.display = 'none';
     }
 });
 
-// --- NAVIGATION ---
 window.showPage = (pageId) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -138,6 +142,7 @@ window.showPage = (pageId) => {
     document.getElementById('nav-' + pageId).classList.add('active');
     if(pageId === 'market') renderMarket();
     if(pageId === 'cart') renderOrders();
+    if(pageId === 'admin') renderAdmin();
     if(pageId === 'profile') renderProfile();
     lucide.createIcons();
 };
@@ -145,35 +150,33 @@ window.showPage = (pageId) => {
 document.getElementById('nav-market').onclick = () => window.showPage('market');
 document.getElementById('nav-add').onclick = () => window.showPage('add');
 document.getElementById('nav-cart').onclick = () => window.showPage('cart');
+document.getElementById('nav-admin').onclick = () => window.showPage('admin');
 document.getElementById('nav-profile').onclick = () => window.showPage('profile');
 
-// --- AUTHENTIFICATION ---
+// AUTH
 document.getElementById('btnSignup').onclick = async () => {
     const email=document.getElementById('email').value, password=document.getElementById('password').value;
-    const userN=document.getElementById('username').value, phone=document.getElementById('phone').value;
-    if(!email || !password || !userN || !phone) return alert("Remplissez tout !");
+    const userN=document.getElementById('username').value, phone=document.getElementById('phone').value, addr=document.getElementById('address').value;
+    if(!email || !addr) return alert("Champs manquants");
     try {
         const uc = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone, createdAt: new Date()});
-    } catch(e) { alert("Erreur : " + e.message); }
+        await setDoc(doc(db, "users", uc.user.uid), {email, username:userN, phone, address:addr, createdAt: new Date()});
+    } catch(e) { alert(e.message); }
 };
 
 document.getElementById('btnLogin').onclick = async () => {
     const email=document.getElementById('email').value, password=document.getElementById('password').value;
-    try { await signInWithEmailAndPassword(auth, email, password); } catch(e) { alert("Compte non trouvé ou erreur."); }
+    try { await signInWithEmailAndPassword(auth, email, password); } catch(e) { alert("Erreur de connexion"); }
 };
 
-// --- CALCUL TAXE ---
+// VENDRE
 document.getElementById('priceInput').oninput = (e) => {
-    const final = (parseFloat(e.target.value || 0) * 1.2).toFixed(2);
-    document.querySelector('#taxInfo b').innerText = `${final} $`;
+    document.querySelector('#taxInfo b').innerText = `${(parseFloat(e.target.value || 0) * 1.2).toFixed(2)} $`;
 };
 
-// --- PUBLICATION (TRACÉE) ---
 document.getElementById('btnPublish').onclick = async () => {
     const file = document.getElementById('img').files[0], title = document.getElementById('title').value, price = document.getElementById('priceInput').value;
-    if(!file || !title || !price) return alert("Ajoutez une photo et un prix !");
-    
+    if(!file || !title) return alert("Info manquante");
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
@@ -181,15 +184,15 @@ document.getElementById('btnPublish').onclick = async () => {
             title, price: (parseFloat(price)*1.2).toFixed(2), img: reader.result,
             sellerName: userData.username, sellerId: currentUser.uid, sellerPhone: userData.phone, createdAt: new Date()
         });
-        alert("Article publié dans le marché !");
+        alert("Publié !");
         window.showPage('market');
     };
 };
 
-// --- MARCHÉ ET ACHAT ---
+// MARKET & COMMANDE
 async function renderMarket() {
     const list = document.getElementById('list');
-    list.innerHTML = "<p style='text-align:center;'>Récupération des articles...</p>";
+    list.innerHTML = "Chargement...";
     const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
     list.innerHTML = "";
     snap.forEach(d => {
@@ -199,77 +202,94 @@ async function renderMarket() {
             <div class="card-item">
                 <img src="${p.img}" class="card-img">
                 <div class="card-body">
-                    <small style="color:var(--gray-text);">Par ${p.sellerName}</small>
-                    <h3 style="margin:5px 0;">${p.title}</h3>
+                    <small>Boutique: ${p.sellerName}</small>
+                    <h3>${p.title}</h3>
                     <div class="card-price">${p.price} $</div>
-                    ${isMine ? '<div class="owner-badge">C\'EST VOTRE ARTICLE</div>' : 
-                    `<button class="btn-main" onclick="buyItem('${d.id}', '${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.sellerId}', '${p.sellerName}', '${p.sellerPhone}')">COMMANDER</button>`}
+                    ${isMine ? '<div class="owner-badge">VOTRE ARTICLE</div>' : 
+                    `<button class="btn-main" onclick="buyItem('${p.title.replace(/'/g, "\\'")}', '${p.price}', '${p.sellerId}', '${p.sellerName}', '${p.sellerPhone}')">COMMANDER</button>`}
                 </div>
             </div>`;
     });
 }
 
-// --- SYSTÈME DE COMMANDE (TRACÉ DANS FIREBASE) ---
-window.buyItem = async (prodId, title, price, sId, sName, sPhone) => {
-    if(confirm(`Voulez-vous commander ${title} pour ${price}$ ?`)) {
+window.buyItem = async (title, price, sId, sName, sPhone) => {
+    if(confirm(`Commander ${title} ?`)) {
         await addDoc(collection(db, "orders"), {
             title, price, sellerId: sId, sellerName: sName, sellerPhone: sPhone,
             buyerId: currentUser.uid, buyerName: userData.username, buyerPhone: userData.phone,
-            date: new Date(), status: "En attente"
+            deliveryAddress: userData.address, date: new Date(), status: "À Livrer"
         });
-        alert("Commande enregistrée ! Le vendeur peut maintenant voir votre numéro.");
+        alert("Commande envoyée ! Le vendeur a reçu votre adresse.");
         window.showPage('cart');
     }
 };
 
-// --- HISTORIQUE DES TRANSACTIONS ---
+// SUIVI & VALIDATION
 async function renderOrders() {
     const oList = document.getElementById('orderList');
     oList.innerHTML = "Chargement...";
-    
     const qAchat = query(collection(db, "orders"), where("buyerId", "==", currentUser.uid));
     const qVente = query(collection(db, "orders"), where("sellerId", "==", currentUser.uid));
-    
-    const [snapAchat, snapVente] = await Promise.all([getDocs(qAchat), getDocs(qVente)]);
+    const [sA, sV] = await Promise.all([getDocs(qAchat), getDocs(qVente)]);
     oList.innerHTML = "";
 
-    snapAchat.forEach(d => {
+    sA.forEach(d => {
         const o = d.data();
-        oList.innerHTML += `
-            <div class="order-item" style="border-left-color: #3b82f6;">
-                <small>ACHAT - ${o.status}</small>
-                <div style="font-weight:700;">${o.title} (${o.price}$)</div>
-                <div style="font-size:12px;">Vendeur : ${o.sellerName} (${o.sellerPhone})</div>
-            </div>`;
+        oList.innerHTML += `<div class="order-item" style="border-left-color:#3b82f6;">🛍️ <b>ACHAT:</b> ${o.title}<br>Statut: ${o.status}<br>Vendeur: ${o.sellerName}</div>`;
     });
 
-    snapVente.forEach(d => {
+    sV.forEach(d => {
         const o = d.data();
-        const isPending = o.status === "En attente";
         oList.innerHTML += `
-            <div class="order-item" style="border-left-color: #10b981;">
-                <small>VENTE - ${o.status}</small>
-                <div style="font-weight:700;">${o.title} (${o.price}$)</div>
-                <div style="font-size:12px;">Acheteur : ${o.buyerName} (${o.buyerPhone})</div>
-                ${isPending ? `<button onclick="confirmOrder('${d.id}')" style="margin-top:5px; background:green; color:white; border:none; padding:5px; border-radius:5px; font-size:10px; cursor:pointer;">VALIDER LE PAIEMENT</button>` : ''}
+            <div class="order-item" style="border-left-color:#10b981;">
+                <b style="color:red;">📢 NOUVELLE VENTE</b><br>
+                Article: ${o.title} (${o.price}$)<br>
+                📍 <b>LIVRER À: ${o.deliveryAddress}</b><br>
+                Client: ${o.buyerName} (${o.buyerPhone})<br>
+                ${o.status === "À Livrer" ? `<button onclick="confirmOrder('${d.id}')" style="margin-top:10px; padding:5px; background:green; color:white; border:none; border-radius:5px;">MARQUER COMME LIVRÉ/PAYÉ</button>` : '✅ Terminé'}
             </div>`;
     });
 }
 
 window.confirmOrder = async (id) => {
-    if(confirm("Confirmez-vous avoir reçu l'argent ?")) {
+    if(confirm("Argent reçu et colis livré ?")) {
         await updateDoc(doc(db, "orders", id), { status: "Payé" });
         renderOrders();
     }
 };
 
+// MODE ADMIN (POUR TOI)
+async function renderAdmin() {
+    const stats = document.getElementById('adminStats');
+    const list = document.getElementById('allOrdersList');
+    const snap = await getDocs(collection(db, "orders"));
+    
+    let totalCom = 0, count = 0;
+    list.innerHTML = "<h3>Toutes les transactions :</h3>";
+    
+    snap.forEach(d => {
+        const o = d.data();
+        const commission = (parseFloat(o.price) * 0.166).toFixed(2); // 20% sur le prix total
+        if(o.status === "Payé") {
+            totalCom += parseFloat(commission);
+            count++;
+        }
+        list.innerHTML += `<div class="order-item" style="font-size:12px;">Vendeur: ${o.sellerName} -> Client: ${o.buyerName}<br>Montant: ${o.price}$ (Com: ${commission}$)<br>Status: ${o.status}</div>`;
+    });
+
+    stats.innerHTML = `
+        <div style="font-size:24px; font-weight:800; color:var(--primary-start);">${totalCom.toFixed(2)} $</div>
+        <div>Commissions Totales (Ventes Payées)</div>
+        <div style="margin-top:10px; font-size:12px; opacity:0.7;">Transactions validées : ${count}</div>
+    `;
+}
+
 function renderProfile() {
     document.getElementById('profileContent').innerHTML = `
         <div class="card-item" style="padding:20px;">
-            <p><b>Nom :</b> ${userData.username}</p>
-            <p><b>Tel :</b> ${userData.phone}</p>
-            <p><b>Email :</b> ${currentUser.email}</p>
-            <button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="margin-top:20px; background:black;">SE DÉCONNECTER</button>
+            <b>Boutique :</b> ${userData.username}<br>
+            <b>Adresse livraison :</b> ${userData.address}<br>
+            <button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="margin-top:20px; background:black;">DÉCONNEXION</button>
         </div>`;
 }
 
