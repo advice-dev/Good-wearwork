@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | Final</title>
+    <title>GOODWEAR | SOLUTION FINALE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; }
+        :root { --p: #FF6600; --s: #FF3366; --bg: #F8F9FA; --w: #FFFFFF; --blue: #007BFF; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .top-bar { padding: 15px; text-align: center; background: var(--w); font-family: 'Outfit'; font-weight: 800; font-size: 22px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
@@ -23,6 +23,7 @@
         #preview-img { width: 100%; height: 100%; object-fit: cover; }
         .order-item { background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 6px solid var(--p); display: flex; align-items: center; }
         .order-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 12px; }
+        .info-box-blue { background: #e0f0ff; color: var(--blue); padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 15px; border: 1px solid var(--blue); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #ddd; }
         .nav-btn { background: none; border: none; color: #666; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 20%; }
         .nav-btn.active { color: var(--p); }
@@ -47,6 +48,11 @@
     
     <div id="cart" class="page">
         <h2>Mon Panier</h2>
+        <div class="info-box-blue">
+            💳 PAIEMENT POUR COMMANDER :<br>
+            Airtel : 0970428667<br>
+            M-Pesa : +243 836 344 645
+        </div>
         <div id="cartList"></div>
     </div>
     
@@ -56,12 +62,10 @@
         <input type="file" id="file-input" accept="image/*" class="input-field">
         <input type="text" id="title" class="input-field" placeholder="Titre de l'habit">
         <input type="number" id="price" class="input-field" placeholder="Prix vendeur ($)">
-        <p style="font-size:12px;">Prix final client (+20%) : <b id="final-price" style="color:var(--p)">0 $</b></p>
         <button class="btn-main" id="btnPublish">PUBLIER L'ARTICLE</button>
     </div>
 
     <div id="track" class="page"><h2>Suivi des Livraisons</h2><div id="orderList"></div></div>
-    
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
@@ -123,14 +127,12 @@ document.getElementById('file-input').onchange = (e) => {
     reader.readAsDataURL(e.target.files[0]);
 };
 
-document.getElementById('price').oninput = (e) => { document.getElementById('final-price').innerText = (parseFloat(e.target.value || 0)*1.2).toFixed(2) + " $"; };
-
 document.getElementById('btnPublish').onclick = async () => {
     await addDoc(collection(db, "products"), {
         title: document.getElementById('title').value, price: (parseFloat(document.getElementById('price').value)*1.2).toFixed(2),
         img: document.getElementById('preview-img').src, sellerId: currentUser.uid, sellerName: userData.username, sellerPhone: userData.phone, createdAt: new Date()
     });
-    alert("Article publié avec succès !"); showPage('market');
+    alert("Article publié !"); showPage('market');
 };
 
 async function renderMarket() {
@@ -138,42 +140,25 @@ async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("createdAt", "desc")));
     snap.forEach(d => {
         const p = d.data(); const isMine = p.sellerId === currentUser.uid;
-        list.innerHTML += `
-            <div class="card">
-                <img src="${p.img}" class="card-img">
-                <div class="card-body">
-                    <h3>${p.title}</h3><b style="font-size:22px; color:var(--p)">${p.price} $</b>
-                    ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px; font-weight:700;">VOTRE ARTICLE</div>` : 
-                    `<div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn-main" style="flex:2" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerPhone}','${p.img}')">ACHETER</button>
-                        <button class="btn-sec" style="flex:1; margin-top:0;" onclick="saveItem('${p.title.replace(/'/g," ")}','${p.price}','${p.img}')"><i data-lucide="bookmark"></i></button>
-                    </div>`}
-                </div>
-            </div>`;
+        list.innerHTML += `<div class="card"><img src="${p.img}" class="card-img"><div class="card-body"><h3>${p.title}</h3><b style="font-size:22px; color:var(--p)">${p.price} $</b>
+        ${isMine ? `<div style="padding:10px; background:#eee; text-align:center; margin-top:10px; border-radius:10px;">VOTRE ARTICLE</div>` : 
+        `<div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-main" style="flex:2" onclick="buyItem('${p.title.replace(/'/g," ")}','${p.price}','${p.sellerId}','${p.sellerPhone}','${p.img}')">ACHETER</button>
+        <button class="btn-sec" style="flex:1; margin-top:0;" onclick="saveItem('${p.title.replace(/'/g," ")}','${p.price}','${p.img}')"><i data-lucide="bookmark"></i></button></div>`}</div></div>`;
     });
     lucide.createIcons();
 }
 
-window.saveItem = async (t, p, i) => { 
-    await addDoc(collection(db, "cart"), {uid:currentUser.uid, title:t, price:p, img:i}); 
-    alert("Enregistré dans le panier !"); 
-};
+window.saveItem = async (t, p, i) => { await addDoc(collection(db, "cart"), {uid:currentUser.uid, title:t, price:p, img:i}); alert("Enregistré !"); };
 
 async function renderCart() {
     const l = document.getElementById('cartList'); l.innerHTML = "";
     const snap = await getDocs(query(collection(db, "cart"), where("uid", "==", currentUser.uid)));
-    snap.forEach(d => { 
-        const i=d.data(); 
-        l.innerHTML += `<div class="order-item"><img src="${i.img}" class="order-img"><div><b>${i.title}</b><br>${i.price}$</div></div>`; 
-    });
+    snap.forEach(d => { const i=d.data(); l.innerHTML += `<div class="order-item"><img src="${i.img}" class="order-img"><div><b>${i.title}</b><br>${i.price}$</div></div>`; });
 }
 
 window.buyItem = async (t, p, sid, sph, img) => {
-    const ok = confirm(`🛒 CONFIRMER ACHAT\n\n💳 PAIEMENT :\n- Airtel: ${PAY_AIRTEL}\n- M-Pesa: ${PAY_MPESA}\n\nConfirmer et envoyer votre adresse ?`);
-    if(ok) {
-        await addDoc(collection(db, "orders"), {
-            title:t, price:p, img:img, sellerId:sid, buyerId:currentUser.uid, buyerName:userData.username, buyerPhone:userData.phone, address:userData.address, status:"À LIVRER", date:new Date()
-        });
+    if(confirm(`💳 PAIEMENT :\n- Airtel: ${PAY_AIRTEL}\n- M-Pesa: ${PAY_MPESA}\n\nConfirmer l'achat ?`)) {
+        await addDoc(collection(db, "orders"), {title:t, price:p, img:img, sellerId:sid, buyerId:currentUser.uid, buyerName:userData.username, buyerPhone:userData.phone, address:userData.address, status:"À LIVRER", date:new Date()});
         alert("Commande envoyée !"); showPage('track');
     }
 };
@@ -181,34 +166,21 @@ window.buyItem = async (t, p, sid, sph, img) => {
 async function renderOrders() {
     const l = document.getElementById('orderList'); l.innerHTML = "";
     const [sA, sV] = await Promise.all([getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid))), getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)))]);
-    sV.forEach(d => { 
-        const o=d.data(); 
-        l.innerHTML += `<div class="order-item"><img src="${o.img}" class="order-img"><div><b>VENTE : ${o.title}</b><br>📍 ${o.address}<br>📞 ${o.buyerPhone}<br>${o.status === "À LIVRER" ? `<button onclick="confirmS('${d.id}')" style="background:green; color:white; border:none; padding:5px; border-radius:5px; margin-top:5px;">LIVRÉ & PAYÉ</button>` : '✅ Terminé'}</div></div>`; 
-    });
-    sA.forEach(d => { 
-        const o=d.data(); 
-        l.innerHTML += `<div class="order-item" style="border-left-color:blue"><img src="${o.img}" class="order-img"><div><b>ACHAT : ${o.title}</b><br>Status: ${o.status}</div></div>`; 
-    });
+    sV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item"><img src="${o.img}" class="order-img"><div><b>VENTE : ${o.title}</b><br>📍 ${o.address}<br>📞 ${o.buyerPhone}<br>${o.status === "À LIVRER" ? `<button onclick="confirmS('${d.id}')" style="background:green; color:white; border:none; padding:8px; border-radius:8px; margin-top:5px;">LIVRÉ & PAYÉ</button>` : '✅ Terminé'}</div></div>`; });
+    sA.forEach(d => { const o=d.data(); l.innerHTML += `<div class="order-item" style="border-left-color:blue"><img src="${o.img}" class="order-img"><div><b>ACHAT : ${o.title}</b><br>Statut: ${o.status}</div></div>`; });
 }
 
-window.confirmS = async (id) => { if(confirm("Confirmez-vous la livraison ?")) { await updateDoc(doc(db, "orders", id), {status:"LIVRÉ"}); renderOrders(); } };
+window.confirmS = async (id) => { if(confirm("Confirmer la livraison ?")) { await updateDoc(doc(db, "orders", id), {status:"LIVRÉ"}); renderOrders(); } };
 
 function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `
-        <div class="card" style="padding:20px">
-            <p><b>Nom:</b> ${userData.username}</p>
-            <p><b>Adresse:</b> ${userData.address}</p>
-            <button class="btn-sec" onclick="editP()">MODIFIER PROFIL</button>
-            <button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000; margin-top:20px">DÉCONNEXION</button>
-        </div>`;
+    document.getElementById('profileContent').innerHTML = `<div class="card" style="padding:20px"><h3>Mon Profil</h3><p><b>Boutique:</b> ${userData.username}</p><p><b>Adresse:</b> ${userData.address}</p><p><b>Tel:</b> ${userData.phone}</p><button class="btn-sec" onclick="editP()">MODIFIER PROFIL</button><button class="btn-main" onclick="signOut(auth).then(()=>location.reload())" style="background:#000; margin-top:20px">DÉCONNEXION</button></div>`;
 }
 
 window.editP = async () => {
-    const n = prompt("Nouveau nom:", userData.username), a = prompt("Nouvelle adresse:", userData.address);
-    if(n && a) { await updateDoc(doc(db, "users", currentUser.uid), {username:n, address:a}); location.reload(); }
+    const n = prompt("Nom:", userData.username), a = prompt("Adresse:", userData.address), ph = prompt("Téléphone:", userData.phone);
+    if(n && a && ph) { await updateDoc(doc(db, "users", currentUser.uid), {username:n, address:a, phone:ph}); location.reload(); }
 };
 lucide.createIcons();
 </script>
 </body>
 </html>
-
