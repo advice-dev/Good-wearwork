@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | VERSION FINALE</title>
+    <title>GOODWEAR | OFFICIEL</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #FF6600; --s: #FF3366; --bg: #F0F2F5; --w: #FFFFFF; }
+        :root { --p: #FF6600; --s: #FF3366; --bg: #F0F2F5; --w: #FFFFFF; --green: #4CAF50; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .page { display: none; } .page.active { display: block; }
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
+        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
         .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; }
         .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
         .btn-sec { background: transparent; color: var(--p); border: 1px solid var(--p); padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 10px; }
@@ -22,11 +22,12 @@
         .nav-btn.active { color: var(--p); }
         .edit-pen { color: var(--p); cursor: pointer; }
         .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="header-fixed" id="top-header">
+<div class="header-fixed">
     <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px;">GOODWEAR</div>
 </div>
 
@@ -57,15 +58,17 @@
         <input type="file" id="prod-upload" style="display:none;" accept="image/*">
         <input type="text" id="prod-title" class="input-field" placeholder="Titre">
         <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
-        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés automatiquement.</p>
+        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés automatiquement pour le client.</p>
         <button class="btn-main" id="btnDoPublish">PUBLIER</button>
     </div>
 
     <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
     
     <div id="track" class="page">
-        <h2>Suivi</h2>
-        <div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucun colis.</p></div>
+        <h2>Suivi de commande</h2>
+        <div id="track-content">
+            <div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucune commande en cours.</p></div>
+        </div>
     </div>
     
     <div id="profile" class="page"><div id="profileContent"></div></div>
@@ -96,6 +99,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
+// GESTION DE L'AUTHENTIFICATION
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
@@ -131,23 +135,74 @@ document.getElementById('btnAuthAction').onclick = async () => {
     } catch(err) { alert(err.message); }
 };
 
+// PUBLICATION AVEC COMMISSION 20%
+document.getElementById('btnDoPublish').onclick = async () => {
+    const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
+    if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
+    const pFinal = (pIn * 1.20).toFixed(2);
+    await addDoc(collection(db, "products"), { 
+        title: t, price: pFinal, priceVendeur: pIn, img: prodPic, views: 0, time: serverTimestamp(), 
+        sellerId: currentUser.uid, sellerName: userData.username 
+    });
+    showPage('market');
+};
+
+// RENDU DU MARKET AVEC ALGORITHME DE VUE
 async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
     const list = document.getElementById('list'); list.innerHTML = "";
     snap.forEach(d => {
         const p = d.data();
         list.innerHTML += `
-            <div class="card" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)}).then(renderMarket)">
-                <img src="${p.img}" style="width:100%; border-radius:10px;">
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <b>${p.title} - ${p.price}$</b>
-                    <small>${p.views || 0} vues</small>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <b style="font-size:14px;">${p.sellerName}</b>
+                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="red" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket)"></i>` : ''}
                 </div>
+                <img src="${p.img}" style="width:100%; border-radius:12px;" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)}).then(renderMarket)">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <b style="color:var(--p); font-size:18px;">${p.price} $</b>
+                    <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${d.id}', '${p.price}')">ACHETER</button>
+                </div>
+                <div style="font-size:10px; color:#aaa; margin-top:5px;">${p.views || 0} vues</div>
             </div>`;
     });
     lucide.createIcons();
 }
 
+// FENÊTRE DE PAIEMENT "STRIPE STYLE" AVEC TES NUMÉROS
+window.buyProduct = (id, total) => {
+    const modal = document.createElement('div');
+    modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
+    modal.id = "pay-modal";
+    modal.innerHTML = `
+        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px; animation: slideUp 0.3s ease-out;">
+            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:22px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
+            <p>Total à envoyer : <b style="font-size:20px;">${total}$</b></p>
+            
+            <div onclick="processPay('M-Pesa')" style="display:flex; align-items:center; padding:15px; border:1px solid #eee; border-radius:15px; margin-bottom:10px; cursor:pointer; background:#fffafa;">
+                <div style="width:45px; height:45px; background:#e61c24; border-radius:10px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">M</div>
+                <div style="text-align:left; margin-left:15px;"><b>M-Pesa</b><br><small>+243 836 344 645</small></div>
+            </div>
+
+            <div onclick="processPay('Airtel')" style="display:flex; align-items:center; padding:15px; border:1px solid #eee; border-radius:15px; margin-bottom:15px; cursor:pointer; background:#fffafa;">
+                <div style="width:45px; height:45px; background:#FF0000; border-radius:10px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">A</div>
+                <div style="text-align:left; margin-left:15px;"><b>Airtel Money</b><br><small>0970428667</small></div>
+            </div>
+
+            <p style="font-size:11px; color:#888;">L'argent est gardé par GOODWEAR.<br>Le vendeur ne reçoit sa part qu'après votre confirmation.</p>
+            <button class="btn-sec" style="border:none;" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
+        </div>`;
+    document.body.appendChild(modal);
+};
+
+window.processPay = (m) => {
+    alert("Instructions reçues ! Une fois le transfert fait, allez dans 'Suivi' pour confirmer la réception dès que vous aurez le colis.");
+    document.getElementById('pay-modal').remove();
+    showPage('track');
+};
+
+// RENDU DU PROFIL (AVEC CRAYONS ET INFOS)
 function renderProfile() {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
@@ -155,25 +210,51 @@ function renderProfile() {
                 <img src="${userData.photo || ''}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
                 <i data-lucide="pencil" class="edit-pen" style="position:absolute; bottom:5px; right:5px; background:white; border-radius:50%; padding:3px;"></i>
             </div>
-            <h2>${userData.username} <i data-lucide="pencil"></i></h2>
-            <div class="card" style="text-align:left; background:#f9f9f9; font-size:14px;">
-                <p><i data-lucide="mail"></i> Email: ${userData.email}</p>
-                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="map-pin"></i> Adresse: ${userData.address || 'Non définie'}</span><i data-lucide="pencil"></i></p>
-                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="phone"></i> N° Retrait: ${userData.payment_num || 'Non défini'}</span><i data-lucide="pencil"></i></p>
+            <h2>${userData.username} <i data-lucide="pencil" class="edit-pen" style="width:18px;"></i></h2>
+            <div class="card" style="text-align:left; background:#f9f9f9; font-size:14px; padding:20px;">
+                <p><i data-lucide="mail" style="width:16px; margin-right:10px;"></i> Email: ${userData.email}</p>
+                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="map-pin" style="width:16px; margin-right:10px;"></i> Adresse: ${userData.address || 'Non définie'}</span><i data-lucide="pencil" class="edit-pen"></i></p>
+                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="phone" style="width:16px; margin-right:10px;"></i> N° Retrait: ${userData.payment_num || 'Non défini'}</span><i data-lucide="pencil" class="edit-pen"></i></p>
             </div>
-            <button class="btn-sec" style="color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+            <button class="btn-sec" style="color:red; border-color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
         </div>`;
     lucide.createIcons();
 }
+
+// SUIVI DE COMMANDE ET CONFIRMATION
+function renderTrack() {
+    document.getElementById('track-content').innerHTML = `
+        <div class="card" style="border-left:5px solid var(--green);">
+            <div style="display:flex; justify-content:space-between;"><b>Commande en cours</b><span style="color:var(--green); font-size:12px; font-weight:bold;">PAYÉ</span></div>
+            <p style="font-size:12px; color:#666; margin:10px 0;">L'argent est sécurisé chez GOODWEAR. Appuyez ci-dessous uniquement si vous avez le colis en main.</p>
+            <button class="btn-main" style="background:var(--green);" onclick="confirmReceipt()">J'AI REÇU MA COMMANDE</button>
+        </div>`;
+    lucide.createIcons();
+}
+
+window.confirmReceipt = () => {
+    if(confirm("Confirmer la réception ? Cela libérera 80% du prix au vendeur. GOODWEAR garde les 20% de frais.")) {
+        alert("🎉 Terminé ! Le vendeur va recevoir son virement. Merci d'avoir utilisé GOODWEAR !");
+        location.reload();
+    }
+};
 
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     if(id === 'market') renderMarket();
     if(id === 'profile') renderProfile();
+    if(id === 'track') renderTrack();
     lucide.createIcons();
 };
 
+// PRÉVIEW DES PHOTOS
+document.getElementById('reg-photo').onchange = e => {
+    const r = new FileReader(); r.onload = ev => {
+        signupPic = ev.target.result;
+        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
+    }; r.readAsDataURL(e.target.files[0]);
+};
 document.getElementById('prod-upload').onchange = e => {
     const r = new FileReader(); r.onload = ev => {
         prodPic = ev.target.result;
@@ -181,20 +262,6 @@ document.getElementById('prod-upload').onchange = e => {
         document.getElementById('img-preview').style.display = 'block';
         document.getElementById('placeholder-add').style.display = 'none';
     }; r.readAsDataURL(e.target.files[0]);
-};
-
-document.getElementById('reg-photo').onchange = e => {
-    const r = new FileReader(); r.onload = ev => {
-        signupPic = ev.target.result;
-        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
-    }; r.readAsDataURL(e.target.files[0]);
-};
-
-document.getElementById('btnDoPublish').onclick = async () => {
-    const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
-    const pFinal = (pIn * 1.20).toFixed(2);
-    await addDoc(collection(db, "products"), { title: t, price: pFinal, img: prodPic, views: 0, time: serverTimestamp(), sellerId: currentUser.uid });
-    showPage('market');
 };
 
 lucide.createIcons();
