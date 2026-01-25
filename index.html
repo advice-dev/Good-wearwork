@@ -11,20 +11,19 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .page { display: none; } .page.active { display: block; }
-        .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; text-align: center; }
+        .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
         .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; font-size: 14px; }
-        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
+        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-sec { background: transparent; color: var(--p); border: 1px solid var(--p); padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 10px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
         .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
         .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
-        #offline-tag { background: #555; color: white; font-size: 10px; text-align: center; display: none; padding: 5px; }
-        .search-bar { background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; border: 1px solid #eee; }
-        .search-bar input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 14px; }
-        .badge-views { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; display: flex; align-items: center; gap: 4px; }
+        .search-bar { background: #f0f2f5; border: none; padding: 10px 15px; border-radius: 10px; width: 100%; margin-bottom: 15px; outline: none; }
+        #offline-tag { background: #555; color: white; font-size: 10px; text-align: center; display: none; padding: 5px; position: sticky; top: 0; z-index: 2000; }
+        .badge-views { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 3px 8px; border-radius: 10px; font-size: 10px; display: flex; align-items: center; gap: 4px; }
     </style>
 </head>
 <body>
@@ -32,31 +31,28 @@
 <div id="offline-tag">MODE HORS-LIGNE : CONSULTATION UNIQUEMENT</div>
 
 <div class="header-fixed">
-    <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px;">GOODWEAR</div>
+    <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px; text-align: center;">GOODWEAR</div>
 </div>
 
 <div class="container">
     <div id="auth-page" class="page">
-        <h2 id="auth-title" style="text-align:center">Inscription</h2>
+        <h2 id="auth-title" style="text-align:center">Bienvenue</h2>
         <div id="reg-photo-container" style="text-align:center; margin-bottom:20px;">
             <label for="reg-photo">
                 <div id="signup-preview" style="width:100px; height:100px; border-radius:50%; background:#eee; margin:0 auto; display:flex; align-items:center; justify-content:center; border:2px dashed var(--p); overflow:hidden;"><i data-lucide="camera"></i></div>
             </label>
             <input type="file" id="reg-photo" style="display:none;" accept="image/*">
         </div>
-        <input type="text" id="reg-name" class="input-field" placeholder="Nom de boutique">
+        <input type="text" id="reg-name" class="input-field" placeholder="Nom de votre boutique">
         <input type="email" id="reg-email" class="input-field" placeholder="Email">
         <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnAuthAction">CRÉER MON COMPTE</button>
+        <button class="btn-main" id="btnAuthAction">COMMENCER</button>
         <button class="btn-sec" id="btnToggleAuth">J'AI DÉJÀ UN COMPTE</button>
         <p style="font-size:10px; text-align:center; margin-top:15px; color:#999;">En continuant, vous acceptez notre <a href="#" style="color:var(--p)">Politique de Confidentialité</a></p>
     </div>
 
     <div id="market" class="page">
-        <div class="search-bar">
-            <i data-lucide="search" size="18" color="#888"></i>
-            <input type="text" id="searchInput" placeholder="Rechercher un article ou une boutique..." oninput="renderMarket()">
-        </div>
+        <input type="text" class="search-bar" id="search-input" placeholder="Rechercher un vêtement, une boutique..." oninput="renderMarket()">
         <div id="list"></div>
     </div>
     
@@ -69,14 +65,14 @@
         <input type="file" id="prod-upload" style="display:none;" accept="image/*">
         <input type="text" id="prod-title" class="input-field" placeholder="Titre de l'article">
         <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
-        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés pour le client.</p>
-        <button class="btn-main" id="btnDoPublish">PUBLIER</button>
+        <p style="font-size:11px; color:var(--p);">Note: Le client verra le prix avec notre commission de 20%.</p>
+        <button class="btn-main" id="btnDoPublish">PUBLIER L'ANNONCE</button>
     </div>
 
-    <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
+    <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list" class="card" style="text-align:center; color:#999; padding:40px;">Bientôt disponible...</div></div>
     
     <div id="track" class="page">
-        <h2>Suivi de commande</h2>
+        <h2>Mes Achats</h2>
         <div id="track-content"></div>
     </div>
     
@@ -94,7 +90,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc, enableIndexedDbPersistence, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -108,7 +104,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-enableIndexedDbPersistence(db).catch(() => {});
+enableIndexedDbPersistence(db).catch(() => console.log("Offline non supporté"));
+
+window.addEventListener('online',  () => document.getElementById('offline-tag').style.display = 'none');
+window.addEventListener('offline', () => document.getElementById('offline-tag').style.display = 'block');
 
 onAuthStateChanged(auth, async user => {
     if(user) {
@@ -124,81 +123,32 @@ onAuthStateChanged(auth, async user => {
     }
 });
 
-// RECHERCHE ET ALGO VUES
-async function renderMarket(filterSellerId = null) {
-    const searchTxt = document.getElementById('searchInput').value.toLowerCase();
-    const list = document.getElementById('list');
-    list.innerHTML = filterSellerId ? `<button class="btn-sec" onclick="renderMarket()" style="margin-bottom:15px;">← Retour au Market</button>` : "";
-    
-    // Algorithme : On trie par vues décroissantes
-    let q = query(collection(db, "products"), orderBy("views", "desc"));
-    if(filterSellerId) q = query(collection(db, "products"), where("sellerId", "==", filterSellerId));
-    
-    const snap = await getDocs(q);
-    snap.forEach(d => {
-        const p = d.data();
-        if(!filterSellerId && !p.title.toLowerCase().includes(searchTxt) && !p.sellerName.toLowerCase().includes(searchTxt)) return;
-        
-        list.innerHTML += `
-            <div class="card">
-                <div class="badge-views"><i data-lucide="eye" size="12"></i> ${p.views || 0}</div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <div onclick="renderMarket('${p.sellerId}')" style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-                        <div style="width:30px; height:30px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; color:var(--p); border:1px solid #ddd;">${p.sellerName[0]}</div>
-                        <b style="font-size:13px;">${p.sellerName}</b>
-                    </div>
-                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" size="18" color="red" onclick="deleteProd('${d.id}')"></i>` : ''}
-                </div>
-                <img src="${p.img}" style="width:100%; border-radius:12px; cursor:pointer;" onclick="viewItem('${d.id}')">
-                <div style="margin-top:10px;">
-                    <b style="font-size:16px;">${p.title}</b>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                        <b style="color:var(--p); font-size:18px;">${p.price} $</b>
-                        ${p.sellerId !== currentUser.uid ? `
-                            <div style="display:flex; gap:8px;">
-                                <button class="btn-sec" style="margin:0; padding:8px 12px; font-size:12px;" onclick="contactSeller('${p.sellerId}', '${p.sellerName}', '${p.title}')">ÉCRIRE</button>
-                                <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>
-                            </div>
-                        ` : `<span style="font-size:11px; color:#aaa;">C'est votre article</span>`}
-                    </div>
-                </div>
-            </div>`;
-    });
-    lucide.createIcons();
-}
-
-window.viewItem = async (id) => {
-    await updateDoc(doc(db, "products", id), { views: increment(1) });
-    renderMarket();
-};
-
-window.contactSeller = (sid, sname, item) => {
-    alert("Ouverture du chat avec " + sname + " pour l'article : " + item);
-    showPage('chat-list');
-    // Ici tu pourrais injecter une logique pour créer une conv dans Firestore
-};
-
-window.deleteProd = async (id) => {
-    if(confirm("Supprimer cet article ?")) { await deleteDoc(doc(db, "products", id)); renderMarket(); }
-};
-
-// AUTH ACTIONS
+// AUTH
 document.getElementById('btnAuthAction').onclick = async () => {
+    if(!navigator.onLine) return alert("Internet requis");
     const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
     try {
         if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
         else {
             const n = document.getElementById('reg-name').value;
-            if(!n) return alert("Nom de boutique requis");
             const uc = await createUserWithEmailAndPassword(auth, e, p);
-            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic, address: "", payment_num: "" });
+            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
         }
     } catch(err) { alert(err.message); }
 };
 
+document.getElementById('btnToggleAuth').onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
+    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
+    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
+    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
+};
+
+// PUBLICATION
 document.getElementById('btnDoPublish').onclick = async () => {
     const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
-    if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
+    if(!prodPic || !t || isNaN(pIn)) return alert("Infos manquantes");
     const pFinal = (pIn * 1.20).toFixed(2);
     await addDoc(collection(db, "products"), { 
         title: t, price: pFinal, priceVendeur: pIn, img: prodPic, views: 0, time: serverTimestamp(), 
@@ -207,83 +157,147 @@ document.getElementById('btnDoPublish').onclick = async () => {
     showPage('market');
 };
 
-// MODAL PAIEMENT
-window.buyProduct = (total) => {
-    const m = document.createElement('div');
-    m.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
-    m.id = "pay-modal";
-    m.innerHTML = `
-        <div class="card" style="width:100%; max-width:400px; text-align:center;">
-            <b style="color:var(--p); font-size:20px;">PAIEMENT SÉCURISÉ</b>
-            <p style="margin:15px 0;">Total : <b style="font-size:20px;">${total}$</b></p>
-            <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid #eee;">
-                <small>M-Pesa :</small><br><b>+243 836 344 645</b>
-                <button onclick="navigator.clipboard.writeText('+243836344645'); alert('Copié')" style="font-size:10px; margin-left:10px;">COPIER</button>
-            </div>
-            <div style="background:#f8f9fa; padding:12px; border-radius:15px; border:1px solid #eee;">
-                <small>Airtel Money :</small><br><b>0970428667</b>
-                <button onclick="navigator.clipboard.writeText('0970428667'); alert('Copié')" style="font-size:10px; margin-left:10px;">COPIER</button>
-            </div>
-            <button class="btn-main" style="margin-top:20px;" onclick="document.getElementById('pay-modal').remove(); showPage('track');">J'AI PAYÉ</button>
-            <button class="btn-sec" style="border:none;" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
-        </div>`;
-    document.body.appendChild(m);
+// ALGO VUES & RECHERCHE
+window.renderMarket = async () => {
+    const searchTerm = document.getElementById('search-input').value.toLowerCase();
+    const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
+    const list = document.getElementById('list'); list.innerHTML = "";
+    
+    snap.forEach(d => {
+        const p = d.data();
+        if(p.title.toLowerCase().includes(searchTerm) || p.sellerName.toLowerCase().includes(searchTerm)) {
+            list.innerHTML += `
+            <div class="card">
+                <div class="badge-views"><i data-lucide="eye" style="width:12px;"></i> ${p.views || 0}</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+                    <div onclick="alert('Visite de la boutique de ${p.sellerName}')" style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+                        <i data-lucide="store" style="width:16px; color:var(--p)"></i>
+                        <b style="font-size:13px;">${p.sellerName}</b>
+                    </div>
+                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="#ccc" style="cursor:pointer" onclick="deleteProd('${d.id}')"></i>` : ''}
+                </div>
+                <img src="${p.img}" style="width:100%; border-radius:12px;" onclick="viewProd('${d.id}')">
+                <div style="margin-top:10px;">
+                    <b style="display:block; font-size:15px; margin-bottom:5px;">${p.title}</b>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="color:var(--p); font-size:18px;">${p.price} $</b>
+                        ${p.sellerId !== currentUser.uid ? 
+                            `<div style="display:flex; gap:5px;">
+                                <button class="btn-main" style="width:auto; padding:8px 12px; background:#eee; color:#333;" onclick="alert('Chat avec ${p.sellerName} bientôt disponible')"><i data-lucide="message-circle" style="width:16px;"></i></button>
+                                <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>
+                             </div>` 
+                            : `<span style="color:#aaa; font-size:11px;">Mon article</span>`
+                        }
+                    </div>
+                </div>
+            </div>`;
+        }
+    });
+    lucide.createIcons();
 };
 
-// PROFILE
-function renderProfile() {
+window.viewProd = async (id) => {
+    await updateDoc(doc(db, "products", id), { views: increment(1) });
+    renderMarket();
+};
+
+window.deleteProd = async (id) => {
+    if(confirm("Supprimer cet article ?")) {
+        await deleteDoc(doc(db, "products", id));
+        renderMarket();
+    }
+};
+
+// ACHAT & PAIEMENT
+window.buyProduct = (total) => {
+    if(!navigator.onLine) return alert("Internet requis.");
+    const modal = document.createElement('div');
+    modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
+    modal.id = "pay-modal";
+    modal.innerHTML = `
+        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px; animation: slideUp 0.3s ease-out;">
+            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:20px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
+            <p>Envoyez : <b style="font-size:22px; color:var(--p);">${total}$</b></p>
+            <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:10px; text-align:left;">
+                <small>Vodacom M-Pesa :</small><br><b>+243 836 344 645</b>
+                <button onclick="navigator.clipboard.writeText('+243836344645');alert('Copié')" style="float:right; border:none; background:none; color:var(--p); font-weight:bold;">COPIER</button>
+            </div>
+            <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:15px; text-align:left;">
+                <small>Airtel Money :</small><br><b>0970428667</b>
+                <button onclick="navigator.clipboard.writeText('0970428667');alert('Copié')" style="float:right; border:none; background:none; color:var(--p); font-weight:bold;">COPIER</button>
+            </div>
+            <button class="btn-main" onclick="document.getElementById('pay-modal').remove(); showPage('track');">J'AI ENVOYÉ L'ARGENT</button>
+            <button class="btn-sec" style="border:none" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
+        </div>`;
+    document.body.appendChild(modal);
+};
+
+// PROFIL & MODIFICATION
+window.renderProfile = () => {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
-            <img src="${userData.photo || 'https://via.placeholder.com/80'}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--p);">
-            <h2 style="margin:10px 0 5px 0;">${userData.username}</h2>
-            <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9; padding:15px;">
+            <img src="${userData.photo || ''}" id="prof-img" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
+            <h2 id="prof-name">${userData.username}</h2>
+            <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9;">
                 <p><b>Email:</b> ${userData.email}</p>
-                <p><b>Adresse:</b> ${userData.address || 'Non définie'}</p>
-                <p><b>N° Retrait:</b> ${userData.payment_num || 'Non défini'}</p>
+                <p><b>Adresse:</b> <span id="disp-addr">${userData.address || 'Non définie'}</span></p>
+                <p><b>N° Retrait:</b> <span id="disp-pay">${userData.payment_num || 'Non défini'}</span></p>
+                <button class="btn-sec" style="font-size:11px; padding:5px;" onclick="editProfile()">MODIFIER LE PROFIL</button>
             </div>
-            <button class="btn-sec" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
-            <button style="border:none; background:none; color:#aaa; font-size:10px; margin-top:20px; text-decoration:underline;" onclick="deleteAcc()">Supprimer mon compte définitivement</button>
+            <button class="btn-sec" style="color:red; border-color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+            <button style="border:none; background:none; color:#bbb; font-size:10px; margin-top:20px; text-decoration:underline;" onclick="deleteAcc()">SUPPRIMER MON COMPTE</button>
         </div>`;
     lucide.createIcons();
-}
+};
+
+window.editProfile = () => {
+    const newName = prompt("Nouveau nom de boutique :", userData.username);
+    const newAddr = prompt("Adresse de livraison :", userData.address);
+    const newPay = prompt("Numéro M-Pesa/Airtel pour vos retraits :", userData.payment_num);
+    if(newName) {
+        updateDoc(doc(db, "users", currentUser.uid), { username: newName, address: newAddr, payment_num: newPay })
+        .then(() => { alert("Profil mis à jour !"); location.reload(); });
+    }
+};
 
 window.deleteAcc = async () => {
-    if(confirm("Action irréversible. Supprimer ?")) {
-        await deleteDoc(doc(db, "users", currentUser.uid));
-        await deleteUser(currentUser);
-        location.reload();
+    if(confirm("Action irréversible. Supprimer vos données et votre compte ?")){
+        try {
+            await deleteDoc(doc(db, "users", currentUser.uid));
+            await deleteUser(currentUser);
+            location.reload();
+        } catch(e) { alert("Reconnectez-vous pour cette action."); }
     }
-}
+};
 
-// NAVIGATION
+// NAVIGATION & TRACKING
+window.renderTrack = () => {
+    document.getElementById('track-content').innerHTML = `
+        <div class="card" style="border-left:5px solid var(--green);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b>Commande en attente</b>
+                <span style="font-size:10px; color:var(--green); font-weight:bold;">VÉRIFICATION SMS</span>
+            </div>
+            <p style="font-size:12px; color:#666; margin:10px 0;">Nous validons votre paiement dès réception du SMS opérateur.</p>
+            <button class="btn-main" style="background:var(--green);" onclick="confirmReceipt()"><i data-lucide="check-circle"></i> COLIS REÇU</button>
+        </div>`;
+    lucide.createIcons();
+};
+
+window.confirmReceipt = () => { if(confirm("Confirmer la réception ?")) { alert("Vente clôturée !"); location.reload(); } };
+
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    
-    // Activer l'icône de navigation
-    const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(id));
-    if(btn) btn.classList.add('active');
-
+    event?.currentTarget?.classList?.add('active');
     if(id === 'market') renderMarket();
     if(id === 'profile') renderProfile();
     if(id === 'track') renderTrack();
     lucide.createIcons();
 };
 
-function renderTrack() {
-    document.getElementById('track-content').innerHTML = `
-        <div class="card" style="border-left:5px solid var(--green);">
-            <b>En attente de validation</b>
-            <p style="font-size:12px; color:#666; margin-top:5px;">Nous vérifions le SMS de paiement sur nos serveurs.</p>
-            <button class="btn-main" style="background:var(--green); margin-top:10px;" onclick="confirmReceipt()">J'AI MON COLIS</button>
-        </div>`;
-    lucide.createIcons();
-}
-
-window.confirmReceipt = () => { if(confirm("Confirmer la réception ?")) { alert("Succès !"); location.reload(); } };
-
-// IMAGE PREVIEWS
+// PHOTOS
 document.getElementById('reg-photo').onchange = e => {
     const r = new FileReader(); r.onload = ev => {
         signupPic = ev.target.result;
@@ -297,14 +311,6 @@ document.getElementById('prod-upload').onchange = e => {
         document.getElementById('img-preview').style.display = 'block';
         document.getElementById('placeholder-add').style.display = 'none';
     }; r.readAsDataURL(e.target.files[0]);
-};
-
-document.getElementById('btnToggleAuth').onclick = () => {
-    isLoginMode = !isLoginMode;
-    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
-    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
-    document.getElementById('reg-name').parentElement.querySelector('#reg-name').style.display = isLoginMode ? "none" : "block";
-    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
 };
 
 lucide.createIcons();
