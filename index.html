@@ -48,7 +48,7 @@
         <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
         <button class="btn-main" id="btnAuthAction">COMMENCER</button>
         <button class="btn-sec" id="btnToggleAuth">J'AI DÉJÀ UN COMPTE</button>
-        <p style="font-size:10px; text-align:center; margin-top:15px; color:#999;">En continuant, vous acceptez notre <a href="#" style="color:var(--p)">Politique de Confidentialité</a></p>
+        <p style="font-size:10px; text-align:center; margin-top:15px; color:#999;">En continuant, vous acceptez notre <a href="https://good-wear-apk-84677.web.app/privacy.html" style="color:var(--p)">Politique de Confidentialité</a></p>
     </div>
 
     <div id="market" class="page">
@@ -125,16 +125,30 @@ onAuthStateChanged(auth, async user => {
 
 // AUTH
 document.getElementById('btnAuthAction').onclick = async () => {
-    if(!navigator.onLine) return alert("Internet requis");
-    const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
+    if(!navigator.onLine) return alert("Vérifiez votre connexion internet.");
+    const e = document.getElementById('reg-email').value.trim();
+    const p = document.getElementById('reg-pass').value;
+    const n = document.getElementById('reg-name').value.trim();
+
+    if(!e || !p) return alert("Veuillez remplir l'email et le mot de passe.");
+
     try {
-        if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
-        else {
-            const n = document.getElementById('reg-name').value;
+        if(isLoginMode) { 
+            await signInWithEmailAndPassword(auth, e, p); 
+        } else {
+            if(!n) return alert("Donnez un nom à votre boutique !");
             const uc = await createUserWithEmailAndPassword(auth, e, p);
-            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
+            await setDoc(doc(db, "users", uc.user.uid), { 
+                username: n, email: e, photo: signupPic || "", address: "", payment_num: "" 
+            });
+            alert("Compte créé avec succès !");
         }
-    } catch(err) { alert(err.message); }
+    } catch(err) {
+        if(err.code === 'auth/email-already-in-use') alert("Cet email est déjà utilisé. Essayez de vous connecter.");
+        else if(err.code === 'auth/invalid-email') alert("L'adresse email n'est pas valide.");
+        else if(err.code === 'auth/weak-password') alert("Le mot de passe est trop court (6 caractères min).");
+        else alert("Erreur : " + err.message);
+    }
 };
 
 document.getElementById('btnToggleAuth').onclick = () => {
@@ -316,4 +330,5 @@ document.getElementById('prod-upload').onchange = e => {
 lucide.createIcons();
 </script>
 </body>
-</html>
+    </html>
+    
