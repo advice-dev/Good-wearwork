@@ -3,110 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR | VERSION FINALE</title>
+    <title>GOODWEAR | VERSION INTEGRALE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --p: #FF6600; --s: #FF3366; --bg: #F0F2F5; --w: #FFFFFF; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); padding-bottom: 90px; color: #1A1A1A; }
-        
-        /* Header & Search */
+        body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; }
-        .logo { font-family: 'Outfit'; font-weight: 800; font-size: 24px; text-align: center; margin-bottom: 10px; background: linear-gradient(45deg, var(--p), var(--s)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .search-container { display: flex; align-items: center; gap: 8px; background: #f0f0f0; padding: 8px 15px; border-radius: 25px; }
-        .search-input { border: none; background: none; outline: none; width: 100%; font-size: 14px; }
-
+        .logo { font-family: 'Outfit'; font-weight: 800; font-size: 24px; color: var(--p); text-align: center; margin-bottom: 10px; }
+        .search-bar { background: #eee; border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; gap: 10px; }
+        .search-bar input { border: none; background: none; outline: none; width: 100%; font-size: 14px; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        .page { display: none; animation: fadeIn 0.3s ease; } 
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Forms */
-        .input-field { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 15px; outline: none; background: #fff; }
-        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 16px; border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 102, 0, 0.2); }
-        .btn-sec { background: transparent; color: var(--p); border: 1.5px solid var(--p); padding: 14px; border-radius: 15px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 10px; }
-
-        /* Cards */
-        .card { background: var(--w); border-radius: 22px; padding: 12px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 20px rgba(0,0,0,0.05); position: relative; }
-        .badge-pop { position: absolute; top: 20px; right: 20px; background: gold; color: #000; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 10px; z-index: 10; }
-        .shop-info { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .shop-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--p); }
-
-        /* Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: none; justify-content: space-around; padding: 12px 0 25px; border-top: 1px solid #eee; z-index: 999; }
-        .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .page { display: none; animation: fadeIn 0.3s ease; } .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
+        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
+        .btn-sec { background: #eee; color: #333; border: none; padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 8px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
+        .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-
-        /* Chat Window */
         #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #F8F9FA; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 10px; padding: 12px; border-radius: 15px; max-width: 75%; font-size: 14px; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; background: #f0f2f5; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
         .msg.me { background: var(--p); color: white; align-self: flex-end; }
-        .msg.other { background: #E9ECEF; align-self: flex-start; }
+        .msg.other { background: #ddd; align-self: flex-start; }
     </style>
 </head>
 <body>
 
 <div class="header-fixed" id="top-header" style="display:none;">
     <div class="logo">GOODWEAR</div>
-    <div class="search-container">
-        <i data-lucide="search" size="18" style="color:#888"></i>
-        <input type="text" id="searchInput" class="search-input" placeholder="Chercher article ou boutique..." oninput="searchMarket()">
+    <div class="search-bar">
+        <i data-lucide="search" size="18"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher un article ou une boutique..." oninput="searchMarket()">
     </div>
 </div>
 
 <div id="chat-window">
-    <div style="padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:12px;">
-        <button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="chevron-left"></i></button>
+    <div style="padding:15px; border-bottom:1px solid #ddd; display:flex; align-items:center; gap:10px;">
+        <button onclick="closeChat()" style="border:none; background:none;"><i data-lucide="arrow-left"></i></button>
         <span id="chat-with-name" style="font-weight:700">Chat</span>
     </div>
     <div id="chat-messages"></div>
-    <div style="padding:15px; display:flex; gap:10px; border-top:1px solid #eee;">
-        <input type="text" id="chat-input" class="input-field" placeholder="Message..." style="margin-bottom:0;">
-        <button class="btn-main" id="btnSend" style="width:60px; padding:0;"><i data-lucide="send" size="20"></i></button>
+    <div style="padding:15px; display:flex; gap:10px; border-top:1px solid #ddd;">
+        <input type="text" id="chat-input" style="width:100%; padding:10px; border-radius:10px; border:1px solid #ddd;" placeholder="Message...">
+        <button class="btn-main" id="btnSend" style="width:60px; padding:10px;">OK</button>
     </div>
 </div>
 
 <div class="container">
     <div id="signup-page" class="page active">
-        <div style="text-align:center; margin-bottom:20px;">
-            <h1 style="font-family:'Outfit';">GOODWEAR</h1>
-            <div id="photo-selector" onclick="document.getElementById('profile-upload').click()" style="width:90px; height:90px; border-radius:50%; background:#eee; margin:20px auto; overflow:hidden; border:2px solid var(--p); display:flex; align-items:center; justify-content:center;">
-                <i data-lucide="camera" id="cam-icon"></i>
-            </div>
-            <input type="file" id="profile-upload" hidden accept="image/*">
-        </div>
-        <input type="text" id="reg-name" class="input-field" placeholder="Nom de ta Boutique">
-        <input type="text" id="reg-address" class="input-field" placeholder="Adresse exacte">
-        <input type="text" id="reg-phone" class="input-field" placeholder="N° M-Pesa / Airtel pour tes paiements">
-        <input type="email" id="reg-email" class="input-field" placeholder="Email">
-        <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnDoSignup">C'EST PARTI !</button>
-        <button class="btn-sec" onclick="toggleAuth()">J'AI DÉJÀ UN COMPTE</button>
-    </div>
-
-    <div id="login-page" class="page">
-        <h2 style="text-align:center;">Bon retour !</h2>
-        <input type="email" id="log-email" class="input-field" placeholder="Email">
-        <input type="password" id="log-pass" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnDoLogin">ME CONNECTER</button>
-        <button class="btn-sec" onclick="toggleAuth()">CRÉER UN COMPTE</button>
+        <h2 style="text-align:center">Bienvenue sur GOODWEAR</h2>
+        <input type="text" id="reg-name" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Nom de ta boutique">
+        <input type="email" id="reg-email" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Email">
+        <input type="password" id="reg-pass" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Mot de passe">
+        <button class="btn-main" id="btnDoSignup">CRÉER MON COMPTE</button>
     </div>
 
     <div id="market" class="page"><div id="list"></div></div>
 
     <div id="add" class="page">
         <h2>Vendre un article</h2>
-        <input type="file" id="prod-upload" class="input-field">
-        <input type="text" id="prod-title" class="input-field" placeholder="Nom du vêtement">
-        <input type="number" id="prod-price" class="input-field" placeholder="Prix souhaité ($)">
-        <button class="btn-main" id="btnDoPublish">PUBLIER L'ANNONCE</button>
+        <input type="file" id="prod-upload" style="margin-bottom:15px;">
+        <input type="text" id="prod-title" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Nom du vêtement">
+        <input type="number" id="prod-price" style="width:100%; padding:14px; margin-bottom:10px; border-radius:12px; border:1px solid #ddd;" placeholder="Ton prix ($)">
+        <button class="btn-main" id="btnDoPublish">PUBLIER</button>
     </div>
 
-    <div id="track" class="page"><h2>Mes Achats & Ventes</h2><div id="orderList"></div></div>
-    
-    <div id="profile" class="page"><div id="profileContent"></div></div>
+    <div id="track" class="page"><h2>Suivi des commandes</h2><div id="orderList"></div></div>
+
+    <div id="profile" class="page">
+        <div id="profileContent"></div>
+    </div>
 </div>
 
 <nav class="bottom-nav" id="main-nav">
@@ -118,8 +87,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, orderBy, where, updateDoc, onSnapshot, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, where, onSnapshot, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -131,72 +100,24 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser=null, userData=null, profileImg = "", prodImg = "", allProducts = [];
+let currentUser = null, userData = null, allProducts = [], currentChatId = null, compressedProdImg = "";
 
-// --- GESTION IMAGES ---
-const compress = (file, size, cb) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = size; canvas.height = (img.height/img.width)*size;
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-            cb(canvas.toDataURL('image/jpeg', 0.7));
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-document.getElementById('profile-upload').onchange = (e) => compress(e.target.files[0], 200, (b) => { 
-    profileImg = b; 
-    document.getElementById('photo-selector').innerHTML = `<img src="${b}" style="width:100%;height:100%;object-fit:cover;">`;
-});
-document.getElementById('prod-upload').onchange = (e) => compress(e.target.files[0], 600, (b) => prodImg = b);
-
-// --- AUTH LOGIC (CORRIGÉE) ---
-window.toggleAuth = () => {
-    const s = document.getElementById('signup-page'), l = document.getElementById('login-page');
-    if(s.classList.contains('active')) { s.classList.remove('active'); l.classList.add('active'); }
-    else { l.classList.remove('active'); s.classList.add('active'); }
-};
-
-document.getElementById('btnDoSignup').onclick = async () => {
-    const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
-    const n = document.getElementById('reg-name').value, ad = document.getElementById('reg-address').value, ph = document.getElementById('reg-phone').value;
-    if(!e || !p || !n) return alert("Remplis tout !");
-    try {
-        const uc = await createUserWithEmailAndPassword(auth, e, p);
-        await setDoc(doc(db, "users", uc.user.uid), { username: n, address: ad, payment_num: ph, photo: profileImg, popularity: 0 });
-        location.reload();
-    } catch(err) { alert("Erreur d'inscription: " + err.message); }
-};
-
-document.getElementById('btnDoLogin').onclick = () => {
-    const e = document.getElementById('log-email').value, p = document.getElementById('log-pass').value;
-    signInWithEmailAndPassword(auth, e, p).catch(err => alert("Erreur: " + err.message));
-};
-
+// --- AUTH & INITIALISATION ---
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
         const s = await getDoc(doc(db, "users", user.uid));
         userData = s.data();
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('signup-page').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
         document.getElementById('top-header').style.display = 'block';
         showPage('market');
-    } else {
-        document.getElementById('signup-page').classList.add('active');
-        document.getElementById('main-nav').style.display = 'none';
-        document.getElementById('top-header').style.display = 'none';
     }
 });
 
-// --- NAVIGATION & MARCHÉ ---
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     if(id==='market') renderMarket();
     if(id==='track') renderOrders();
@@ -204,6 +125,7 @@ window.showPage = (id) => {
     lucide.createIcons();
 };
 
+// --- MARKET & RECHERCHE & POPULARITÉ ---
 async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
     allProducts = []; snap.forEach(d => allProducts.push({id: d.id, ...d.data()}));
@@ -215,16 +137,16 @@ function displayProducts(arr) {
     arr.forEach(p => {
         list.innerHTML += `
             <div class="card" onclick="updateDoc(doc(db,'products','${p.id}'),{views:increment(1)})">
-                <div class="shop-info">
-                    <img src="${p.sellerPhoto || ''}" class="shop-avatar">
-                    <b>${p.sellerName}</b>
-                    ${p.views > 20 ? '<span class="badge-pop">🔥 TENDANCE</span>' : ''}
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                    <img src="${p.sellerPhoto || ''}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">
+                    <b style="font-size:13px;">${p.sellerName}</b>
+                    ${p.views > 20 ? '<span style="background:gold; font-size:9px; padding:2px 5px; border-radius:5px;">🔥 POPULAIRE</span>' : ''}
                 </div>
-                <img src="${p.img}" style="width:100%; border-radius:15px; height:250px; object-fit:cover;">
-                <h3>${p.title}</h3>
+                <img src="${p.img}" style="width:100%; border-radius:15px; height:220px; object-fit:cover;">
+                <h3 style="margin:10px 0 5px 0;">${p.title}</h3>
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <b style="color:var(--p); font-size:18px;">${p.price} $</b>
-                    <button class="btn-main" style="width:auto; padding:8px 15px;" onclick="buy('${p.id}','${p.title}','${p.price}','${p.sellerId}','${p.img}')">ACHETER</button>
+                    <button class="btn-main" style="width:auto; padding:8px 15px;" onclick="buy('${p.id}','${p.title}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>
                 </div>
             </div>`;
     });
@@ -235,37 +157,100 @@ window.searchMarket = () => {
     displayProducts(allProducts.filter(p => p.title.toLowerCase().includes(q) || p.sellerName.toLowerCase().includes(q)));
 };
 
-// --- ACHAT / VENTE ---
-document.getElementById('btnDoPublish').onclick = async () => {
-    const t = document.getElementById('prod-title').value, p = document.getElementById('prod-price').value;
-    if(!t || !p || !prodImg) return alert("Infos manquantes");
-    await addDoc(collection(db, "products"), { title:t, price:(p*1.2).toFixed(2), img:prodImg, sellerId:currentUser.uid, sellerName:userData.username, sellerPhoto:userData.photo, views:0, createdAt:serverTimestamp() });
-    alert("Publié !"); showPage('market');
-};
-
-window.buy = async (id,t,p,sid,img) => {
-    if(!confirm("Commander ?")) return;
-    await addDoc(collection(db, "orders"), { title:t, price:p, img:img, sellerId:sid, buyerId:currentUser.uid, buyerName:userData.username, status:"EN ATTENTE", createdAt:serverTimestamp() });
-    alert("Commande envoyée !"); showPage('track');
-};
-
-async function renderOrders() {
-    const l = document.getElementById('orderList'); l.innerHTML = "";
-    const snap = await getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid)));
-    snap.forEach(d => {
-        const o = d.data();
-        l.innerHTML += `<div class="card"><b>${o.title}</b><br>Prix: ${o.price}$ - Statut: ${o.status}</div>`;
+// --- CHAT SYSTEM ---
+window.openChat = async (targetId, targetName) => {
+    const chatId = [currentUser.uid, targetId].sort().join("_");
+    currentChatId = chatId;
+    document.getElementById('chat-window').style.display = 'flex';
+    document.getElementById('chat-with-name').innerText = targetName;
+    const q = query(collection(db, "chats", chatId, "messages"), orderBy("time"));
+    onSnapshot(q, (snap) => {
+        const box = document.getElementById('chat-messages'); box.innerHTML = "";
+        snap.forEach(d => { const m = d.data(); box.innerHTML += `<div class="msg ${m.sender === currentUser.uid ? 'me' : 'other'}">${m.text}</div>`; });
+        box.scrollTop = box.scrollHeight;
     });
-}
+};
 
+document.getElementById('btnSend').onclick = async () => {
+    const text = document.getElementById('chat-input').value;
+    if(/[0-9]{7,}/.test(text)) return alert("Sécurité : Numéros interdits.");
+    if(text.trim()) {
+        await addDoc(collection(db, "chats", currentChatId, "messages"), { sender: currentUser.uid, text: text, time: serverTimestamp() });
+        document.getElementById('chat-input').value = "";
+    }
+};
+window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
+
+// --- PROFIL & MODIFICATION ---
 function renderProfile() {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
-            <img src="${userData.photo}" style="width:80px;height:80px;border-radius:50%">
-            <h2>${userData.username}</h2>
-            <button class="btn-sec" onclick="signOut(auth).then(()=>location.reload())">DECONNEXION</button>
+            <img src="${userData.photo || 'https://via.placeholder.com/100'}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--p); object-fit:cover; margin-bottom:15px;">
+            <h2 style="margin:0;">${userData.username}</h2>
+            <div style="text-align:left; background:#f9f9f9; padding:15px; border-radius:15px; margin-top:15px; font-size:14px;">
+                <p><b>📧 Email :</b> ${userData.email}</p>
+                <p><b>📍 Adresse :</b> ${userData.address || 'Non renseignée'}</p>
+                <p><b>📞 N° Retrait :</b> ${userData.payment_num || 'Non renseigné'}</p>
+            </div>
+            <button class="btn-main" style="margin-top:15px;" onclick="editFullProfile()">MODIFIER MON PROFIL</button>
+            <button class="btn-sec" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
         </div>`;
 }
+
+window.editFullProfile = async () => {
+    const n = prompt("Nouveau nom :", userData.username), a = prompt("Nouvelle adresse :", userData.address), p = prompt("Nouveau numéro :", userData.payment_num), ph = prompt("Lien photo URL :", userData.photo);
+    if(n || a || p || ph) {
+        await updateDoc(doc(db, "users", currentUser.uid), { username: n||userData.username, address: a||userData.address, payment_num: p||userData.payment_num, photo: ph||userData.photo });
+        alert("Profil mis à jour !"); location.reload();
+    }
+};
+
+// --- SUIVI & ACHAT ---
+window.buy = async (id,t,p,sid,sn,img) => {
+    if(!confirm("Confirmer la commande ?")) return;
+    await addDoc(collection(db, "orders"), { title:t, price:p, img:img, sellerId:sid, sellerName:sn, buyerId:currentUser.uid, buyerName:userData.username, status:"EN ATTENTE", createdAt:serverTimestamp() });
+    alert("Commande réussie !"); showPage('track');
+};
+
+async function renderOrders() {
+    const l = document.getElementById('orderList'); l.innerHTML = "Chargement...";
+    const [sA, sV] = await Promise.all([
+        getDocs(query(collection(db, "orders"), where("buyerId", "==", currentUser.uid))),
+        getDocs(query(collection(db, "orders"), where("sellerId", "==", currentUser.uid)))
+    ]);
+    l.innerHTML = "";
+    sV.forEach(d => { const o=d.data(); l.innerHTML += `<div class="card" style="border-left:5px solid #28a745"><b>VENTE : ${o.title}</b><br>Client: ${o.buyerName}<br><button class="btn-sec" onclick="openChat('${o.buyerId}','${o.buyerName}')">CONTACTER ACHETEUR</button></div>`; });
+    sA.forEach(d => { const o=d.data(); l.innerHTML += `<div class="card" style="border-left:5px solid #007bff"><b>ACHAT : ${o.title}</b><br>Statut: ${o.status}<br><button class="btn-sec" onclick="openChat('${o.sellerId}','${o.sellerName}')">CONTACTER VENDEUR</button></div>`; });
+}
+
+// --- VENDRE (Compression incluse) ---
+document.getElementById('prod-upload').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600; canvas.height = (img.height/img.width)*600;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            compressedProdImg = canvas.toDataURL('image/jpeg', 0.7);
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('btnDoPublish').onclick = async () => {
+    const t = document.getElementById('prod-title').value, p = document.getElementById('prod-price').value;
+    if(!t || !p || !compressedProdImg) return alert("Remplis tout !");
+    await addDoc(collection(db, "products"), { title:t, price:(p*1.2).toFixed(2), img:compressedProdImg, sellerId:currentUser.uid, sellerName:userData.username, sellerPhoto:userData.photo || "", views:0, createdAt:serverTimestamp() });
+    alert("Article en ligne !"); showPage('market');
+};
+
+document.getElementById('btnDoSignup').onclick = async () => {
+    const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value, n = document.getElementById('reg-name').value;
+    const uc = await createUserWithEmailAndPassword(auth, e, p);
+    await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, address: "", payment_num: "", photo: "", popularity: 0 });
+};
 
 lucide.createIcons();
 </script>
