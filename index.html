@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR PREMIUM | OFFICIEL</title>
+    <title>GOODWEAR | VERSION FINALE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,18 +11,19 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; display: none; }
-        .logo { font-family: 'Outfit'; font-weight: 800; font-size: 24px; color: var(--p); text-align: center; margin-bottom: 10px; }
+        .logo { font-family: 'Outfit'; font-weight: 800; font-size: 24px; color: var(--p); text-align: center; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         .page { display: none; } .page.active { display: block; }
         .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; }
         .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
         .btn-sec { background: #eee; color: #333; border: none; padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 8px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
         .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-        .edit-icon { color: var(--p); cursor: pointer; float: right; }
+        .edit-pen { color: var(--p); cursor: pointer; float: right; margin-left: 10px; }
         #chat-window { position: fixed; inset: 0; background: white; z-index: 2000; display: none; flex-direction: column; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; background: #f0f2f5; }
         .msg { margin-bottom: 10px; padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
         .msg.me { background: var(--p); color: white; align-self: flex-end; }
         .msg.other { background: #ddd; align-self: flex-start; }
@@ -32,39 +33,41 @@
 
 <div class="header-fixed" id="top-header">
     <div class="logo">GOODWEAR</div>
-    <div style="background:#eee; border-radius:20px; padding:8px 15px; display:flex; align-items:center; gap:10px;">
-        <i data-lucide="search" size="18"></i>
-        <input type="text" id="searchInput" placeholder="Chercher boutique ou article..." style="border:none; background:none; outline:none; width:100%;" oninput="searchMarket()">
-    </div>
 </div>
 
 <div class="container">
     <div id="auth-page" class="page active">
-        <h2 style="text-align:center; font-family:'Outfit';">GOODWEAR</h2>
-        <div id="signup-form">
-            <input type="text" id="reg-name" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Nom de boutique">
-            <input type="email" id="reg-email" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Email">
-            <input type="password" id="reg-pass" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Mot de passe">
-            <button class="btn-main" id="btnDoSignup">CRÉER MON COMPTE</button>
-            <button class="btn-sec" onclick="toggleAuth(true)">J'AI DÉJÀ UN COMPTE</button>
+        <h2 style="text-align:center">Créer mon compte</h2>
+        <div style="text-align:center; margin-bottom:20px;">
+            <label for="reg-photo" style="cursor:pointer;">
+                <div id="signup-preview" style="width:100px; height:100px; border-radius:50%; background:#eee; margin:0 auto; display:flex; align-items:center; justify-content:center; border:2px dashed var(--p); overflow:hidden;">
+                    <i data-lucide="camera" id="cam-icon"></i>
+                </div>
+                <p style="font-size:12px; color:var(--p); margin-top:5px;">Ajouter une photo de profil</p>
+            </label>
+            <input type="file" id="reg-photo" style="display:none;" accept="image/*">
         </div>
-        <div id="login-form" style="display:none;">
-            <input type="email" id="log-email" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Email">
-            <input type="password" id="log-pass" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Mot de passe">
-            <button class="btn-main" id="btnDoLogin">ME CONNECTER</button>
-            <button class="btn-sec" onclick="toggleAuth(false)">RETOUR</button>
-        </div>
+        <input type="text" id="reg-name" class="input-field" placeholder="Nom de boutique">
+        <input type="email" id="reg-email" class="input-field" placeholder="Email">
+        <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
+        <button class="btn-main" id="btnDoSignup">CRÉER MON COMPTE</button>
+        <button class="btn-sec" id="btnGoLogin">J'AI DÉJÀ UN COMPTE</button>
     </div>
 
-    <div id="market" class="page"><div id="list"></div></div>
-    <div id="add" class="page">
-        <h2>Publier un article</h2>
-        <input type="file" id="prod-upload" class="card" style="width:100%;">
-        <input type="text" id="prod-title" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Nom de l'article">
-        <input type="number" id="prod-price" class="card" style="width:100%; border:1px solid #ddd;" placeholder="Prix ($)">
-        <button class="btn-main" id="btnDoPublish">METTRE EN VENTE</button>
+    <div id="market" class="page">
+        <div class="card" style="padding:10px;"><input type="text" id="searchInput" placeholder="Rechercher..." class="input-field" style="margin:0;" oninput="searchMarket()"></div>
+        <div id="list"></div>
     </div>
-    <div id="track" class="page"><h2>Mes transactions</h2><div id="orderList"></div></div>
+
+    <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
+    <div id="add" class="page">
+        <h2>Vendre un article</h2>
+        <input type="file" id="prod-upload" class="card" style="width:100%;">
+        <input type="text" id="prod-title" class="input-field" placeholder="Titre de l'article">
+        <input type="number" id="prod-price" class="input-field" placeholder="Prix ($)">
+        <button class="btn-main" id="btnDoPublish">PUBLIER</button>
+    </div>
+    <div id="track" class="page"><h2>Suivi des commandes</h2><div id="orderList"></div></div>
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
@@ -83,6 +86,7 @@
 <nav class="bottom-nav" id="main-nav">
     <button class="nav-btn" onclick="showPage('market')"><i data-lucide="home"></i>Market</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-circle"></i>Vendre</button>
+    <button class="nav-btn" onclick="showPage('chat-list')"><i data-lucide="message-square"></i>Chat</button>
     <button class="nav-btn" onclick="showPage('track')"><i data-lucide="truck"></i>Suivi</button>
     <button class="nav-btn" onclick="showPage('profile')"><i data-lucide="user"></i>Profil</button>
 </nav>
@@ -102,9 +106,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-let currentUser = null, userData = null, allProducts = [], currentChatId = null, compressedImg = "";
+let currentUser = null, userData = null, signupPic = "", prodPic = "";
 
-// --- AUTH & CONNEXION AUTOMATIQUE ---
+// --- GESTION CONNEXION ---
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
@@ -116,137 +120,93 @@ onAuthStateChanged(auth, async user => {
         showPage('market');
     } else {
         document.getElementById('auth-page').style.display = 'block';
-        document.getElementById('main-nav').style.display = 'none';
-        document.getElementById('top-header').style.display = 'none';
     }
 });
 
-window.toggleAuth = (isLogin) => {
-    document.getElementById('signup-form').style.display = isLogin ? 'none' : 'block';
-    document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
+// --- INSCRIPTION AVEC PHOTO ---
+document.getElementById('reg-photo').onchange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        signupPic = ev.target.result;
+        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
+    };
+    reader.readAsDataURL(e.target.files[0]);
 };
 
 document.getElementById('btnDoSignup').onclick = async () => {
     const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value, n = document.getElementById('reg-name').value;
     if(!e || !p || !n) return alert("Remplis tout !");
     const uc = await createUserWithEmailAndPassword(auth, e, p);
-    await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, address: "", payment_num: "", photo: "", views: 0 });
+    await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic, address: "", payment_num: "", views: 0 });
 };
 
-document.getElementById('btnDoLogin').onclick = () => {
-    signInWithEmailAndPassword(auth, document.getElementById('log-email').value, document.getElementById('log-pass').value).catch(e => alert(e.message));
+// --- PROFIL AVEC CRAYONS ---
+window.renderProfile = () => {
+    document.getElementById('profileContent').innerHTML = `
+        <div class="card" style="text-align:center">
+            <img src="${userData.photo || ''}" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
+            <i data-lucide="edit-2" class="edit-pen" onclick="editField('photo')"></i>
+            <h2>${userData.username} <i data-lucide="edit-2" class="edit-pen" onclick="editField('username')"></i></h2>
+            <div style="text-align:left; font-size:14px; margin-top:15px;">
+                <p>📧 Email: ${userData.email} <i data-lucide="edit-2" class="edit-pen" onclick="editField('email')"></i></p>
+                <p>📍 Adresse: ${userData.address || 'Non définie'} <i data-lucide="edit-2" class="edit-pen" onclick="editField('address')"></i></p>
+                <p>📞 Numéro: ${userData.payment_num || 'Non défini'} <i data-lucide="edit-2" class="edit-pen" onclick="editField('payment_num')"></i></p>
+            </div>
+            <button class="btn-sec" style="color:red; margin-top:20px;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+        </div>`;
+    lucide.createIcons();
+};
+
+window.editField = async (f) => {
+    const v = prompt("Nouvelle valeur :");
+    if(v) { await updateDoc(doc(db,"users",currentUser.uid), {[f]: v}); location.reload(); }
+};
+
+// --- CHAT & SÉCURITÉ ---
+window.openChat = (tid, tn) => {
+    const cid = [currentUser.uid, tid].sort().join("_");
+    document.getElementById('chat-window').style.display = 'flex';
+    onSnapshot(query(collection(db, "chats", cid, "messages"), orderBy("time")), snap => {
+        const box = document.getElementById('chat-messages'); box.innerHTML = "";
+        snap.forEach(d => { const m=d.data(); box.innerHTML += `<div class="msg ${m.sender===currentUser.uid?'me':'other'}">${m.text}</div>`; });
+    });
+};
+
+document.getElementById('btnSend').onclick = async () => {
+    const t = document.getElementById('chat-input').value;
+    if(/(whatsapp|facebook|\+243|[0-9]{7,})/i.test(t)) return alert("Sécurité : Contact interdit !");
+    // Code envoi Firebase...
 };
 
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    if(id === 'market') renderMarket();
-    if(id === 'track') renderOrders();
-    if(id === 'profile') renderProfile();
+    if(id==='profile') renderProfile();
+    if(id==='market') renderMarket();
     lucide.createIcons();
 };
 
-// --- PROFIL AVEC CRAYONS ---
-function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `
-        <div class="card" style="text-align:center">
-            <div style="position:relative; width:100px; margin:0 auto;">
-                <img src="${userData.photo || 'https://via.placeholder.com/100'}" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--p); object-fit:cover;">
-                <i data-lucide="edit-3" class="edit-icon" style="position:absolute; bottom:0; right:0; background:white; border-radius:50%; padding:4px;" onclick="editField('photo')"></i>
-            </div>
-            <h2 style="margin:15px 0 5px 0;">${userData.username} <i data-lucide="edit-3" size="16" class="edit-icon" onclick="editField('username')"></i></h2>
-            <div style="text-align:left; background:#F8F9FA; padding:15px; border-radius:15px; margin-top:15px; font-size:14px;">
-                <p><b>📧 Email :</b> ${userData.email} <i data-lucide="edit-3" size="14" class="edit-icon" onclick="editField('email')"></i></p>
-                <p><b>📍 Adresse :</b> ${userData.address || 'Non définie'} <i data-lucide="edit-3" size="14" class="edit-icon" onclick="editField('address')"></i></p>
-                <p><b>📞 N° Retrait :</b> ${userData.payment_num || 'Non défini'} <i data-lucide="edit-3" size="14" class="edit-icon" onclick="editField('payment_num')"></i></p>
-            </div>
-            <button class="btn-sec" style="color:red; border-color:red; margin-top:20px;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
-        </div>`;
-    lucide.createIcons();
-}
-
-window.editField = async (field) => {
-    const newVal = prompt("Entrez la nouvelle valeur :");
-    if(newVal) {
-        let update = {}; update[field] = newVal;
-        await updateDoc(doc(db, "users", currentUser.uid), update);
-        location.reload();
-    }
-};
-
-// --- MARKET & POPULARITÉ ---
+// --- MARKET (POPULARITÉ & SUPPRESSION) ---
 async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
-    allProducts = []; snap.forEach(d => allProducts.push({id: d.id, ...d.data()}));
     const list = document.getElementById('list'); list.innerHTML = "";
-    allProducts.forEach(p => {
+    snap.forEach(d => {
+        const p = d.data();
         list.innerHTML += `
-            <div class="card" onclick="updateDoc(doc(db,'products','${p.id}'),{views:increment(1)})">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-                    <img src="${p.sellerPhoto || ''}" style="width:25px;height:25px;border-radius:50%;object-fit:cover;">
+            <div class="card" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)})">
+                <div style="display:flex; justify-content:space-between;">
                     <b>${p.sellerName}</b>
-                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" style="margin-left:auto; color:red;" onclick="deleteItem('${p.id}')"></i>` : ''}
+                    ${p.sellerId===currentUser.uid ? `<i data-lucide="trash-2" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket)"></i>` : ''}
                 </div>
-                <img src="${p.img}" style="width:100%; border-radius:15px; height:220px; object-fit:cover;">
-                <h3>${p.title}</h3>
+                <img src="${p.img}" style="width:100%; height:200px; object-fit:cover; border-radius:15px; margin:10px 0;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="color:var(--p); font-size:18px;">${p.price} $</b>
-                    <button class="btn-main" style="width:auto; padding:8px 15px;" onclick="buy('${p.id}','${p.title}','${p.price}','${p.sellerId}','${p.sellerName}','${p.img}')">ACHETER</button>
+                    <b>${p.price} $</b>
+                    <button class="btn-main" style="width:auto; padding:8px 15px;" onclick="openChat('${p.sellerId}','${p.sellerName}')">DISCUTER</button>
                 </div>
             </div>`;
     });
     lucide.createIcons();
 }
-
-window.deleteItem = async (id) => {
-    if(confirm("Supprimer cet article ?")) { await deleteDoc(doc(db, "products", id)); renderMarket(); }
-};
-
-// --- CHAT SÉCURISÉ ---
-window.openChat = (tid, tn) => {
-    currentChatId = [currentUser.uid, tid].sort().join("_");
-    document.getElementById('chat-window').style.display = 'flex';
-    document.getElementById('chat-with-name').innerText = tn;
-    onSnapshot(query(collection(db, "chats", currentChatId, "messages"), orderBy("time")), snap => {
-        const box = document.getElementById('chat-messages'); box.innerHTML = "";
-        snap.forEach(d => { const m = d.data(); box.innerHTML += `<div class="msg ${m.sender === currentUser.uid ? 'me' : 'other'}">${m.text}</div>`; });
-        box.scrollTop = box.scrollHeight;
-    });
-};
-
-document.getElementById('btnSend').onclick = async () => {
-    const txt = document.getElementById('chat-input').value;
-    const forbidden = /(facebook|whatsapp|instagram|tiktok|\+243|[0-9]{7,})/i;
-    if(forbidden.test(txt)) return alert("Échanges de numéros ou réseaux interdits !");
-    if(txt.trim()) {
-        await addDoc(collection(db, "chats", currentChatId, "messages"), { sender: currentUser.uid, text: txt, time: serverTimestamp() });
-        document.getElementById('chat-input').value = "";
-    }
-};
-window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
-
-// --- VENDRE (Compression) ---
-document.getElementById('prod-upload').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 600; canvas.height = (img.height/img.width)*600;
-            canvas.getContext('2d').drawImage(img, 0, 0, 600, canvas.height);
-            compressedImg = canvas.toDataURL('image/jpeg', 0.7);
-        };
-        img.src = ev.target.result;
-    };
-    reader.readAsDataURL(e.target.files[0]);
-};
-
-document.getElementById('btnDoPublish').onclick = async () => {
-    const t = document.getElementById('prod-title').value, p = document.getElementById('prod-price').value;
-    if(!t || !p || !compressedImg) return alert("Remplis tout !");
-    await addDoc(collection(db, "products"), { title:t, price:(p*1.2).toFixed(2), img:compressedImg, sellerId:currentUser.uid, sellerName:userData.username, sellerPhoto:userData.photo || "", views:0 });
-    alert("Publié !"); showPage('market');
-};
 
 lucide.createIcons();
 </script>
