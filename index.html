@@ -3,62 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOODWEAR</title>
+    <title>GOODWEAR | VERSION FINALE</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --p: #FF6600; --s: #FF3366; --bg: #F0F2F5; --w: #FFFFFF; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
-        .page { display: none; padding: 15px; } 
-        .page.active { display: block; }
+        .page { display: none; } .page.active { display: block; }
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; text-align: center; }
-        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; }
-        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: flex; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
-        .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; }
+        .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
+        .btn-sec { background: transparent; color: var(--p); border: 1px solid var(--p); padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 10px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
+        .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-        .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; border: 2px dashed #ccc; margin-bottom: 10px; }
+        .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
     </style>
 </head>
 <body>
 
-<div class="header-fixed">
+<div class="header-fixed" id="top-header">
     <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px;">GOODWEAR</div>
 </div>
 
-<div id="auth-page" class="page active">
-    <h2 style="text-align:center">Connexion / Inscription</h2>
-    <div class="card">
+<div class="container">
+    <div id="auth-page" class="page">
+        <h2 id="auth-title" style="text-align:center">Inscription</h2>
+        <div id="reg-photo-container" style="text-align:center; margin-bottom:20px;">
+            <label for="reg-photo">
+                <div id="signup-preview" style="width:100px; height:100px; border-radius:50%; background:#eee; margin:0 auto; display:flex; align-items:center; justify-content:center; border:2px dashed var(--p); overflow:hidden;"><i data-lucide="camera"></i></div>
+            </label>
+            <input type="file" id="reg-photo" style="display:none;" accept="image/*">
+        </div>
+        <input type="text" id="reg-name" class="input-field" placeholder="Nom de boutique">
         <input type="email" id="reg-email" class="input-field" placeholder="Email">
         <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
-        <button class="btn-main" id="btnDoSignup">ACCÉDER À LA BOUTIQUE</button>
+        
+        <button class="btn-main" id="btnAuthAction">CRÉER MON COMPTE</button>
+        <button class="btn-sec" id="btnToggleAuth">J'AI DÉJÀ UN COMPTE</button>
     </div>
+
+    <div id="market" class="page"><div id="list"></div></div>
+    
+    <div id="add" class="page">
+        <h2>Vendre un article</h2>
+        <label for="prod-upload">
+            <img id="img-preview" class="preview-img" style="display:none;">
+            <div id="placeholder-add" class="preview-img" style="display:flex; align-items:center; justify-content:center;"><i data-lucide="image-plus"></i></div>
+        </label>
+        <input type="file" id="prod-upload" style="display:none;" accept="image/*">
+        <input type="text" id="prod-title" class="input-field" placeholder="Titre">
+        <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
+        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés automatiquement.</p>
+        <button class="btn-main" id="btnDoPublish">PUBLIER</button>
+    </div>
+
+    <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
+    <div id="track" class="page"><h2>Suivi</h2><div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucun colis.</p></div></div>
+    <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
-<div id="market" class="page">
-    <h2>Market</h2>
-    <div id="list">Chargement des articles...</div>
-</div>
-
-<div id="add" class="page">
-    <h2>Vendre un article</h2>
-    <label for="prod-upload">
-        <img id="img-preview" class="preview-img" style="display:none;">
-        <div id="placeholder-add" class="preview-img" style="display:flex; align-items:center; justify-content:center;"><i data-lucide="image-plus"></i></div>
-    </label>
-    <input type="file" id="prod-upload" style="display:none;" accept="image/*">
-    <input type="text" id="prod-title" class="input-field" placeholder="Nom de l'article">
-    <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
-    <button class="btn-main" id="btnDoPublish">PUBLIER (+20% com)</button>
-</div>
-
-<div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
-<div id="track" class="page"><h2>Suivi</h2><div class="card">Aucune commande.</div></div>
-<div id="profile" class="page"><h2>Profil</h2><div id="profileContent"></div></div>
-
-<nav class="bottom-nav">
+<nav class="bottom-nav" id="main-nav">
     <button class="nav-btn" onclick="showPage('market')"><i data-lucide="home"></i>Market</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-circle"></i>Vendre</button>
     <button class="nav-btn" onclick="showPage('chat-list')"><i data-lucide="message-square"></i>Messages</button>
@@ -68,8 +76,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -80,76 +88,110 @@ const firebaseConfig = {
     appId: "1:293506727538:web:a8a2cc194bca78272d4ceb"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-let currentUser = null;
-let prodPic = "";
+// BASCULER ENTRE CONNEXION ET INSCRIPTION
+document.getElementById('btnToggleAuth').onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
+    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
+    document.getElementById('btnToggleAuth').innerText = isLoginMode ? "PAS DE COMPTE ? S'INSCRIRE" : "J'AI DÉJÀ UN COMPTE";
+    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
+    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
+};
 
-// GESTION DES PAGES (SANS ERREUR)
+// ÉCOUTER L'ÉTAT DE CONNEXION
+onAuthStateChanged(auth, async user => {
+    if(user) {
+        currentUser = user;
+        const s = await getDoc(doc(db, "users", user.uid));
+        userData = s.data();
+        document.getElementById('auth-page').classList.remove('active');
+        document.getElementById('main-nav').style.display = 'flex';
+        showPage('market');
+    } else {
+        document.getElementById('auth-page').classList.add('active');
+        document.getElementById('main-nav').style.display = 'none';
+    }
+    lucide.createIcons();
+});
+
+// ACTIONS D'AUTH
+document.getElementById('btnAuthAction').onclick = async () => {
+    const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
+    try {
+        if(isLoginMode) {
+            await signInWithEmailAndPassword(auth, e, p);
+        } else {
+            const n = document.getElementById('reg-name').value;
+            const uc = await createUserWithEmailAndPassword(auth, e, p);
+            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "" });
+        }
+    } catch(err) { alert("Erreur: " + err.message); }
+};
+
+// PUBLIER AVEC +20%
+document.getElementById('btnDoPublish').onclick = async () => {
+    const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
+    if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
+    const pFinal = (pIn * 1.20).toFixed(2);
+    await addDoc(collection(db, "products"), {
+        title: t, price: pFinal, img: prodPic, sellerId: currentUser.uid, 
+        sellerName: userData.username, sellerPhoto: userData.photo, views: 0, time: serverTimestamp()
+    });
+    showPage('market');
+};
+
+// MARKET & ALGORITHME DE VUE
+async function renderMarket() {
+    const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
+    const list = document.getElementById('list'); list.innerHTML = "";
+    snap.forEach(d => {
+        const p = d.data();
+        list.innerHTML += `
+            <div class="card" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)}).then(renderMarket)">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <b>${p.sellerName}</b>
+                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="red" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket())"></i>` : ''}
+                </div>
+                <img src="${p.img}" style="width:100%; border-radius:10px;">
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <b style="color:var(--p);">${p.price} $</b>
+                    <small>${p.views || 0} vues</small>
+                </div>
+            </div>`;
+    });
+    lucide.createIcons();
+}
+
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(id);
-    if(target) target.classList.add('active');
-    if(id === 'market') loadMarket();
+    document.getElementById(id).classList.add('active');
+    if(id === 'market') renderMarket();
+    if(id === 'profile') renderProfile();
     lucide.createIcons();
 };
 
-// PRÉVISUALISATION
-document.getElementById('prod-upload').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
+function renderProfile() {
+    document.getElementById('profileContent').innerHTML = `<div class="card" style="text-align:center"><h2>${userData.username}</h2><button class="btn-sec" onclick="signOut(auth)">DÉCONNEXION</button></div>`;
+}
+
+// PRÉVIEW PHOTOS
+document.getElementById('reg-photo').onchange = e => {
+    const r = new FileReader(); r.onload = ev => {
+        signupPic = ev.target.result;
+        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
+    }; r.readAsDataURL(e.target.files[0]);
+};
+document.getElementById('prod-upload').onchange = e => {
+    const r = new FileReader(); r.onload = ev => {
         prodPic = ev.target.result;
         document.getElementById('img-preview').src = prodPic;
         document.getElementById('img-preview').style.display = 'block';
         document.getElementById('placeholder-add').style.display = 'none';
-    };
-    reader.readAsDataURL(e.target.files[0]);
+    }; r.readAsDataURL(e.target.files[0]);
 };
-
-// ALGORITHME DE VUE ET MARKET
-async function loadMarket() {
-    const list = document.getElementById('list');
-    try {
-        const q = query(collection(db, "products"), orderBy("views", "desc"));
-        const snap = await getDocs(q);
-        list.innerHTML = "";
-        snap.forEach(d => {
-            const p = d.data();
-            list.innerHTML += `
-                <div class="card" onclick="updateView('${d.id}')">
-                    <img src="${p.img}" style="width:100%; border-radius:10px;">
-                    <h3>${p.title} - ${p.price}$</h3>
-                    <small>${p.views || 0} vues</small>
-                </div>`;
-        });
-    } catch(e) { list.innerHTML = "Connectez-vous pour voir les articles."; }
-    lucide.createIcons();
-}
-
-window.updateView = async (id) => {
-    await updateDoc(doc(db, "products", id), { views: increment(1) });
-    loadMarket();
-};
-
-// CONNEXION SIMPLIFIÉE POUR ÉVITER LE BLOCAGE
-document.getElementById('btnDoSignup').onclick = async () => {
-    const email = document.getElementById('reg-email').value;
-    const pass = document.getElementById('reg-pass').value;
-    try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-    } catch(e) {
-        await signInWithEmailAndPassword(auth, email, pass);
-    }
-};
-
-onAuthStateChanged(auth, user => {
-    if(user) {
-        currentUser = user;
-        showPage('market');
-    }
-});
 
 lucide.createIcons();
 </script>
