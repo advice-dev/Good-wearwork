@@ -20,6 +20,7 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
         .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
+        .edit-pen { color: var(--p); cursor: pointer; }
         .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
     </style>
 </head>
@@ -41,7 +42,6 @@
         <input type="text" id="reg-name" class="input-field" placeholder="Nom de boutique">
         <input type="email" id="reg-email" class="input-field" placeholder="Email">
         <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
-        
         <button class="btn-main" id="btnAuthAction">CRÉER MON COMPTE</button>
         <button class="btn-sec" id="btnToggleAuth">J'AI DÉJÀ UN COMPTE</button>
     </div>
@@ -62,7 +62,12 @@
     </div>
 
     <div id="chat-list" class="page"><h2>Messages</h2><div id="conv-list"></div></div>
-    <div id="track" class="page"><h2>Suivi</h2><div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucun colis.</p></div></div>
+    
+    <div id="track" class="page">
+        <h2>Suivi</h2>
+        <div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucun colis.</p></div>
+    </div>
+    
     <div id="profile" class="page"><div id="profileContent"></div></div>
 </div>
 
@@ -91,17 +96,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-// BASCULER ENTRE CONNEXION ET INSCRIPTION
-document.getElementById('btnToggleAuth').onclick = () => {
-    isLoginMode = !isLoginMode;
-    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
-    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
-    document.getElementById('btnToggleAuth').innerText = isLoginMode ? "PAS DE COMPTE ? S'INSCRIRE" : "J'AI DÉJÀ UN COMPTE";
-    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
-    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
-};
-
-// ÉCOUTER L'ÉTAT DE CONNEXION
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
@@ -114,36 +108,29 @@ onAuthStateChanged(auth, async user => {
         document.getElementById('auth-page').classList.add('active');
         document.getElementById('main-nav').style.display = 'none';
     }
-    lucide.createIcons();
 });
 
-// ACTIONS D'AUTH
+document.getElementById('btnToggleAuth').onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
+    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
+    document.getElementById('btnToggleAuth').innerText = isLoginMode ? "PAS DE COMPTE ? S'INSCRIRE" : "J'AI DÉJÀ UN COMPTE";
+    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
+    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
+};
+
 document.getElementById('btnAuthAction').onclick = async () => {
     const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
     try {
-        if(isLoginMode) {
-            await signInWithEmailAndPassword(auth, e, p);
-        } else {
+        if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
+        else {
             const n = document.getElementById('reg-name').value;
             const uc = await createUserWithEmailAndPassword(auth, e, p);
-            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "" });
+            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
         }
-    } catch(err) { alert("Erreur: " + err.message); }
+    } catch(err) { alert(err.message); }
 };
 
-// PUBLIER AVEC +20%
-document.getElementById('btnDoPublish').onclick = async () => {
-    const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
-    if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
-    const pFinal = (pIn * 1.20).toFixed(2);
-    await addDoc(collection(db, "products"), {
-        title: t, price: pFinal, img: prodPic, sellerId: currentUser.uid, 
-        sellerName: userData.username, sellerPhoto: userData.photo, views: 0, time: serverTimestamp()
-    });
-    showPage('market');
-};
-
-// MARKET & ALGORITHME DE VUE
 async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
     const list = document.getElementById('list'); list.innerHTML = "";
@@ -151,17 +138,31 @@ async function renderMarket() {
         const p = d.data();
         list.innerHTML += `
             <div class="card" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)}).then(renderMarket)">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <b>${p.sellerName}</b>
-                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="red" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket())"></i>` : ''}
-                </div>
                 <img src="${p.img}" style="width:100%; border-radius:10px;">
                 <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <b style="color:var(--p);">${p.price} $</b>
+                    <b>${p.title} - ${p.price}$</b>
                     <small>${p.views || 0} vues</small>
                 </div>
             </div>`;
     });
+    lucide.createIcons();
+}
+
+function renderProfile() {
+    document.getElementById('profileContent').innerHTML = `
+        <div class="card" style="text-align:center">
+            <div style="position:relative; width:100px; margin:0 auto;">
+                <img src="${userData.photo || ''}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
+                <i data-lucide="pencil" class="edit-pen" style="position:absolute; bottom:5px; right:5px; background:white; border-radius:50%; padding:3px;"></i>
+            </div>
+            <h2>${userData.username} <i data-lucide="pencil"></i></h2>
+            <div class="card" style="text-align:left; background:#f9f9f9; font-size:14px;">
+                <p><i data-lucide="mail"></i> Email: ${userData.email}</p>
+                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="map-pin"></i> Adresse: ${userData.address || 'Non définie'}</span><i data-lucide="pencil"></i></p>
+                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="phone"></i> N° Retrait: ${userData.payment_num || 'Non défini'}</span><i data-lucide="pencil"></i></p>
+            </div>
+            <button class="btn-sec" style="color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+        </div>`;
     lucide.createIcons();
 }
 
@@ -173,17 +174,6 @@ window.showPage = (id) => {
     lucide.createIcons();
 };
 
-function renderProfile() {
-    document.getElementById('profileContent').innerHTML = `<div class="card" style="text-align:center"><h2>${userData.username}</h2><button class="btn-sec" onclick="signOut(auth)">DÉCONNEXION</button></div>`;
-}
-
-// PRÉVIEW PHOTOS
-document.getElementById('reg-photo').onchange = e => {
-    const r = new FileReader(); r.onload = ev => {
-        signupPic = ev.target.result;
-        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
-    }; r.readAsDataURL(e.target.files[0]);
-};
 document.getElementById('prod-upload').onchange = e => {
     const r = new FileReader(); r.onload = ev => {
         prodPic = ev.target.result;
@@ -191,6 +181,20 @@ document.getElementById('prod-upload').onchange = e => {
         document.getElementById('img-preview').style.display = 'block';
         document.getElementById('placeholder-add').style.display = 'none';
     }; r.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('reg-photo').onchange = e => {
+    const r = new FileReader(); r.onload = ev => {
+        signupPic = ev.target.result;
+        document.getElementById('signup-preview').innerHTML = `<img src="${signupPic}" style="width:100%;height:100%;object-fit:cover;">`;
+    }; r.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('btnDoPublish').onclick = async () => {
+    const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
+    const pFinal = (pIn * 1.20).toFixed(2);
+    await addDoc(collection(db, "products"), { title: t, price: pFinal, img: prodPic, views: 0, time: serverTimestamp(), sellerId: currentUser.uid });
+    showPage('market');
 };
 
 lucide.createIcons();
