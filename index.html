@@ -14,7 +14,7 @@
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; text-align: center; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         .card { background: var(--w); border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
-        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; }
+        .input-field { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 12px; outline: none; font-size: 14px; }
         .btn-main { background: linear-gradient(45deg, var(--p), var(--s)); color: #fff; border: none; padding: 15px; border-radius: 12px; font-weight: 700; width: 100%; cursor: pointer; }
         .btn-sec { background: transparent; color: var(--p); border: 1px solid var(--p); padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; cursor: pointer; margin-top: 10px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
@@ -22,6 +22,9 @@
         .nav-btn.active { color: var(--p); }
         .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
         #offline-tag { background: #555; color: white; font-size: 10px; text-align: center; display: none; padding: 5px; }
+        .search-bar { background: #fff; padding: 10px; border-radius: 12px; margin-bottom: 15px; display: flex; align-items: center; border: 1px solid #eee; }
+        .search-bar input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 14px; }
+        .badge-views { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; display: flex; align-items: center; gap: 4px; }
     </style>
 </head>
 <body>
@@ -49,7 +52,13 @@
         <p style="font-size:10px; text-align:center; margin-top:15px; color:#999;">En continuant, vous acceptez notre <a href="#" style="color:var(--p)">Politique de Confidentialité</a></p>
     </div>
 
-    <div id="market" class="page"><div id="list"></div></div>
+    <div id="market" class="page">
+        <div class="search-bar">
+            <i data-lucide="search" size="18" color="#888"></i>
+            <input type="text" id="searchInput" placeholder="Rechercher un article ou une boutique..." oninput="renderMarket()">
+        </div>
+        <div id="list"></div>
+    </div>
     
     <div id="add" class="page">
         <h2>Vendre un article</h2>
@@ -58,7 +67,7 @@
             <div id="placeholder-add" class="preview-img" style="display:flex; align-items:center; justify-content:center;"><i data-lucide="image-plus"></i></div>
         </label>
         <input type="file" id="prod-upload" style="display:none;" accept="image/*">
-        <input type="text" id="prod-title" class="input-field" placeholder="Titre">
+        <input type="text" id="prod-title" class="input-field" placeholder="Titre de l'article">
         <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
         <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés pour le client.</p>
         <button class="btn-main" id="btnDoPublish">PUBLIER</button>
@@ -75,7 +84,7 @@
 </div>
 
 <nav class="bottom-nav" id="main-nav">
-    <button class="nav-btn" onclick="showPage('market')"><i data-lucide="home"></i>Market</button>
+    <button class="nav-btn active" onclick="showPage('market')"><i data-lucide="home"></i>Market</button>
     <button class="nav-btn" onclick="showPage('add')"><i data-lucide="plus-circle"></i>Vendre</button>
     <button class="nav-btn" onclick="showPage('chat-list')"><i data-lucide="message-square"></i>Messages</button>
     <button class="nav-btn" onclick="showPage('track')"><i data-lucide="truck"></i>Suivi</button>
@@ -85,7 +94,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc, enableIndexedDbPersistence, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -99,12 +108,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-// ACTIVATION DU MODE HORS-LIGNE
-enableIndexedDbPersistence(db).catch(() => console.log("Persistance impossible"));
-
-// DETECTION CONNEXION
-window.addEventListener('online',  () => document.getElementById('offline-tag').style.display = 'none');
-window.addEventListener('offline', () => document.getElementById('offline-tag').style.display = 'block');
+enableIndexedDbPersistence(db).catch(() => {});
 
 onAuthStateChanged(auth, async user => {
     if(user) {
@@ -120,31 +124,79 @@ onAuthStateChanged(auth, async user => {
     }
 });
 
-// AUTHENTIFICATION
+// RECHERCHE ET ALGO VUES
+async function renderMarket(filterSellerId = null) {
+    const searchTxt = document.getElementById('searchInput').value.toLowerCase();
+    const list = document.getElementById('list');
+    list.innerHTML = filterSellerId ? `<button class="btn-sec" onclick="renderMarket()" style="margin-bottom:15px;">← Retour au Market</button>` : "";
+    
+    // Algorithme : On trie par vues décroissantes
+    let q = query(collection(db, "products"), orderBy("views", "desc"));
+    if(filterSellerId) q = query(collection(db, "products"), where("sellerId", "==", filterSellerId));
+    
+    const snap = await getDocs(q);
+    snap.forEach(d => {
+        const p = d.data();
+        if(!filterSellerId && !p.title.toLowerCase().includes(searchTxt) && !p.sellerName.toLowerCase().includes(searchTxt)) return;
+        
+        list.innerHTML += `
+            <div class="card">
+                <div class="badge-views"><i data-lucide="eye" size="12"></i> ${p.views || 0}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div onclick="renderMarket('${p.sellerId}')" style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+                        <div style="width:30px; height:30px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; color:var(--p); border:1px solid #ddd;">${p.sellerName[0]}</div>
+                        <b style="font-size:13px;">${p.sellerName}</b>
+                    </div>
+                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" size="18" color="red" onclick="deleteProd('${d.id}')"></i>` : ''}
+                </div>
+                <img src="${p.img}" style="width:100%; border-radius:12px; cursor:pointer;" onclick="viewItem('${d.id}')">
+                <div style="margin-top:10px;">
+                    <b style="font-size:16px;">${p.title}</b>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                        <b style="color:var(--p); font-size:18px;">${p.price} $</b>
+                        ${p.sellerId !== currentUser.uid ? `
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-sec" style="margin:0; padding:8px 12px; font-size:12px;" onclick="contactSeller('${p.sellerId}', '${p.sellerName}', '${p.title}')">ÉCRIRE</button>
+                                <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>
+                            </div>
+                        ` : `<span style="font-size:11px; color:#aaa;">C'est votre article</span>`}
+                    </div>
+                </div>
+            </div>`;
+    });
+    lucide.createIcons();
+}
+
+window.viewItem = async (id) => {
+    await updateDoc(doc(db, "products", id), { views: increment(1) });
+    renderMarket();
+};
+
+window.contactSeller = (sid, sname, item) => {
+    alert("Ouverture du chat avec " + sname + " pour l'article : " + item);
+    showPage('chat-list');
+    // Ici tu pourrais injecter une logique pour créer une conv dans Firestore
+};
+
+window.deleteProd = async (id) => {
+    if(confirm("Supprimer cet article ?")) { await deleteDoc(doc(db, "products", id)); renderMarket(); }
+};
+
+// AUTH ACTIONS
 document.getElementById('btnAuthAction').onclick = async () => {
-    if(!navigator.onLine) return alert("Connexion internet requise pour s'identifier.");
     const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
     try {
         if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
         else {
             const n = document.getElementById('reg-name').value;
+            if(!n) return alert("Nom de boutique requis");
             const uc = await createUserWithEmailAndPassword(auth, e, p);
-            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
+            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic, address: "", payment_num: "" });
         }
-    } catch(err) { alert("Erreur: " + err.message); }
+    } catch(err) { alert(err.message); }
 };
 
-document.getElementById('btnToggleAuth').onclick = () => {
-    isLoginMode = !isLoginMode;
-    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
-    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
-    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
-    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
-};
-
-// PUBLICATION
 document.getElementById('btnDoPublish').onclick = async () => {
-    if(!navigator.onLine) return alert("Impossible de publier hors-ligne.");
     const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
     if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
     const pFinal = (pIn * 1.20).toFixed(2);
@@ -155,65 +207,39 @@ document.getElementById('btnDoPublish').onclick = async () => {
     showPage('market');
 };
 
-// MARKET
-async function renderMarket() {
-    const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
-    const list = document.getElementById('list'); list.innerHTML = "";
-    snap.forEach(d => {
-        const p = d.data();
-        list.innerHTML += `
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <b>${p.sellerName}</b>
-                    ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="red" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket)"></i>` : ''}
-                </div>
-                <img src="${p.img}" style="width:100%; border-radius:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <b style="color:var(--p); font-size:18px;">${p.price} $</b>
-                    ${p.sellerId !== currentUser.uid ? 
-                        `<button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>` 
-                        : `<span style="color:#aaa; font-size:12px;">Votre article</span>`
-                    }
-                </div>
-            </div>`;
-    });
-    lucide.createIcons();
-}
-
-// ACHAT
+// MODAL PAIEMENT
 window.buyProduct = (total) => {
-    if(!navigator.onLine) return alert("Connexion requise pour acheter.");
-    const modal = document.createElement('div');
-    modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
-    modal.id = "pay-modal";
-    modal.innerHTML = `
-        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px;">
-            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:20px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
-            <p>Envoyez : <b style="font-size:18px; color:var(--p);">${total}$</b></p>
-            <div style="background:#f8f9fa; padding:10px; border-radius:15px; margin-bottom:10px;">
-                <small>M-Pesa :</small> <br> <b>+243 836 344 645</b>
-                <button onclick="navigator.clipboard.writeText('+243836344645');alert('Copié')" style="font-size:9px; margin-left:5px;">COPIER</button>
+    const m = document.createElement('div');
+    m.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
+    m.id = "pay-modal";
+    m.innerHTML = `
+        <div class="card" style="width:100%; max-width:400px; text-align:center;">
+            <b style="color:var(--p); font-size:20px;">PAIEMENT SÉCURISÉ</b>
+            <p style="margin:15px 0;">Total : <b style="font-size:20px;">${total}$</b></p>
+            <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:10px; border:1px solid #eee;">
+                <small>M-Pesa :</small><br><b>+243 836 344 645</b>
+                <button onclick="navigator.clipboard.writeText('+243836344645'); alert('Copié')" style="font-size:10px; margin-left:10px;">COPIER</button>
             </div>
-            <div style="background:#f8f9fa; padding:10px; border-radius:15px; margin-bottom:10px;">
-                <small>Airtel Money :</small> <br> <b>0970428667</b>
-                <button onclick="navigator.clipboard.writeText('0970428667');alert('Copié')" style="font-size:9px; margin-left:5px;">COPIER</button>
+            <div style="background:#f8f9fa; padding:12px; border-radius:15px; border:1px solid #eee;">
+                <small>Airtel Money :</small><br><b>0970428667</b>
+                <button onclick="navigator.clipboard.writeText('0970428667'); alert('Copié')" style="font-size:10px; margin-left:10px;">COPIER</button>
             </div>
-            <button class="btn-main" onclick="document.getElementById('pay-modal').remove(); showPage('track');">C'EST FAIT</button>
-            <button class="btn-sec" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
+            <button class="btn-main" style="margin-top:20px;" onclick="document.getElementById('pay-modal').remove(); showPage('track');">J'AI PAYÉ</button>
+            <button class="btn-sec" style="border:none;" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
         </div>`;
-    document.body.appendChild(modal);
+    document.body.appendChild(m);
 };
 
-// PROFIL & SUPPRESSION COMPTE (GOOGLE REQUIREMENT)
+// PROFILE
 function renderProfile() {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
-            <img src="${userData.photo || ''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--p);">
-            <h2>${userData.username}</h2>
-            <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9;">
-                <p>Email: ${userData.email}</p>
-                <p>Adresse: ${userData.address || 'Non définie'}</p>
-                <p>N° Retrait: ${userData.payment_num || 'Non défini'}</p>
+            <img src="${userData.photo || 'https://via.placeholder.com/80'}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--p);">
+            <h2 style="margin:10px 0 5px 0;">${userData.username}</h2>
+            <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9; padding:15px;">
+                <p><b>Email:</b> ${userData.email}</p>
+                <p><b>Adresse:</b> ${userData.address || 'Non définie'}</p>
+                <p><b>N° Retrait:</b> ${userData.payment_num || 'Non défini'}</p>
             </div>
             <button class="btn-sec" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
             <button style="border:none; background:none; color:#aaa; font-size:10px; margin-top:20px; text-decoration:underline;" onclick="deleteAcc()">Supprimer mon compte définitivement</button>
@@ -222,44 +248,42 @@ function renderProfile() {
 }
 
 window.deleteAcc = async () => {
-    if(confirm("Supprimer votre compte et toutes vos données ?")){
-        if(!navigator.onLine) return alert("Connexion requise.");
-        try {
-            await deleteDoc(doc(db, "users", currentUser.uid));
-            await deleteUser(currentUser);
-            location.reload();
-        } catch(e) { alert("Reconnectez-vous avant de supprimer le compte."); }
-    }
-}
-
-// SUIVI
-function renderTrack() {
-    document.getElementById('track-content').innerHTML = `
-        <div class="card" style="border-left:5px solid var(--green);">
-            <b>Commande en attente</b>
-            <p style="font-size:12px; color:#666;">En attente de réception du SMS de paiement.</p>
-            <button class="btn-main" style="background:var(--green); margin-top:10px;" onclick="confirmReceipt()">J'AI REÇU MON COLIS</button>
-        </div>`;
-    lucide.createIcons();
-}
-
-window.confirmReceipt = () => {
-    if(confirm("Confirmer la réception ?")) {
-        alert("Succès !");
+    if(confirm("Action irréversible. Supprimer ?")) {
+        await deleteDoc(doc(db, "users", currentUser.uid));
+        await deleteUser(currentUser);
         location.reload();
     }
-};
+}
 
+// NAVIGATION
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    
+    // Activer l'icône de navigation
+    const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick').includes(id));
+    if(btn) btn.classList.add('active');
+
     if(id === 'market') renderMarket();
     if(id === 'profile') renderProfile();
     if(id === 'track') renderTrack();
     lucide.createIcons();
 };
 
-// IMAGES
+function renderTrack() {
+    document.getElementById('track-content').innerHTML = `
+        <div class="card" style="border-left:5px solid var(--green);">
+            <b>En attente de validation</b>
+            <p style="font-size:12px; color:#666; margin-top:5px;">Nous vérifions le SMS de paiement sur nos serveurs.</p>
+            <button class="btn-main" style="background:var(--green); margin-top:10px;" onclick="confirmReceipt()">J'AI MON COLIS</button>
+        </div>`;
+    lucide.createIcons();
+}
+
+window.confirmReceipt = () => { if(confirm("Confirmer la réception ?")) { alert("Succès !"); location.reload(); } };
+
+// IMAGE PREVIEWS
 document.getElementById('reg-photo').onchange = e => {
     const r = new FileReader(); r.onload = ev => {
         signupPic = ev.target.result;
@@ -273,6 +297,14 @@ document.getElementById('prod-upload').onchange = e => {
         document.getElementById('img-preview').style.display = 'block';
         document.getElementById('placeholder-add').style.display = 'none';
     }; r.readAsDataURL(e.target.files[0]);
+};
+
+document.getElementById('btnToggleAuth').onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
+    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
+    document.getElementById('reg-name').parentElement.querySelector('#reg-name').style.display = isLoginMode ? "none" : "block";
+    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
 };
 
 lucide.createIcons();
