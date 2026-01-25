@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GOODWEAR | OFFICIEL</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --p: #FF6600; --s: #FF3366; --bg: #F0F2F5; --w: #FFFFFF; --green: #4CAF50; }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); padding-bottom: 90px; }
         .page { display: none; } .page.active { display: block; }
         .header-fixed { position: sticky; top: 0; z-index: 1000; background: var(--w); border-bottom: 1px solid #eee; padding: 10px 15px; }
@@ -31,7 +30,7 @@
 <div id="offline-tag">MODE HORS-LIGNE : CONSULTATION UNIQUEMENT</div>
 
 <div class="header-fixed">
-    <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px; text-align: center;">GOODWEAR</div>
+    <div style="font-weight:800; color:var(--p); font-size:24px; text-align: center;">GOODWEAR</div>
 </div>
 
 <div class="container">
@@ -104,7 +103,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-enableIndexedDbPersistence(db).catch(() => console.log("Offline non supporté"));
+// Activation PERSISTANCE (Essentiel pour le hors-ligne)
+enableIndexedDbPersistence(db).catch(() => console.log("Cache local activé"));
 
 window.addEventListener('online',  () => document.getElementById('offline-tag').style.display = 'none');
 window.addEventListener('offline', () => document.getElementById('offline-tag').style.display = 'block');
@@ -112,8 +112,10 @@ window.addEventListener('offline', () => document.getElementById('offline-tag').
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
-        const s = await getDoc(doc(db, "users", user.uid));
-        userData = s.data() || {};
+        try {
+            const s = await getDoc(doc(db, "users", user.uid));
+            userData = s.data() || {};
+        } catch(e) { console.log("Mode hors-ligne"); }
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
         showPage('market');
@@ -125,28 +127,24 @@ onAuthStateChanged(auth, async user => {
 
 // AUTH
 document.getElementById('btnAuthAction').onclick = async () => {
-    if(!navigator.onLine) return alert("Vérifiez votre connexion internet.");
+    if(!navigator.onLine) return alert("Vérifiez votre connexion internet pour vous connecter.");
     const e = document.getElementById('reg-email').value.trim();
     const p = document.getElementById('reg-pass').value;
     const n = document.getElementById('reg-name').value.trim();
 
-    if(!e || !p) return alert("Veuillez remplir l'email et le mot de passe.");
+    if(!e || !p) return alert("Remplissez l'email et le mot de passe.");
 
     try {
-        if(isLoginMode) { 
-            await signInWithEmailAndPassword(auth, e, p); 
-        } else {
-            if(!n) return alert("Donnez un nom à votre boutique !");
+        if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
+        else {
+            if(!n) return alert("Nom de boutique requis.");
             const uc = await createUserWithEmailAndPassword(auth, e, p);
-            await setDoc(doc(db, "users", uc.user.uid), { 
-                username: n, email: e, photo: signupPic || "", address: "", payment_num: "" 
-            });
-            alert("Compte créé avec succès !");
+            await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
         }
     } catch(err) {
-        if(err.code === 'auth/email-already-in-use') alert("Cet email est déjà utilisé. Essayez de vous connecter.");
+        if(err.code === 'auth/email-already-in-use') alert("Cet email est déjà utilisé.");
         else if(err.code === 'auth/invalid-email') alert("L'adresse email n'est pas valide.");
-        else if(err.code === 'auth/weak-password') alert("Le mot de passe est trop court (6 caractères min).");
+        else if(err.code === 'auth/weak-password') alert("Le mot de passe est trop court.");
         else alert("Erreur : " + err.message);
     }
 };
@@ -161,6 +159,7 @@ document.getElementById('btnToggleAuth').onclick = () => {
 
 // PUBLICATION
 document.getElementById('btnDoPublish').onclick = async () => {
+    if(!navigator.onLine) return alert("Connexion internet requise pour publier.");
     const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
     if(!prodPic || !t || isNaN(pIn)) return alert("Infos manquantes");
     const pFinal = (pIn * 1.20).toFixed(2);
@@ -184,7 +183,7 @@ window.renderMarket = async () => {
             <div class="card">
                 <div class="badge-views"><i data-lucide="eye" style="width:12px;"></i> ${p.views || 0}</div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-                    <div onclick="alert('Visite de la boutique de ${p.sellerName}')" style="cursor:pointer; display:flex; align-items:center; gap:5px;">
+                    <div style="display:flex; align-items:center; gap:5px;">
                         <i data-lucide="store" style="width:16px; color:var(--p)"></i>
                         <b style="font-size:13px;">${p.sellerName}</b>
                     </div>
@@ -197,7 +196,7 @@ window.renderMarket = async () => {
                         <b style="color:var(--p); font-size:18px;">${p.price} $</b>
                         ${p.sellerId !== currentUser.uid ? 
                             `<div style="display:flex; gap:5px;">
-                                <button class="btn-main" style="width:auto; padding:8px 12px; background:#eee; color:#333;" onclick="alert('Chat avec ${p.sellerName} bientôt disponible')"><i data-lucide="message-circle" style="width:16px;"></i></button>
+                                <button class="btn-main" style="width:auto; padding:8px 12px; background:#eee; color:#333;" onclick="alert('Chat bientôt disponible')"><i data-lucide="message-circle" style="width:16px;"></i></button>
                                 <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>
                              </div>` 
                             : `<span style="color:#aaa; font-size:11px;">Mon article</span>`
@@ -207,11 +206,11 @@ window.renderMarket = async () => {
             </div>`;
         }
     });
-    lucide.createIcons();
+    if(window.lucide) lucide.createIcons();
 };
 
 window.viewProd = async (id) => {
-    await updateDoc(doc(db, "products", id), { views: increment(1) });
+    if(navigator.onLine) await updateDoc(doc(db, "products", id), { views: increment(1) });
     renderMarket();
 };
 
@@ -224,21 +223,19 @@ window.deleteProd = async (id) => {
 
 // ACHAT & PAIEMENT
 window.buyProduct = (total) => {
-    if(!navigator.onLine) return alert("Internet requis.");
+    if(!navigator.onLine) return alert("Internet requis pour payer.");
     const modal = document.createElement('div');
     modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
     modal.id = "pay-modal";
     modal.innerHTML = `
-        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px; animation: slideUp 0.3s ease-out;">
-            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:20px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
+        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px;">
+            <div style="font-weight:800; color:var(--p); font-size:20px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
             <p>Envoyez : <b style="font-size:22px; color:var(--p);">${total}$</b></p>
             <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:10px; text-align:left;">
                 <small>Vodacom M-Pesa :</small><br><b>+243 836 344 645</b>
-                <button onclick="navigator.clipboard.writeText('+243836344645');alert('Copié')" style="float:right; border:none; background:none; color:var(--p); font-weight:bold;">COPIER</button>
             </div>
             <div style="background:#f8f9fa; padding:12px; border-radius:15px; margin-bottom:15px; text-align:left;">
                 <small>Airtel Money :</small><br><b>0970428667</b>
-                <button onclick="navigator.clipboard.writeText('0970428667');alert('Copié')" style="float:right; border:none; background:none; color:var(--p); font-weight:bold;">COPIER</button>
             </div>
             <button class="btn-main" onclick="document.getElementById('pay-modal').remove(); showPage('track');">J'AI ENVOYÉ L'ARGENT</button>
             <button class="btn-sec" style="border:none" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
@@ -246,69 +243,46 @@ window.buyProduct = (total) => {
     document.body.appendChild(modal);
 };
 
-// PROFIL & MODIFICATION
+// PROFIL
 window.renderProfile = () => {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
             <img src="${userData.photo || ''}" id="prof-img" style="width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
-            <h2 id="prof-name">${userData.username}</h2>
+            <h2>${userData.username}</h2>
             <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9;">
                 <p><b>Email:</b> ${userData.email}</p>
-                <p><b>Adresse:</b> <span id="disp-addr">${userData.address || 'Non définie'}</span></p>
-                <p><b>N° Retrait:</b> <span id="disp-pay">${userData.payment_num || 'Non défini'}</span></p>
+                <p><b>Adresse:</b> ${userData.address || 'Non définie'}</p>
                 <button class="btn-sec" style="font-size:11px; padding:5px;" onclick="editProfile()">MODIFIER LE PROFIL</button>
             </div>
             <button class="btn-sec" style="color:red; border-color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
-            <button style="border:none; background:none; color:#bbb; font-size:10px; margin-top:20px; text-decoration:underline;" onclick="deleteAcc()">SUPPRIMER MON COMPTE</button>
         </div>`;
-    lucide.createIcons();
+    if(window.lucide) lucide.createIcons();
 };
 
 window.editProfile = () => {
-    const newName = prompt("Nouveau nom de boutique :", userData.username);
-    const newAddr = prompt("Adresse de livraison :", userData.address);
-    const newPay = prompt("Numéro M-Pesa/Airtel pour vos retraits :", userData.payment_num);
+    const newName = prompt("Nouveau nom :", userData.username);
     if(newName) {
-        updateDoc(doc(db, "users", currentUser.uid), { username: newName, address: newAddr, payment_num: newPay })
-        .then(() => { alert("Profil mis à jour !"); location.reload(); });
+        updateDoc(doc(db, "users", currentUser.uid), { username: newName })
+        .then(() => { alert("Mis à jour !"); location.reload(); });
     }
 };
 
-window.deleteAcc = async () => {
-    if(confirm("Action irréversible. Supprimer vos données et votre compte ?")){
-        try {
-            await deleteDoc(doc(db, "users", currentUser.uid));
-            await deleteUser(currentUser);
-            location.reload();
-        } catch(e) { alert("Reconnectez-vous pour cette action."); }
-    }
-};
-
-// NAVIGATION & TRACKING
+// NAVIGATION
 window.renderTrack = () => {
     document.getElementById('track-content').innerHTML = `
         <div class="card" style="border-left:5px solid var(--green);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b>Commande en attente</b>
-                <span style="font-size:10px; color:var(--green); font-weight:bold;">VÉRIFICATION SMS</span>
-            </div>
-            <p style="font-size:12px; color:#666; margin:10px 0;">Nous validons votre paiement dès réception du SMS opérateur.</p>
-            <button class="btn-main" style="background:var(--green);" onclick="confirmReceipt()"><i data-lucide="check-circle"></i> COLIS REÇU</button>
+            <b>Commande en attente</b>
+            <p style="font-size:12px; color:#666; margin:10px 0;">Nous validons votre paiement.</p>
         </div>`;
-    lucide.createIcons();
 };
-
-window.confirmReceipt = () => { if(confirm("Confirmer la réception ?")) { alert("Vente clôturée !"); location.reload(); } };
 
 window.showPage = (id) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    event?.currentTarget?.classList?.add('active');
     if(id === 'market') renderMarket();
     if(id === 'profile') renderProfile();
     if(id === 'track') renderTrack();
-    lucide.createIcons();
+    if(window.lucide) lucide.createIcons();
 };
 
 // PHOTOS
@@ -327,7 +301,7 @@ document.getElementById('prod-upload').onchange = e => {
     }; r.readAsDataURL(e.target.files[0]);
 };
 
-lucide.createIcons();
+if(window.lucide) lucide.createIcons();
 </script>
 </body>
     </html>
