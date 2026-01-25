@@ -20,12 +20,13 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--w); display: none; justify-content: space-around; padding: 10px 0 25px; border-top: 1px solid #eee; z-index: 999; }
         .nav-btn { background: none; border: none; color: #888; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--p); }
-        .edit-pen { color: var(--p); cursor: pointer; }
         .preview-img { width: 100%; height: 200px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; border: 2px dashed #ccc; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        #offline-tag { background: #555; color: white; font-size: 10px; text-align: center; display: none; padding: 5px; }
     </style>
 </head>
 <body>
+
+<div id="offline-tag">MODE HORS-LIGNE : CONSULTATION UNIQUEMENT</div>
 
 <div class="header-fixed">
     <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:24px;">GOODWEAR</div>
@@ -45,6 +46,7 @@
         <input type="password" id="reg-pass" class="input-field" placeholder="Mot de passe">
         <button class="btn-main" id="btnAuthAction">CRÉER MON COMPTE</button>
         <button class="btn-sec" id="btnToggleAuth">J'AI DÉJÀ UN COMPTE</button>
+        <p style="font-size:10px; text-align:center; margin-top:15px; color:#999;">En continuant, vous acceptez notre <a href="#" style="color:var(--p)">Politique de Confidentialité</a></p>
     </div>
 
     <div id="market" class="page"><div id="list"></div></div>
@@ -58,7 +60,7 @@
         <input type="file" id="prod-upload" style="display:none;" accept="image/*">
         <input type="text" id="prod-title" class="input-field" placeholder="Titre">
         <input type="number" id="prod-price" class="input-field" placeholder="Prix vendeur ($)">
-        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés automatiquement pour le client.</p>
+        <p style="font-size:11px; color:var(--p);">+20% de commission ajoutés pour le client.</p>
         <button class="btn-main" id="btnDoPublish">PUBLIER</button>
     </div>
 
@@ -66,9 +68,7 @@
     
     <div id="track" class="page">
         <h2>Suivi de commande</h2>
-        <div id="track-content">
-            <div class="card" style="text-align:center; padding:30px;"><i data-lucide="truck"></i><p>Aucune commande en cours.</p></div>
-        </div>
+        <div id="track-content"></div>
     </div>
     
     <div id="profile" class="page"><div id="profileContent"></div></div>
@@ -84,8 +84,8 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, updateDoc, increment, deleteDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDyeyhiWsguJ1_8cypOGWDWlxLGTrqmXOc",
@@ -99,12 +99,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 let isLoginMode = false, signupPic = "", prodPic = "", currentUser = null, userData = null;
 
-// GESTION DE L'AUTHENTIFICATION
+// ACTIVATION DU MODE HORS-LIGNE
+enableIndexedDbPersistence(db).catch(() => console.log("Persistance impossible"));
+
+// DETECTION CONNEXION
+window.addEventListener('online',  () => document.getElementById('offline-tag').style.display = 'none');
+window.addEventListener('offline', () => document.getElementById('offline-tag').style.display = 'block');
+
 onAuthStateChanged(auth, async user => {
     if(user) {
         currentUser = user;
         const s = await getDoc(doc(db, "users", user.uid));
-        userData = s.data();
+        userData = s.data() || {};
         document.getElementById('auth-page').classList.remove('active');
         document.getElementById('main-nav').style.display = 'flex';
         showPage('market');
@@ -114,16 +120,9 @@ onAuthStateChanged(auth, async user => {
     }
 });
 
-document.getElementById('btnToggleAuth').onclick = () => {
-    isLoginMode = !isLoginMode;
-    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
-    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
-    document.getElementById('btnToggleAuth').innerText = isLoginMode ? "PAS DE COMPTE ? S'INSCRIRE" : "J'AI DÉJÀ UN COMPTE";
-    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
-    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
-};
-
+// AUTHENTIFICATION
 document.getElementById('btnAuthAction').onclick = async () => {
+    if(!navigator.onLine) return alert("Connexion internet requise pour s'identifier.");
     const e = document.getElementById('reg-email').value, p = document.getElementById('reg-pass').value;
     try {
         if(isLoginMode) { await signInWithEmailAndPassword(auth, e, p); } 
@@ -132,11 +131,20 @@ document.getElementById('btnAuthAction').onclick = async () => {
             const uc = await createUserWithEmailAndPassword(auth, e, p);
             await setDoc(doc(db, "users", uc.user.uid), { username: n, email: e, photo: signupPic || "", address: "", payment_num: "" });
         }
-    } catch(err) { alert(err.message); }
+    } catch(err) { alert("Erreur: " + err.message); }
 };
 
-// PUBLICATION AVEC COMMISSION 20%
+document.getElementById('btnToggleAuth').onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById('auth-title').innerText = isLoginMode ? "Connexion" : "Inscription";
+    document.getElementById('btnAuthAction').innerText = isLoginMode ? "SE CONNECTER" : "CRÉER MON COMPTE";
+    document.getElementById('reg-name').style.display = isLoginMode ? "none" : "block";
+    document.getElementById('reg-photo-container').style.display = isLoginMode ? "none" : "block";
+};
+
+// PUBLICATION
 document.getElementById('btnDoPublish').onclick = async () => {
+    if(!navigator.onLine) return alert("Impossible de publier hors-ligne.");
     const t = document.getElementById('prod-title').value, pIn = parseFloat(document.getElementById('prod-price').value);
     if(!prodPic || !t || isNaN(pIn)) return alert("Complétez tout !");
     const pFinal = (pIn * 1.20).toFixed(2);
@@ -147,7 +155,7 @@ document.getElementById('btnDoPublish').onclick = async () => {
     showPage('market');
 };
 
-// RENDU DU MARKET AVEC ALGORITHME DE VUE
+// MARKET
 async function renderMarket() {
     const snap = await getDocs(query(collection(db, "products"), orderBy("views", "desc")));
     const list = document.getElementById('list'); list.innerHTML = "";
@@ -156,85 +164,88 @@ async function renderMarket() {
         list.innerHTML += `
             <div class="card">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <b style="font-size:14px;">${p.sellerName}</b>
+                    <b>${p.sellerName}</b>
                     ${p.sellerId === currentUser.uid ? `<i data-lucide="trash-2" color="red" onclick="deleteDoc(doc(db,'products','${d.id}')).then(renderMarket)"></i>` : ''}
                 </div>
-                <img src="${p.img}" style="width:100%; border-radius:12px;" onclick="updateDoc(doc(db,'products','${d.id}'),{views:increment(1)}).then(renderMarket)">
+                <img src="${p.img}" style="width:100%; border-radius:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                     <b style="color:var(--p); font-size:18px;">${p.price} $</b>
-                    <button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${d.id}', '${p.price}')">ACHETER</button>
+                    ${p.sellerId !== currentUser.uid ? 
+                        `<button class="btn-main" style="width:auto; padding:8px 15px; background:var(--green);" onclick="buyProduct('${p.price}')">ACHETER</button>` 
+                        : `<span style="color:#aaa; font-size:12px;">Votre article</span>`
+                    }
                 </div>
-                <div style="font-size:10px; color:#aaa; margin-top:5px;">${p.views || 0} vues</div>
             </div>`;
     });
     lucide.createIcons();
 }
 
-// FENÊTRE DE PAIEMENT "STRIPE STYLE" AVEC TES NUMÉROS
-window.buyProduct = (id, total) => {
+// ACHAT
+window.buyProduct = (total) => {
+    if(!navigator.onLine) return alert("Connexion requise pour acheter.");
     const modal = document.createElement('div');
     modal.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;";
     modal.id = "pay-modal";
     modal.innerHTML = `
-        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px; animation: slideUp 0.3s ease-out;">
-            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:22px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
-            <p>Total à envoyer : <b style="font-size:20px;">${total}$</b></p>
-            
-            <div onclick="processPay('M-Pesa')" style="display:flex; align-items:center; padding:15px; border:1px solid #eee; border-radius:15px; margin-bottom:10px; cursor:pointer; background:#fffafa;">
-                <div style="width:45px; height:45px; background:#e61c24; border-radius:10px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">M</div>
-                <div style="text-align:left; margin-left:15px;"><b>M-Pesa</b><br><small>+243 836 344 645</small></div>
+        <div class="card" style="width:100%; max-width:400px; text-align:center; border-radius:30px;">
+            <div style="font-family:'Outfit'; font-weight:800; color:var(--p); font-size:20px; margin-bottom:15px;">PAIEMENT SÉCURISÉ</div>
+            <p>Envoyez : <b style="font-size:18px; color:var(--p);">${total}$</b></p>
+            <div style="background:#f8f9fa; padding:10px; border-radius:15px; margin-bottom:10px;">
+                <small>M-Pesa :</small> <br> <b>+243 836 344 645</b>
+                <button onclick="navigator.clipboard.writeText('+243836344645');alert('Copié')" style="font-size:9px; margin-left:5px;">COPIER</button>
             </div>
-
-            <div onclick="processPay('Airtel')" style="display:flex; align-items:center; padding:15px; border:1px solid #eee; border-radius:15px; margin-bottom:15px; cursor:pointer; background:#fffafa;">
-                <div style="width:45px; height:45px; background:#FF0000; border-radius:10px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">A</div>
-                <div style="text-align:left; margin-left:15px;"><b>Airtel Money</b><br><small>0970428667</small></div>
+            <div style="background:#f8f9fa; padding:10px; border-radius:15px; margin-bottom:10px;">
+                <small>Airtel Money :</small> <br> <b>0970428667</b>
+                <button onclick="navigator.clipboard.writeText('0970428667');alert('Copié')" style="font-size:9px; margin-left:5px;">COPIER</button>
             </div>
-
-            <p style="font-size:11px; color:#888;">L'argent est gardé par GOODWEAR.<br>Le vendeur ne reçoit sa part qu'après votre confirmation.</p>
-            <button class="btn-sec" style="border:none;" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
+            <button class="btn-main" onclick="document.getElementById('pay-modal').remove(); showPage('track');">C'EST FAIT</button>
+            <button class="btn-sec" onclick="document.getElementById('pay-modal').remove()">ANNULER</button>
         </div>`;
     document.body.appendChild(modal);
 };
 
-window.processPay = (m) => {
-    alert("Instructions reçues ! Une fois le transfert fait, allez dans 'Suivi' pour confirmer la réception dès que vous aurez le colis.");
-    document.getElementById('pay-modal').remove();
-    showPage('track');
-};
-
-// RENDU DU PROFIL (AVEC CRAYONS ET INFOS)
+// PROFIL & SUPPRESSION COMPTE (GOOGLE REQUIREMENT)
 function renderProfile() {
     document.getElementById('profileContent').innerHTML = `
         <div class="card" style="text-align:center">
-            <div style="position:relative; width:100px; margin:0 auto;">
-                <img src="${userData.photo || ''}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--p);">
-                <i data-lucide="pencil" class="edit-pen" style="position:absolute; bottom:5px; right:5px; background:white; border-radius:50%; padding:3px;"></i>
+            <img src="${userData.photo || ''}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--p);">
+            <h2>${userData.username}</h2>
+            <div class="card" style="text-align:left; font-size:13px; background:#f9f9f9;">
+                <p>Email: ${userData.email}</p>
+                <p>Adresse: ${userData.address || 'Non définie'}</p>
+                <p>N° Retrait: ${userData.payment_num || 'Non défini'}</p>
             </div>
-            <h2>${userData.username} <i data-lucide="pencil" class="edit-pen" style="width:18px;"></i></h2>
-            <div class="card" style="text-align:left; background:#f9f9f9; font-size:14px; padding:20px;">
-                <p><i data-lucide="mail" style="width:16px; margin-right:10px;"></i> Email: ${userData.email}</p>
-                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="map-pin" style="width:16px; margin-right:10px;"></i> Adresse: ${userData.address || 'Non définie'}</span><i data-lucide="pencil" class="edit-pen"></i></p>
-                <p style="display:flex; justify-content:space-between;"><span><i data-lucide="phone" style="width:16px; margin-right:10px;"></i> N° Retrait: ${userData.payment_num || 'Non défini'}</span><i data-lucide="pencil" class="edit-pen"></i></p>
-            </div>
-            <button class="btn-sec" style="color:red; border-color:red;" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+            <button class="btn-sec" onclick="signOut(auth).then(()=>location.reload())">DÉCONNEXION</button>
+            <button style="border:none; background:none; color:#aaa; font-size:10px; margin-top:20px; text-decoration:underline;" onclick="deleteAcc()">Supprimer mon compte définitivement</button>
         </div>`;
     lucide.createIcons();
 }
 
-// SUIVI DE COMMANDE ET CONFIRMATION
+window.deleteAcc = async () => {
+    if(confirm("Supprimer votre compte et toutes vos données ?")){
+        if(!navigator.onLine) return alert("Connexion requise.");
+        try {
+            await deleteDoc(doc(db, "users", currentUser.uid));
+            await deleteUser(currentUser);
+            location.reload();
+        } catch(e) { alert("Reconnectez-vous avant de supprimer le compte."); }
+    }
+}
+
+// SUIVI
 function renderTrack() {
     document.getElementById('track-content').innerHTML = `
         <div class="card" style="border-left:5px solid var(--green);">
-            <div style="display:flex; justify-content:space-between;"><b>Commande en cours</b><span style="color:var(--green); font-size:12px; font-weight:bold;">PAYÉ</span></div>
-            <p style="font-size:12px; color:#666; margin:10px 0;">L'argent est sécurisé chez GOODWEAR. Appuyez ci-dessous uniquement si vous avez le colis en main.</p>
-            <button class="btn-main" style="background:var(--green);" onclick="confirmReceipt()">J'AI REÇU MA COMMANDE</button>
+            <b>Commande en attente</b>
+            <p style="font-size:12px; color:#666;">En attente de réception du SMS de paiement.</p>
+            <button class="btn-main" style="background:var(--green); margin-top:10px;" onclick="confirmReceipt()">J'AI REÇU MON COLIS</button>
         </div>`;
     lucide.createIcons();
 }
 
 window.confirmReceipt = () => {
-    if(confirm("Confirmer la réception ? Cela libérera 80% du prix au vendeur. GOODWEAR garde les 20% de frais.")) {
-        alert("🎉 Terminé ! Le vendeur va recevoir son virement. Merci d'avoir utilisé GOODWEAR !");
+    if(confirm("Confirmer la réception ?")) {
+        alert("Succès !");
         location.reload();
     }
 };
@@ -248,7 +259,7 @@ window.showPage = (id) => {
     lucide.createIcons();
 };
 
-// PRÉVIEW DES PHOTOS
+// IMAGES
 document.getElementById('reg-photo').onchange = e => {
     const r = new FileReader(); r.onload = ev => {
         signupPic = ev.target.result;
